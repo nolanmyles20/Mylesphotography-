@@ -1,42 +1,73 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sample Images | Myles Photography LLC</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header>
-  <div class="container nav">
-    <a class="brand" href="index.html" aria-label="Home">
-      <img src="assets/logo.svg" alt="Myles Photography LLC logo" />
-      <span>Myles Photography LLC</span>
-    </a>
-    <nav class="navlinks">
-      <a href="samples.html">Sample Images</a>
-      <a href="about.html">About Us</a>
-      <a href="locations.html">Locations</a>
-      <a class="cta" href="mailto:hello@mylesphotographyllc.com">Book a Flight</a>
-    </nav>
-    <button class="hamburger" aria-label="Menu"><span></span></button>
-  </div>
-</header>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+        <span>Myles Photography LLC</span>
+      </a>
+      <nav class="navlinks">
+        <a href="samples.html" class="btn">Sample Images</a>
+        <a href="about.html" class="btn">About Us</a>
+        <a href="locations.html" class="btn">Locations</a>
+        <a href="mailto:nolanmyles@icloud.com" class="btn">Contact</a>
+      </nav>
+      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
+        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
+      </a>
+    </div>
+  </header>
 
-<main class="container">
-  <h1>Sample Images</h1>
-  <p class="lead">A small selection from recent shoots. Ask for a private gallery with MLS download sizes.</p>
-  <div class="grid">
-    <div class="card"><img src="https://images.unsplash.com/photo-1505691723518-36a5ac3b2cb5?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Golden hour front elevation</div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Neighborhood overview</div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Backyard + pool</div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1437419764061-2473afe69fc2?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Roof detail</div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Lot lines overlay</div></div>
-    <div class="card"><img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Community amenities</div></div>
-  </div>
-</main>
-<footer><div class="container">© <span id="year"></span> Myles Photography LLC</div></footer>
-<script src="script.js"></script>
-<script>document.getElementById('year').textContent=new Date().getFullYear()</script>
+  <main class="page">
+    <h1>Sample Images</h1>
+    <p>Drop your photos into <code>assets/samples/</code> and list them in <code>assets/samples/manifest.json</code>. They’ll appear here automatically—centered, uniform size, scrollable.</p>
+
+    <div id="gallery" class="gallery" aria-live="polite"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+  </footer>
+
+  <script>
+    // Load gallery items from a simple JSON manifest for easy updates
+    // File: assets/samples/manifest.json
+    // Example:
+    // { "images": [
+    //   {"src": "house-1.jpg", "caption": "Front Elevation"},
+    //   {"src": "house-2.jpg", "caption": "Backyard & Pool"}
+    // ]}
+    async function loadGallery(){
+      const container = document.getElementById('gallery');
+      try{
+        const res = await fetch('assets/samples/manifest.json');
+        if(!res.ok) throw new Error('manifest not found');
+        const data = await res.json();
+        if(!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
+
+        data.images.forEach(item=>{
+          const fig = document.createElement('figure');
+          const img = document.createElement('img');
+          img.src = 'assets/samples/' + item.src;
+          img.alt = item.caption || 'Sample image';
+          const cap = document.createElement('figcaption');
+          cap.textContent = item.caption || '';
+          fig.appendChild(img);
+          fig.appendChild(cap);
+          container.appendChild(fig);
+        });
+      }catch(e){
+        container.innerHTML = '<p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p>';
+      }
+    }
+    loadGallery();
+  </script>
 </body>
 </html>
