@@ -119,7 +119,7 @@ footer a:hover{color:#fff}
 /* === Drone cursor (uses assets/drone.png) === */
 /* TIP: best size is ~32x32px (or 64x64 for retina). Hotspot below assumes center. */
 :root {
-  --drone-cursor: url("assets/drone.png") 16 16, auto; /* x y hotspot then fallback */
+  --drone-cursor: url("assets/drone_cursor_32x32.png") 16 16, auto; /* x y hotspot then fallback */
 }
 
 /* Site-wide default */
