@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sample Images | Myles Photography LLC</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="Home">
+      <img src="assets/logo.svg" alt="Myles Photography LLC logo" />
+      <span>Myles Photography LLC</span>
+    </a>
+    <nav class="navlinks">
+      <a href="samples.html">Sample Images</a>
+      <a href="about.html">About Us</a>
+      <a href="locations.html">Locations</a>
+      <a class="cta" href="mailto:hello@mylesphotographyllc.com">Book a Flight</a>
+    </nav>
+    <button class="hamburger" aria-label="Menu"><span></span></button>
+  </div>
+</header>
+
+<main class="container">
+  <h1>Sample Images</h1>
+  <p class="lead">A small selection from recent shoots. Ask for a private gallery with MLS download sizes.</p>
+  <div class="grid">
+    <div class="card"><img src="https://images.unsplash.com/photo-1505691723518-36a5ac3b2cb5?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Golden hour front elevation</div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Neighborhood overview</div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1464146072230-91cabc968266?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Backyard + pool</div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1437419764061-2473afe69fc2?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Roof detail</div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Lot lines overlay</div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200&auto=format&fit=crop" alt=""><div class="p">Community amenities</div></div>
+  </div>
+</main>
+<footer><div class="container">© <span id="year"></span> Myles Photography LLC</div></footer>
+<script src="script.js"></script>
+<script>document.getElementById('year').textContent=new Date().getFullYear()</script>
+</body>
+</html>
