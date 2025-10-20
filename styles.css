@@ -92,3 +92,27 @@ footer a:hover{color:#fff}
   .gallery{grid-template-columns:1fr;gap:16px;justify-items:stretch}
   .gallery img{height:auto;max-height:300px;object-fit:cover}
 }
+.video-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+  justify-items: center;
+  margin-top: 1rem;
+}
+
+.video-grid iframe {
+  width: 100%;
+  height: 440px;
+  border-radius: 12px;
+}
+
+/* Mobile layout */
+@media (max-width: 720px) {
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .video-grid iframe {
+    height: 260px;
+  }
+}
