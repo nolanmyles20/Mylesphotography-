@@ -236,12 +236,12 @@ footer a:hover { color:#fff }
 
 /* === DRONE CURSOR === */
 html, body {
-  cursor:url("assets/drone_cursor_32x32.png") 16 16, auto;
+  cursor:url("assets/drone_cursor_32x32.png") 32 32, auto;
 }
 
 /* For links and buttons */
 a, button, .btn {
-  cursor:url("assets/drone_cursor_32x32.png") 16 16, pointer;
+  cursor:url("assets/drone_cursor_32x32.png") 32 32, pointer;
 }
 
 /* For text input fields */
