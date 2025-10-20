@@ -116,3 +116,26 @@ footer a:hover{color:#fff}
 }
 .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
 .fineprint{color:#888; margin-top:1rem; font-size:.9rem;}
+/* Mobile menu fix */
+@media (max-width: 720px){
+  .container.nav{
+    flex-wrap: wrap;          /* allow items to wrap on small screens */
+    justify-content: center;
+    gap: 8px;
+  }
+  .brand span{
+    display: none;            /* hide long company name text on mobile */
+  }
+  .navlinks{
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .navlinks a.btn{
+    padding:6px 10px;
+    font-size:0.9rem;
+  }
+  .faa-badge img{
+    height:26px;
+  }
+}
+
