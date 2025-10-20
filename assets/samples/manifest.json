@@ -1,0 +1,7 @@
+{
+  "images": [
+    { "src": "house-1.jpg", "caption": "Front Elevation" },
+    { "src": "house-2.jpg", "caption": "Backyard & Pool" },
+    { "src": "house-3.jpg", "caption": "Neighborhood Overview" }
+  ]
+}
