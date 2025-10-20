@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment | Myles Photography LLC</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+        <span>Myles Photography LLC</span>
+      </a>
+      <nav class="navlinks">
+        <a href="samples.html" class="btn">Sample Images</a>
+        <a href="about.html" class="btn">About Us</a>
+        <a href="locations.html" class="btn">Locations</a>
+        <a href="payment.html" class="btn">Payment</a>
+        <a href="mailto:nolanmyles@icloud.com" class="btn">Contact</a>
+      </nav>
+      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
+        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
+      </a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Payment</h1>
+    <p>Choose the method that’s easiest for you. For invoices or questions, email <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>.</p>
+
+    <div class="pay-grid">
+      <!-- Cash App -->
+      <section class="pay-card">
+        <h2>Cash App</h2>
+        <p><strong>Cashtag:</strong> <span class="mono">$MylesPhotography</span></p>
+        <p><a class="btn" href="https://cash.app/$MylesPhotography" target="_blank" rel="noopener">Pay on Cash App</a></p>
+        <!-- Optional QR (upload to assets/payments/cashapp-qr.png) -->
+        <div class="qr-wrap">
+          <img src="assets/payments/cashapp-qr.png" alt="Cash App QR" onerror="this.style.display='none'">
+        </div>
+      </section>
+
+      <!-- PayPal -->
+      <section class="pay-card">
+        <h2>PayPal</h2>
+        <p><strong>Link:</strong> <a class="mono" href="https://paypal.me/MylesPhotography" target="_blank" rel="noopener">paypal.me/MylesPhotography</a></p>
+        <p><a class="btn" href="https://paypal.me/MylesPhotography" target="_blank" rel="noopener">Pay on PayPal</a></p>
+        <!-- Optional QR (upload to assets/payments/paypal-qr.png) -->
+        <div class="qr-wrap">
+          <img src="assets/payments/paypal-qr.png" alt="PayPal QR" onerror="this.style.display='none'">
+        </div>
+      </section>
+
+      <!-- Cash / Check -->
+      <section class="pay-card">
+        <h2>Cash or Check</h2>
+        <p>We gladly accept cash or check on-site.</p>
+        <p>Please include the property address in the memo.</p>
+        <p><a class="btn" href="mailto:nolanmyles@icloud.com?subject=Payment%20Question">Email for details</a></p>
+      </section>
+    </div>
+
+    <p class="fineprint">* A 3% processing fee may apply to some digital payments. Please confirm on your invoice.</p>
+  </main>
+
+  <footer>
+    <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+  </footer>
+</body>
+</html>
