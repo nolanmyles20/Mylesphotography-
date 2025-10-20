@@ -10,11 +10,12 @@ header {
   color:#000;
 }
 .container.nav {
-  max-width:1200px;
-  margin:0 auto;
-  display:flex;
-  align-items:center;
-  gap:16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* keeps logo left, FAA badge right */
+  flex-wrap: nowrap;              /* prevents wrapping */
+  overflow-x: auto;               /* allows scroll on very narrow screens instead of breaking */
+  gap: 16px;
 }
 
 /* BRAND / LOGO */
@@ -45,7 +46,13 @@ header {
 }
 
 /* NAVIGATION: outlined rounded buttons */
-.navlinks { display:flex; align-items:center; gap:10px }
+.navlinks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;              /* no line breaks */
+  white-space: nowrap;            /* text stays on one line */
+}
 .navlinks a { text-decoration:none }
 .btn {
   color:#000;
@@ -266,5 +273,11 @@ input, textarea, select {
 @media (max-width: 720px) {
   .services-tag .services-drone {
     height: 6px;
+  }
+}
+@media (max-width: 720px) {
+  .navlinks a.btn {
+    padding: 6px 10px;
+    font-size: 0.85rem;
   }
 }
