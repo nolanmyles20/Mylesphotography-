@@ -1,59 +1,159 @@
-:root{
-  --bg:#0e0f12;
-  --card:#15171c;
-  --text:#e9eef5;
-  --muted:#a8b0bc;
-  --accent:#3ee083;
-  --border:#23252b;
+/* GLOBAL RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
-a{color:var(--text);text-decoration:none}
-a:hover{opacity:.92}
-.container{max-width:1100px;margin:0 auto;padding:0 20px}
 
-header{
-  position:sticky; top:0; z-index:10;
-  border-bottom:1px solid var(--border); background:rgba(14,15,18,.85); backdrop-filter: blur(10px);
+/* BODY */
+body {
+  background: #000;
+  color: #fff;
+  line-height: 1.6;
 }
-.nav{display:flex; align-items:center; justify-content:space-between; gap:20px; height:64px;}
-.brand{display:flex; align-items:center; gap:12px; font-weight:700}
-.brand img{height:34px; width:auto; display:block}
-.navlinks{display:flex; gap:18px; align-items:center}
-.navlinks a{padding:8px 10px; border-radius:8px}
-.navlinks a.active, .navlinks a:hover{background:var(--card); border:1px solid var(--border)}
-.cta{background:var(--accent); color:#0b0c0f; padding:8px 14px; border-radius:10px; font-weight:700}
 
-.hamburger{display:none; cursor:pointer; height:36px; width:36px; place-items:center; border:1px solid var(--border); border-radius:8px}
-.hamburger span,.hamburger span:before,.hamburger span:after{
-  content:""; display:block; width:18px; height:2px; background:var(--text); position:relative
+/* HEADER */
+header {
+  background: #000;
+  border-bottom: 2px solid #0f0;
+  padding: 0.8rem 2rem;
 }
-.hamburger span:before{position:absolute; top:-6px; content:""}
-.hamburger span:after{position:absolute; top:6px; content:""}
 
-main{padding:36px 0}
-h1{margin:0 0 12px}
-.lead{color:var(--muted); max-width:70ch}
-.hero{display:grid; gap:24px; grid-template-columns:1.1fr .9fr; align-items:center;}
-.hero .panel{background:linear-gradient(145deg, #121418, #0d0f12); border:1px solid var(--border); padding:26px; border-radius:16px;}
-.grid{display:grid; gap:16px; grid-template-columns:repeat(3,minmax(0,1fr));}
-.card{background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden}
-.card img{display:block; width:100%; height:220px; object-fit:cover}
-.card .p{padding:12px; color:var(--muted)}
-footer{border-top:1px solid var(--border); padding:28px 0; color:var(--muted)}
-
-.kicker{color:var(--accent); letter-spacing:.12em; font-size:.8rem; text-transform:uppercase}
-.badge{display:inline-block; border:1px solid var(--border); background:#101216; padding:6px 10px; border-radius:999px; color:var(--muted)}
-.list{display:grid; gap:10px}
-.list li{background:var(--card); border:1px solid var(--border); padding:12px 14px; border-radius:10px}
-
-@media (max-width:900px){
-  .hero{grid-template-columns:1fr}
-  .grid{grid-template-columns:1fr 1fr}
+.container.nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-@media (max-width:640px){
-  .navlinks{display:none}
-  .navlinks.open{display:flex; position:absolute; top:64px; left:0; right:0; background:var(--bg); padding:14px 20px; border-bottom:1px solid var(--border)}
-  .hamburger{display:grid}
-  .grid{grid-template-columns:1fr}
+
+.brand {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.brand .logo {
+  height: 45px;
+  width: auto;
+  margin-right: 10px;
+}
+
+/* NAVIGATION */
+.navlinks a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 12px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navlinks a:hover {
+  color: #0f0;
+}
+
+.navlinks a.cta {
+  background: #0f0;
+  color: #000;
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.navlinks a.cta:hover {
+  background: #9f9;
+}
+
+/* FAA BADGE */
+.faa-badge img {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .faa-badge img {
+    height: 36px;
+  }
+  .navlinks a {
+    margin: 0 8px;
+    font-size: 0.9rem;
+  }
+}
+
+/* HERO SECTION */
+.hero {
+  text-align: center;
+  padding: 5rem 1rem;
+  background: radial-gradient(circle at center, #111 0%, #000 100%);
+  color: #fff;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #ccc;
+}
+
+/* BUTTONS */
+.cta {
+  background: #0f0;
+  color: #000;
+  padding: 10px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* INTRO SECTION */
+.intro {
+  text-align: center;
+  padding: 3rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.intro h2 {
+  color: #0f0;
+  margin-bottom: 1rem;
+}
+
+.intro p {
+  color: #ccc;
+}
+
+/* ABOUT PAGE */
+.about {
+  padding: 3rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about h1, .about h2 {
+  color: #0f0;
+  margin-bottom: 0.8rem;
+}
+
+.about p {
+  margin-bottom: 1.2rem;
+  color: #ccc;
+}
+
+/* FOOTER */
+footer {
+  background: #000;
+  color: #888;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  border-top: 1px solid #222;
 }
