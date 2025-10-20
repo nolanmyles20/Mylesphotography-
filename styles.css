@@ -28,6 +28,21 @@ header {
   margin-right:auto;
 }
 .brand .logo { height:80px; width:auto; margin-right:10px }
+/* DRONE SERVICES TAG */
+.services-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 1.5rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.services-tag .services-drone {
+  height: 28px;
+  width: auto;
+  image-rendering: crisp-edges;
+}
 
 /* NAVIGATION: outlined rounded buttons */
 .navlinks { display:flex; align-items:center; gap:10px }
