@@ -34,10 +34,37 @@ header{background:#f2f2f2;border-bottom:1px solid #d6d6d6;padding:0.8rem 2rem;co
 .intro p,.about p,.page p{color:#ccc;margin-bottom:1.2rem}
 
 /* GALLERY (Samples page) */
-.gallery{display:grid;gap:16px;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));align-items:start}
-.gallery figure{background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
-.gallery img{width:100%;height:440px;object-fit:cover;display:block}
-.gallery figcaption{padding:10px 12px;color:#bbb;text-align:center}
+.gallery {
+  display: grid;
+  gap: 24px;  /* a bit more space between images */
+  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));  /* doubled width */
+  align-items: start;
+  justify-items: center;
+}
+
+.gallery figure {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery img {
+  width: 100%;
+  height: 440px;        /* doubled height */
+  object-fit: cover;    /* preserves crop and alignment */
+  display: block;
+  border-radius: 12px;
+}
+
+.gallery figcaption {
+  padding: 10px 12px;
+  color: #bbb;
+  text-align: center;
+}
+
 
 /* FOOTER */
 footer{background:#000;color:#888;text-align:center;padding:1rem 0;font-size:.9rem;border-top:1px solid #222}
