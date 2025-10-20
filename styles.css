@@ -8,15 +8,15 @@ header{background:#f2f2f2;border-bottom:1px solid #d6d6d6;padding:0.8rem 2rem;co
 
 /* BRAND / LOGO */
 .brand{display:flex;align-items:center;color:#000;text-decoration:none;font-size:1.2rem;font-weight:600;margin-right:auto}
-.brand .logo{height:80px; /* doubled from 22px */ width:auto;margin-right:10px}
+.brand .logo{height:80px;width:auto;margin-right:10px}
 
 /* NAVIGATION: outlined rounded buttons */
 .navlinks{display:flex;align-items:center;gap:10px}
-.navlinks a{ text-decoration:none } /* prevent underlines on all pages */
+.navlinks a{text-decoration:none} /* prevent underlines on all pages */
 .btn{color:#000;text-decoration:none;border:2px solid #000;background:transparent;padding:8px 14px;border-radius:10px;font-weight:600;transition:transform .15s ease, background .15s ease, color .15s ease}
 .btn:hover{background:#000;color:#fff;transform:translateY(-1px)}
 
-/* FAA BADGE — grew by 25% (was 25px -> ~31.25). Use 32px for crisp pixels */
+/* FAA BADGE */
 .faa-badge img{height:60px;width:auto;display:block}
 
 /* HERO SECTION */
@@ -33,156 +33,62 @@ header{background:#f2f2f2;border-bottom:1px solid #d6d6d6;padding:0.8rem 2rem;co
 .intro h2,.about h1,.about h2,.page h1{color:#fff;margin-bottom:.8rem}
 .intro p,.about p,.page p{color:#ccc;margin-bottom:1.2rem}
 
-/* GALLERY (Samples page) */
-.gallery {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); /* wide layout on desktop */
-  align-items: start;
-  justify-items: center;
-}
-
-.gallery figure {
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.gallery img {
-  width: 100%;
-  height: 620px;
-  object-fit: cover;
-  display: block;
-  border-radius: 12px;
-}
-
-.gallery figcaption {
-  padding: 10px 12px;
-  color: #bbb;
-  text-align: center;
-}
-
+/* GALLERY (Samples page) — desktop */
+.gallery{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(520px,1fr));align-items:start;justify-items:center}
+.gallery figure{background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.gallery img{width:100%;height:620px;object-fit:cover;display:block;border-radius:12px}
+.gallery figcaption{padding:10px 12px;color:#bbb;text-align:center}
 
 /* FOOTER */
 footer{background:#000;color:#888;text-align:center;padding:1rem 0;font-size:.9rem;border-top:1px solid #222}
 footer a{color:#bbb;text-decoration:none}
 footer a:hover{color:#fff}
 
-/* SMALL DEVICES */
+/* SMALL DEVICES (logo/FAA sizing) */
 @media (max-width:640px){
   .brand .logo{height:40px}
   .faa-badge img{height:28px}
 }
+
 /* Locations page: show full uncropped images */
-.locations-gallery img {
-  height: auto;            /* remove fixed height */
-  width: 100%;
-  object-fit: contain;     /* show full image, no cropping */
-  display: block;
-  margin: 0 auto;
-  max-width: 1000px;       /* limit maximum width so it stays clean */
-  max-height: 80vh;        /* prevents massive overflow on tall images */
+.locations-gallery img{
+  height:auto;           /* remove fixed height */
+  width:100%;
+  object-fit:contain;    /* show full image */
+  display:block;
+  margin:0 auto;
+  max-width:1000px;
+  max-height:80vh;
 }
+.locations-gallery{display:flex;flex-direction:column;align-items:center;gap:20px}
+.locations-gallery figure{background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;padding:12px;text-align:center}
+.locations-gallery figcaption{color:#bbb;font-size:.9rem;margin-top:8px}
 
-.locations-gallery {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.locations-gallery figure {
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 12px;
-  overflow: hidden;
-  padding: 12px;
-  text-align: center;
-}
-
-.locations-gallery figcaption {
-  color: #bbb;
-  font-size: 0.9rem;
-  margin-top: 8px;
-}
 /* Payment page cards */
-.pay-grid{
-  display:grid;
-  gap:16px;
-  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
-  margin-top: 1rem;
-}
-.pay-card{
-  background:#111;
-  border:1px solid #222;
-  border-radius:12px;
-  padding:18px;
-}
-.pay-card h2{
-  color:#fff;
-  margin-bottom:.4rem;
-}
-.pay-card p{
-  color:#ccc;
-  margin:.4rem 0;
-}
-.qr-wrap{
-  margin-top:.6rem;
-  display:flex;
-  justify-content:center;
-}
-.qr-wrap img{
-  width:160px;
-  height:auto;
-  border-radius:10px;
-  border:1px solid #222;
-  background:#000;
-}
-.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-.fineprint{color:#888; margin-top:1rem; font-size:.9rem;}
-/* Mobile menu fix */
-/* PAYMENT PAGE EXCLUSIVE STYLES */
-.pay-card .btn {
-  background:#e0e0e0;       /* light gray button background */
-  color:#000;
-  border:2px solid #000;
-  border-radius:10px;
-  padding:8px 14px;
-  font-weight:600;
-  text-decoration:none;
-  display:inline-block;
-  transition:transform .15s ease, background .15s ease, color .15s ease;
-}
-.pay-card .btn:hover {
-  background:#cfcfcf;       /* darker on hover */
-  color:#000;
-  transform:translateY(-1px);
-}
+.pay-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:1rem}
+.pay-card{background:#111;border:1px solid #222;border-radius:12px;padding:18px}
+.pay-card h2{color:#fff;margin-bottom:.4rem}
+.pay-card p{color:#ccc;margin:.4rem 0}
+.qr-wrap{margin-top:.6rem;display:flex;justify-content:center}
+.qr-wrap img{width:160px;height:auto;border-radius:10px;border:1px solid #222;background:#000}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+.fineprint{color:#888;margin-top:1rem;font-size:.9rem}
 
-/* Mobile nav fix (applies site-wide but doesn’t change menu color) */
+/* PAYMENT PAGE EXCLUSIVE BUTTON STYLE */
+.pay-card .btn{
+  background:#e0e0e0;color:#000;border:2px solid #000;border-radius:10px;padding:8px 14px;font-weight:600;text-decoration:none;display:inline-block;transition:transform .15s ease, background .15s ease, color .15s ease
+}
+.pay-card .btn:hover{background:#cfcfcf;color:#000;transform:translateY(-1px)}
+
+/* Mobile nav + gallery fix (site-wide layout only) */
 @media (max-width:720px){
-  .container.nav{
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:8px;
-  }
-  .brand span{display:none;}         /* hide long company name text if too wide */
-  .navlinks{flex-wrap:wrap;justify-content:center;}
-  .navlinks a.btn{padding:6px 10px;font-size:0.9rem;}
-  .faa-badge img{height:26px;}
-  }
-  .gallery {
-    grid-template-columns: 1fr;  /* one per row */
-    gap: 16px;
-    justify-items: stretch;      /* stretch to full width */
-  }
-  .gallery img {
-    height: auto;                /* keep proportions */
-    max-height: 300px;           /* limit tall images */
-    object-fit: cover;
-  }
-}
+  .container.nav{flex-wrap:wrap;justify-content:center;gap:8px}
+  .brand span{display:none}                   /* hide long company name text if too wide */
+  .navlinks{flex-wrap:wrap;justify-content:center}
+  .navlinks a.btn{padding:6px 10px;font-size:.9rem}
+  .faa-badge img{height:26px}
 
+  /* Samples gallery on mobile: one per row, no sideways scroll */
+  .gallery{grid-template-columns:1fr;gap:16px;justify-items:stretch}
+  .gallery img{height:auto;max-height:300px;object-fit:cover}
+}
