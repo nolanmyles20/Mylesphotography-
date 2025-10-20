@@ -13,11 +13,12 @@ body {
   line-height: 1.6;
 }
 
-/* HEADER */
+/* HEADER (light gray with black elements) */
 header {
-  background: #000;
-  border-bottom: 2px solid #0f0;
+  background: #f2f2f2;              /* gray bar */
+  border-bottom: 1px solid #d6d6d6;
   padding: 0.8rem 2rem;
+  color: #000;
 }
 
 .container.nav {
@@ -25,16 +26,18 @@ header {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
 }
 
+/* Brand area */
 .brand {
   display: flex;
   align-items: center;
-  color: #fff;
+  color: #000;
   text-decoration: none;
   font-size: 1.2rem;
   font-weight: 600;
+  margin-right: auto;               /* push nav to center/right */
 }
 
 .brand .logo {
@@ -43,46 +46,35 @@ header {
   margin-right: 10px;
 }
 
-/* NAVIGATION */
-.navlinks a {
-  color: #fff;
-  text-decoration: none;
-  margin: 0 12px;
-  font-weight: 500;
-  transition: color 0.3s ease;
+/* NAVIGATION: black outlined rounded buttons with black text */
+.navlinks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.navlinks a:hover {
-  color: #0f0;
-}
-
-.navlinks a.cta {
-  background: #0f0;
+.btn {
   color: #000;
-  padding: 6px 14px;
-  border-radius: 4px;
-  transition: background 0.3s ease;
+  text-decoration: none;
+  border: 2px solid #000;           /* black outline */
+  background: transparent;          /* no fill */
+  padding: 8px 14px;
+  border-radius: 10px;              /* rounded corners */
+  font-weight: 600;
+  transition: transform .15s ease, background .15s ease, color .15s ease;
 }
 
-.navlinks a.cta:hover {
-  background: #9f9;
+.btn:hover {
+  background: #000;                 /* invert on hover for modern feel */
+  color: #fff;
+  transform: translateY(-1px);
 }
 
-/* FAA BADGE */
+/* FAA BADGE — half size */
 .faa-badge img {
-  height: 50px;
+  height: 25px;   /* half of the previous 50px */
   width: auto;
   display: block;
-}
-
-@media (max-width: 640px) {
-  .faa-badge img {
-    height: 36px;
-  }
-  .navlinks a {
-    margin: 0 8px;
-    font-size: 0.9rem;
-  }
 }
 
 /* HERO SECTION */
@@ -104,48 +96,38 @@ header {
   color: #ccc;
 }
 
-/* BUTTONS */
+/* Primary CTA in hero (kept solid for emphasis) */
 .cta {
-  background: #0f0;
+  background: #fff;
   color: #000;
   padding: 10px 18px;
-  border-radius: 4px;
+  border-radius: 10px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  border: 2px solid #000;
+  transition: transform .15s ease, background .15s ease, color .15s ease;
+}
+.cta:hover {
+  background: #000;
+  color: #fff;
+  transform: translateY(-1px);
 }
 
-/* INTRO SECTION */
-.intro {
-  text-align: center;
-  padding: 3rem 1rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.intro h2 {
-  color: #0f0;
-  margin-bottom: 1rem;
-}
-
-.intro p {
-  color: #ccc;
-}
-
-/* ABOUT PAGE */
-.about {
+/* INTRO / ABOUT SHARED STYLES */
+.intro, .about {
   padding: 3rem 2rem;
   max-width: 900px;
   margin: 0 auto;
 }
 
-.about h1, .about h2 {
-  color: #0f0;
+.intro h2, .about h1, .about h2 {
+  color: #fff;
   margin-bottom: 0.8rem;
 }
 
-.about p {
-  margin-bottom: 1.2rem;
+.intro p, .about p {
   color: #ccc;
+  margin-bottom: 1.2rem;
 }
 
 /* FOOTER */
@@ -157,3 +139,6 @@ footer {
   font-size: 0.9rem;
   border-top: 1px solid #222;
 }
+
+footer a { color: #bbb; text-decoration: none; }
+footer a:hover { color: #fff; }
