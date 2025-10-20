@@ -81,3 +81,38 @@ footer a:hover{color:#fff}
   font-size: 0.9rem;
   margin-top: 8px;
 }
+/* Payment page cards */
+.pay-grid{
+  display:grid;
+  gap:16px;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+  margin-top: 1rem;
+}
+.pay-card{
+  background:#111;
+  border:1px solid #222;
+  border-radius:12px;
+  padding:18px;
+}
+.pay-card h2{
+  color:#fff;
+  margin-bottom:.4rem;
+}
+.pay-card p{
+  color:#ccc;
+  margin:.4rem 0;
+}
+.qr-wrap{
+  margin-top:.6rem;
+  display:flex;
+  justify-content:center;
+}
+.qr-wrap img{
+  width:160px;
+  height:auto;
+  border-radius:10px;
+  border:1px solid #222;
+  background:#000;
+}
+.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+.fineprint{color:#888; margin-top:1rem; font-size:.9rem;}
