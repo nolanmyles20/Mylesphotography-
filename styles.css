@@ -49,3 +49,35 @@ footer a:hover{color:#fff}
   .brand .logo{height:40px}
   .faa-badge img{height:28px}
 }
+/* Locations page: show full uncropped images */
+.locations-gallery img {
+  height: auto;            /* remove fixed height */
+  width: 100%;
+  object-fit: contain;     /* show full image, no cropping */
+  display: block;
+  margin: 0 auto;
+  max-width: 1000px;       /* limit maximum width so it stays clean */
+  max-height: 80vh;        /* prevents massive overflow on tall images */
+}
+
+.locations-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.locations-gallery figure {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 12px;
+  text-align: center;
+}
+
+.locations-gallery figcaption {
+  color: #bbb;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
