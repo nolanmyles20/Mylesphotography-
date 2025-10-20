@@ -27,13 +27,26 @@
   </header>
 
   <main class="page">
-    <h1>Sample Images</h1>
+    <h1>Sample Work</h1>
     <p>We can do anything from premium waterfront property to commercial buildings downtown to even the middle of nowhere.</p>
 
+    <!-- 🎥 Featured Autoplay Video -->
+    <div class="video-grid" style="margin-top:2rem;">
+      <iframe
+        src="https://www.youtube.com/embed/uZUKKVT1jvI?si=UJTlo2_WUYto2T1v&autoplay=1&mute=1&loop=1&playlist=uZUKKVT1jvI"
+        title="Featured Aerial Reel"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <!-- 🖼️ Image Gallery -->
     <div id="gallery" class="gallery" aria-live="polite"></div>
 
-    <!-- New: Sample Videos section -->
-    <h2 style="margin-top:3rem; text-align:center;">Sample Videos</h2>
+    <!-- 🎬 Secondary Video Section -->
+    <h2 style="margin-top:3rem; text-align:center;">More Sample Videos</h2>
     <div class="video-grid">
       <iframe
         width="560"
@@ -53,13 +66,6 @@
   </footer>
 
   <script>
-    // Load gallery items from a simple JSON manifest for easy updates
-    // File: assets/samples/manifest.json
-    // Example:
-    // { "images": [
-    //   {"src": "house-1.jpg", "caption": "Front Elevation"},
-    //   {"src": "house-2.jpg", "caption": "Backyard & Pool"}
-    // ]}
     async function loadGallery(){
       const container = document.getElementById('gallery');
       try{
