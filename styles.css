@@ -117,25 +117,34 @@ footer a:hover{color:#fff}
 .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
 .fineprint{color:#888; margin-top:1rem; font-size:.9rem;}
 /* Mobile menu fix */
-@media (max-width: 720px){
+/* PAYMENT PAGE EXCLUSIVE STYLES */
+.pay-card .btn {
+  background:#e0e0e0;       /* light gray button background */
+  color:#000;
+  border:2px solid #000;
+  border-radius:10px;
+  padding:8px 14px;
+  font-weight:600;
+  text-decoration:none;
+  display:inline-block;
+  transition:transform .15s ease, background .15s ease, color .15s ease;
+}
+.pay-card .btn:hover {
+  background:#cfcfcf;       /* darker on hover */
+  color:#000;
+  transform:translateY(-1px);
+}
+
+/* Mobile nav fix (applies site-wide but doesn’t change menu color) */
+@media (max-width:720px){
   .container.nav{
-    flex-wrap: wrap;          /* allow items to wrap on small screens */
-    justify-content: center;
-    gap: 8px;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
   }
-  .brand span{
-    display: none;            /* hide long company name text on mobile */
-  }
-  .navlinks{
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .navlinks a.btn{
-    padding:6px 10px;
-    font-size:0.9rem;
-  }
-  .faa-badge img{
-    height:26px;
-  }
+  .brand span{display:none;}         /* hide long company name text if too wide */
+  .navlinks{flex-wrap:wrap;justify-content:center;}
+  .navlinks a.btn{padding:6px 10px;font-size:0.9rem;}
+  .faa-badge img{height:26px;}
 }
 
