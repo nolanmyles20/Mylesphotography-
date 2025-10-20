@@ -116,3 +116,22 @@ footer a:hover{color:#fff}
     height: 260px;
   }
 }
+/* === Drone cursor (uses assets/drone.png) === */
+/* TIP: best size is ~32x32px (or 64x64 for retina). Hotspot below assumes center. */
+:root {
+  --drone-cursor: url("assets/drone.png") 16 16, auto; /* x y hotspot then fallback */
+}
+
+/* Site-wide default */
+html, body {
+  cursor: var(--drone-cursor);
+}
+
+/* Keep proper cursors where needed */
+a, button, .btn {
+  cursor: var(--drone-cursor);     /* custom first... */
+  cursor: pointer;                 /* ...pointer if image can't load */
+}
+input, textarea, select {
+  cursor: text;                    /* I-beam for typing */
+}
