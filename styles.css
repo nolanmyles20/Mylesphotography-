@@ -272,7 +272,7 @@ input, textarea, select {
 }
 @media (max-width: 720px) {
   .services-tag .services-drone {
-    height: 12px;
+    height: 20px;
   }
 }
 @media (max-width: 720px) {
