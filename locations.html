@@ -1,40 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Locations | Myles Photography LLC</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header>
-  <div class="container nav">
-    <a class="brand" href="index.html" aria-label="Home">
-      <img src="assets/logo.svg" alt="Myles Photography LLC logo" />
-      <span>Myles Photography LLC</span>
-    </a>
-    <nav class="navlinks">
-      <a href="samples.html">Sample Images</a>
-      <a href="about.html">About Us</a>
-      <a href="locations.html">Locations</a>
-      <a class="cta" href="mailto:hello@mylesphotographyllc.com">Book a Flight</a>
-    </nav>
-    <button class="hamburger" aria-label="Menu"><span></span></button>
-  </div>
-</header>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+        <span>Myles Photography LLC</span>
+      </a>
+      <nav class="navlinks">
+        <a href="samples.html" class="btn">Sample Images</a>
+        <a href="about.html" class="btn">About Us</a>
+        <a href="locations.html" class="btn">Locations</a>
+        <a href="mailto:nolanmyles@icloud.com" class="btn">Contact</a>
+      </nav>
+      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
+        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
+      </a>
+    </div>
+  </header>
 
-<main class="container">
-  <h1>Service Areas</h1>
-  <p class="lead">Primary coverage: Metro Detroit, Ann Arbor, Lansing, Grand Rapids. We can travel statewide—ask for a quote.</p>
-  <div class="grid">
-    <div class="card"><div class="p"><strong>Detroit</strong><br/>Downtown, Midtown, Grosse Pointe, Downriver</div></div>
-    <div class="card"><div class="p"><strong>Ann Arbor</strong><br/>Washtenaw County & nearby</div></div>
-    <div class="card"><div class="p"><strong>Grand Rapids</strong><br/>Kent, Ottawa, Allegan</div></div>
-  </div>
-  <p style="margin-top:18px">Not listed? We’re happy to travel. <a href="mailto:hello@mylesphotographyllc.com?subject=Coverage%20request">Contact us</a>.</p>
-</main>
-<footer><div class="container">© <span id="year"></span> Myles Photography LLC</div></footer>
-<script src="script.js"></script>
-<script>document.getElementById('year').textContent=new Date().getFullYear()</script>
+  <main class="page">
+    <h1>Service Areas</h1>
+    <p>Primary coverage: Metro Detroit, Ann Arbor, Lansing, Grand Rapids. Travel statewide available—ask for a quote.</p>
+
+    <div class="gallery">
+      <figure><img src="assets/samples/house-1.jpg" alt="Detroit"><figcaption>Detroit & Grosse Pointe</figcaption></figure>
+      <figure><img src="assets/samples/house-2.jpg" alt="Ann Arbor"><figcaption>Ann Arbor & Washtenaw</figcaption></figure>
+      <figure><img src="assets/samples/house-3.jpg" alt="Grand Rapids"><figcaption>Grand Rapids & West MI</figcaption></figure>
+    </div>
+
+    <p style="margin-top:1.2rem">Not listed? Email <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a> for custom coverage.</p>
+  </main>
+
+  <footer>
+    <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+  </footer>
 </body>
 </html>
