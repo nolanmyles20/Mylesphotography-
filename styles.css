@@ -263,3 +263,8 @@ a, button, .btn {
 input, textarea, select {
   cursor:text;
 }
+@media (max-width: 720px) {
+  .services-tag .services-drone {
+    height: 6px;
+  }
+}
