@@ -1,40 +1,70 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About Us | Myles Photography LLC</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header>
-  <div class="container nav">
-    <a class="brand" href="index.html" aria-label="Home">
-      <img src="assets/logo.svg" alt="Myles Photography LLC logo" />
-      <span>Myles Photography LLC</span>
-    </a>
-    <nav class="navlinks">
-      <a href="samples.html">Sample Images</a>
-      <a href="about.html">About Us</a>
-      <a href="locations.html">Locations</a>
-      <a class="cta" href="mailto:hello@mylesphotographyllc.com">Book a Flight</a>
-    </nav>
-    <button class="hamburger" aria-label="Menu"><span></span></button>
-  </div>
-</header>
 
-<main class="container">
-  <h1>About Us</h1>
-  <p class="lead">We’re a Michigan-based aerial media team focused on real estate. FAA Part 107 certified, insured, and geared for quick turnarounds.</p>
-  <div class="grid">
-    <div class="card"><div class="p"><strong>Deliverables</strong><br/>15–25 MLS-ready photos, optional 4K reels, property-line overlays, amenity callouts.</div></div>
-    <div class="card"><div class="p"><strong>Turnaround</strong><br/>Photos: same day • Video: within 24 hours.</div></div>
-    <div class="card"><div class="p"><strong>Compliance</strong><br/>Airspace checks, authorizations/COAs as needed.</div></div>
-  </div>
-  <p style="margin-top:18px">Questions? <a class="cta" href="mailto:hello@mylesphotographyllc.com?subject=Drone%20inquiry">Email us</a></p>
-</main>
-<footer><div class="container">© <span id="year"></span> Myles Photography LLC</div></footer>
-<script src="script.js"></script>
-<script>document.getElementById('year').textContent=new Date().getFullYear()</script>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+        <span>Myles Photography LLC</span>
+      </a>
+
+      <nav class="navlinks">
+        <a href="samples.html">Sample Images</a>
+        <a href="about.html">About Us</a>
+        <a href="locations.html">Locations</a>
+        <a href="mailto:hello@mylesphotographyllc.com" class="cta">Book a Flight</a>
+      </nav>
+
+      <a class="faa-badge" href="#faa-cert" aria-label="FAA Certified Drone Pilot">
+        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="about">
+      <h1>About Us</h1>
+      <p>
+        <strong>Myles Photography LLC</strong> was founded with a passion for aerial perspective and visual storytelling.
+        Based in Oscoda, Michigan, we provide high-quality drone and real estate photography that helps properties
+        stand out in today’s competitive market.
+      </p>
+
+      <p>
+        Every image we capture is guided by precision, artistry, and a deep understanding of how light, angles,
+        and elevation create emotion.
+      </p>
+
+      <section id="faa-cert">
+        <h2>FAA Certified</h2>
+        <p>
+          Myles Photography LLC proudly operates as an
+          <strong>FAA-Certified Drone Pilot</strong> under Part 107, ensuring safe and compliant aerial
+          operations for every shoot. All flights are conducted within FAA-approved guidelines for altitude,
+          airspace, and safety.
+        </p>
+      </section>
+
+      <section class="mission">
+        <h2>Our Mission</h2>
+        <p>
+          To provide every client with breathtaking, professional-grade aerial photography that enhances
+          their visual marketing and tells their story from a new perspective.
+        </p>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Myles Photography LLC • FAA Certified Drone Pilot</p>
+  </footer>
+
 </body>
 </html>
