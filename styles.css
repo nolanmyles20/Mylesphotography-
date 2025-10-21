@@ -281,3 +281,39 @@ input, textarea, select {
     font-size: 0.85rem;
   }
 }
+/* === Drone fly-by every minute (CSS-only) === */
+/* Flies for ~5s, then sits landed until the minute completes, then repeats */
+@keyframes droneFlyAcrossMinute {
+  /* start off-screen left */
+  0%   { transform: translateX(-120vw) translateY(-6px) rotate(-15deg) scale(1); opacity: 0; }
+  3%   { opacity: 1; }
+  /* flight arc (land by ~8%) */
+  5%   { transform: translateX(40vw) translateY(-10px) rotate(10deg)  scale(1.05); }
+  8%   { transform: translateX(0)     translateY(0)     rotate(0deg)  scale(1);   opacity: 1; }
+  /* stay landed the rest of the minute */
+  100% { transform: translateX(0)     translateY(0)     rotate(0deg)  scale(1);   opacity: 1; }
+}
+
+.services-drone.fly-in {
+  position: relative;
+  z-index: 10;
+  animation: droneFlyAcrossMinute 60s ease-in-out infinite;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+  pointer-events: none; /* keep header clickable during fly-by */
+}
+
+/* Optional: text fades in on first load only (doesn't loop) */
+.services-tag span {
+  opacity: 0;
+  animation: fadeInOnce 1s ease forwards;
+  animation-delay: 3s;            /* sync with landing (~8% of 60s is 4.8s; adjust if you like) */
+  animation-iteration-count: 1;   /* run once only */
+}
+@keyframes fadeInOnce { to { opacity: 1; } }
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .services-drone.fly-in { animation: none; opacity: 1; transform: none; }
+  .services-tag span { animation: none; opacity: 1; }
+}
