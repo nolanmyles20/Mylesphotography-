@@ -260,7 +260,7 @@ input, textarea, select { cursor:text }
 .services-drone.fly-in {
   position:relative;
   z-index:10;
-  animation:droneFlyAcrossMinute 75s ease-in-out infinite;
+  animation:droneFlyAcrossMinute 100s ease-in-out infinite;
   animation-fill-mode:forwards;
   will-change:transform,opacity,filter;
   pointer-events:none;
