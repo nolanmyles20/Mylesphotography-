@@ -320,4 +320,30 @@ input, textarea, select { cursor:text }
   .services-drone.fly-in::after {animation:none;opacity:1;transform:none;}
   .services-tag span{animation:none;opacity:1;}
 }
+/*UPGRADE*/
+/* Sticky header + soft shadow */
+header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 
+/* Hero background video */
+.hero { position: relative; overflow: hidden; min-height: 56vw; } /* 16:9 ratio responsive */
+.bg-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.6; z-index:-1; }
+.hero .hero-inner { position:relative; z-index:1; }
+
+/* Page fade-in */
+body { animation: siteFade .6s ease both; }
+@keyframes siteFade { from{opacity:0} to{opacity:1} }
+
+/* Button hover glow (subtle) */
+.btn:hover { box-shadow: 0 0 8px rgba(255,255,255,0.35); }
+
+/* Section reveal-on-scroll */
+.reveal { opacity: 0; transform: translateY(12px); transition: all .6s ease; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* Simple “Why choose us” list */
+.why { list-style: none; display: grid; gap: 8px; }
+.why li::before { content: "✓ "; color: #0f0; }
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
