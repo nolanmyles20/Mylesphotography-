@@ -2,56 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Myles Photography LLC</title>
+
+  <!-- Favicon + Preloads -->
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preload" as="image" href="assets/logo.png">
+  <link rel="preload" as="image" href="assets/drone_cursor_32x32.png">
+  <link rel="preload" as="video" href="assets/hero.mp4" type="video/mp4">
+
+  <!-- SEO / Social -->
+  <meta name="description" content="FAA-certified drone photo & video for real estate and commercial work across Michigan." />
+  <meta property="og:title" content="Myles Photography LLC">
+  <meta property="og:description" content="FAA-certified drone photo & video for real estate and commercial work across Michigan.">
+  <meta property="og:image" content="assets/favicon.png">
+  <meta property="og:url" content="https://www.mylesphotographyllc.com">
+  <meta name="theme-color" content="#000000">
+
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" type="image/png" href="assets/logo.png" />
 </head>
 <body>
+
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
         <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
         <span>Myles Photography LLC</span>
       </a>
+
       <div class="services-tag">
         <img src="assets/drone.png" alt="Drone icon" class="services-drone fly-in">
         <span>Drone Services</span>
       </div>
+
       <nav class="navlinks">
         <a href="samples.html" class="btn">Sample Images</a>
         <a href="about.html" class="btn">About Us</a>
         <a href="locations.html" class="btn">Locations</a>
         <a href="payment.html" class="btn">Payment</a>
-        <a href="mailto:nolanmyles@icloud.com" class="btn">Contact</a>
-      
-
+        <a href="contact.html" class="btn">Contact</a>
       </nav>
+
       <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
         <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
       </a>
     </div>
   </header>
 
-  <main>
-    <section class="hero">
+  <!-- Background hero video -->
+  <section class="hero">
+    <video class="bg-video" autoplay muted loop playsinline>
+      <source src="assets/hero.mp4" type="video/mp4">
+    </video>
+    <div class="hero-inner reveal">
       <h1>Capturing Michigan from a Higher Perspective</h1>
-      <p>Professional aerial and real estate photography by an FAA-Certified Drone Pilot.</p>
+      <p>FAA-certified aerial imaging for real estate and commercial projects.</p>
       <a href="samples.html" class="cta">View Our Work</a>
+    </div>
+  </section>
+
+  <main>
+    <section class="intro reveal">
+      <h2>Precision, Passion, Perspective</h2>
+      <p>From waterfront estates to downtown commercial properties, we deliver cinematic aerial visuals that sell the story and the space.</p>
     </section>
 
-    <section class="intro">
-      <h2>Precision, Passion, and Perspective</h2>
-      <p>
-        At <strong>Myles Photography LLC</strong>, we specialize in aerial imaging and real estate media that highlight
-        every property’s best angles. Whether for listings, construction sites, or marketing campaigns,
-        our drone photography delivers sharp visuals that make a lasting impact.
-      </p>
+    <section class="intro reveal">
+      <h2>Why Choose Us</h2>
+      <ul class="why">
+        <li>FAA Part 107 Certified & Fully Insured</li>
+        <li>Real estate photo, video, and mapping</li>
+        <li>Fast turnarounds and MLS-ready exports</li>
+      </ul>
     </section>
   </main>
 
   <footer>
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
   </footer>
+
+  <!-- Minimal reveal-on-scroll (tiny vanilla JS, optional but recommended) -->
+  <script>
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold: 0.15});
+    els.forEach(el=>io.observe(el));
+  </script>
 </body>
 </html>
