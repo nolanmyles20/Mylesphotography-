@@ -6,6 +6,29 @@
   <title>Sample Images | Myles Photography LLC</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/logo.png" />
+
+  <!-- Minimal lightbox styles (kept here so you don't have to edit styles.css) -->
+  <style>
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.8);
+      display: none; place-items: center;
+      z-index: 9999; padding: 20px;
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img {
+      max-width: 90vw; max-height: 85vh; border-radius: 12px; display: block;
+    }
+    .lightbox-cap {
+      color: #ccc; margin-top: 10px; text-align: center; max-width: 90vw;
+    }
+    .lightbox-close {
+      position: absolute; top: 14px; right: 18px;
+      background: #111; color: #fff; border: 1px solid #333;
+      border-radius: 10px; font-size: 20px; line-height: 1;
+      padding: 8px 12px; cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -38,7 +61,7 @@
     <!-- 🎥 Featured Autoplay Video -->
     <div class="video-grid" style="margin-top:2rem;">
       <iframe
-        src="https://www.youtube.com/embed/iVyg4wXB2MM?si=X_8tFyIOhyMrSe1F"
+        src="https://www.youtube.com/embed/iVyg4wXB2MM?autoplay=1&mute=1&loop=1&playlist=iVyg4wXB2MM"
         title="Featured Aerial Reel"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -78,11 +101,19 @@
     </div>
   </main>
 
+  <!-- 🔎 Lightbox overlay -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close">×</button>
+    <img id="lightbox-img" alt="" />
+    <div id="lightbox-cap" class="lightbox-cap"></div>
+  </div>
+
   <footer>
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
   </footer>
 
   <script>
+    // Build gallery from manifest, with lazy-loading + lightbox
     async function loadGallery(){
       const container = document.getElementById('gallery');
       try{
@@ -93,15 +124,52 @@
 
         data.images.forEach(item=>{
           const fig = document.createElement('figure');
+          const link = document.createElement('a');
           const img = document.createElement('img');
-          img.src = 'assets/samples/' + item.src;
-          img.alt = item.caption || 'Sample image';
           const cap = document.createElement('figcaption');
+
+          link.href = 'assets/samples/' + item.src;
+          link.className = 'lb';
+
+          img.src = link.href;
+          img.loading = 'lazy';
+          img.alt = item.caption || 'Sample image';
+
           cap.textContent = item.caption || '';
-          fig.appendChild(img);
+
+          link.appendChild(img);
+          fig.appendChild(link);
           fig.appendChild(cap);
           container.appendChild(fig);
         });
+
+        // Lightbox behavior
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        const lbCap = document.getElementById('lightbox-cap');
+
+        container.addEventListener('click', (e)=>{
+          const a = e.target.closest('a.lb');
+          if(!a) return;
+          e.preventDefault();
+          lbImg.src = a.href;
+          lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
+          lb.classList.add('open');
+          lb.setAttribute('aria-hidden','false');
+          document.body.style.overflow = 'hidden';
+        });
+
+        document.querySelector('.lightbox-close').addEventListener('click', ()=>{
+          lb.classList.remove('open');
+          lb.setAttribute('aria-hidden','true');
+          lbImg.src = '';
+          document.body.style.overflow = '';
+        });
+
+        lb.addEventListener('click', (e)=>{
+          if(e.target === lb) document.querySelector('.lightbox-close').click();
+        });
+
       }catch(e){
         container.innerHTML = '<p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p>';
       }
