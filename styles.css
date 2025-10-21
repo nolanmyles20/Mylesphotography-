@@ -309,7 +309,7 @@ input, textarea, select { cursor:text }
 .services-tag span {
   opacity:0;
   animation:fadeInOnce 1s ease forwards;
-  animation-delay:4s;
+  animation-delay:6s;
   animation-iteration-count:1;
 }
 @keyframes fadeInOnce { to {opacity:1;} }
