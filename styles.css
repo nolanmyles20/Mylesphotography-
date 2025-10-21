@@ -241,82 +241,78 @@ input, textarea, select { cursor:text }
 /* === DRONE FLY-BY: slow + soft motion trail === */
 /* === DRONE FLY-BY: slow, bidirectional shadow, soft trail === */
 /* === DRONE FLY-BY: slow, constant hover shadow, soft trail === */
+/* === Drone fly-by (wrapper-based) — quicker start, constant hover shadow, soft trail === */
 @keyframes droneFlyAcrossMinute {
-  0%   { transform: translateX(-120vw) translateY(-6px) rotate(-15deg); opacity: 0; filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
-  1%   { opacity: 1; }
-  4%   { transform: translateX(40vw) translateY(-10px) rotate(8deg);  filter: drop-shadow(0 6px 3px rgba(0,0,0,0.4)); }
-  7%   { transform: translateX(0) translateY(0) rotate(0);  filter: drop-shadow(0 4px 2px rgba(0,0,0,0.3)); }
-  50%  { transform: translateX(0) translateY(0) rotate(0); }
-  53%  { transform: translateX(0) translateY(-2px); }
-  56%  { transform: translateX(0) translateY(2px); }
-  59%  { transform: translateX(0) translateY(-1px); }
-  100% { transform: translateX(0) translateY(0); filter: drop-shadow(0 3px 2px rgba(0,0,0,0.25)); }
+  0%   { transform: translateX(-120vw) translateY(-6px) rotate(-15deg); opacity:0; filter:drop-shadow(0 0 0 rgba(0,0,0,0)); }
+  1%   { opacity:1; }
+  4%   { transform: translateX(40vw) translateY(-10px) rotate(8deg);  filter:drop-shadow(0 6px 3px rgba(0,0,0,0.4)); }
+  7%   { transform: translateX(0) translateY(0) rotate(0);            filter:drop-shadow(0 4px 2px rgba(0,0,0,0.3)); }
+  50%  { transform: translateY(0); }
+  53%  { transform: translateY(-2px); }
+  56%  { transform: translateY(2px); }
+  59%  { transform: translateY(-1px); }
+  100% { transform: translateY(0);                                    filter:drop-shadow(0 3px 2px rgba(0,0,0,0.25)); }
 }
 
-
-.services-drone.fly-in {
-  position:relative;
-  z-index:10;
-  animation:droneFlyAcrossMinute 100s ease-in-out infinite;
-  animation-fill-mode:forwards;
-  will-change:transform,opacity,filter;
-  pointer-events:none;
-  filter:drop-shadow(0 2px 1px rgba(0,0,0,0.3));
+/* wrapper that carries the animation + effects */
+.drone-wrap {
+  position: relative;
+  display: inline-block;
+  line-height: 0;            /* tight box around the image */
+}
+.drone-wrap.fly-in {
+  z-index: 10;
+  animation: droneFlyAcrossMinute 60s ease-in-out infinite; /* faster cycle; change to 75s if you prefer slower */
+  animation-fill-mode: forwards;
+  will-change: transform, opacity, filter;
+  pointer-events: none;
 }
 
-/* === constant hover shadow below === */
-.services-drone.fly-in::after {
-  content:"";
-  position:absolute;
-  left:50%;
-  bottom:-6px;
-  width:120%;
-  height:6px;
-  transform:translateX(-50%) scale(1,1);
-  background:radial-gradient(ellipse at center,
-    rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.0) 70%);
-  opacity:0.9;
-  filter:blur(2px);
-  pointer-events:none;
+/* constant “hover pad” shadow under drone */
+.drone-wrap.fly-in::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 120%;
+  height: 6px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 70%);
+  opacity: 0.9;
+  filter: blur(2px);
+  pointer-events: none;
 }
 
-/* === soft motion trail === */
-.services-drone.fly-in::before {
-  content:"";
-  position:absolute;
-  left:-40px; top:50%;
-  width:80px; height:6px;
-  background:linear-gradient(90deg,
-    rgba(255,255,255,0) 0%, rgba(200,200,200,0.25) 50%, rgba(255,255,255,0) 100%);
-  border-radius:50%;
-  opacity:0;
-  filter:blur(3px);
-  transform:translateY(-50%) scaleX(0);
-  pointer-events:none;
-  animation:whooshTrail 75s ease-in-out infinite;
-}
+/* soft motion trail during the fly-in portion */
 @keyframes whooshTrail {
-  0%,3% {opacity:0;transform:translateY(-50%) scaleX(0);}
-  4%,10% {opacity:0.7;transform:translateY(-50%) scaleX(1);}
-  20% {opacity:0.3;transform:translateY(-50%) scaleX(0.8);}
-  40%,100% {opacity:0;transform:translateY(-50%) scaleX(0);}
+  0%, 2%   { opacity: 0; transform: translateY(-50%) scaleX(0); }
+  3%, 10%  { opacity: 0.7; transform: translateY(-50%) scaleX(1); }
+  20%      { opacity: 0.3; transform: translateY(-50%) scaleX(0.8); }
+  40%,100% { opacity: 0; transform: translateY(-50%) scaleX(0); }
+}
+.drone-wrap.fly-in::before {
+  content: "";
+  position: absolute;
+  left: -40px; top: 50%;
+  width: 80px; height: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(200,200,200,0.25) 50%, rgba(255,255,255,0) 100%);
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateY(-50%) scaleX(0);
+  pointer-events: none;
+  animation: whooshTrail 60s ease-in-out infinite;
 }
 
-/* fade-in text once */
-.services-tag span {
-  opacity:0;
-  animation:fadeInOnce 1s ease forwards;
-  animation-delay:6s;
-  animation-iteration-count:1;
-}
-@keyframes fadeInOnce { to {opacity:1;} }
+/* keep the image sizing as before */
+.services-drone { height: 30px; width: auto; image-rendering: crisp-edges; }
 
-@media (prefers-reduced-motion:reduce){
-  .services-drone.fly-in,
-  .services-drone.fly-in::before,
-  .services-drone.fly-in::after {animation:none;opacity:1;transform:none;}
-  .services-tag span{animation:none;opacity:1;}
+/* if users prefer reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .drone-wrap.fly-in,
+  .drone-wrap.fly-in::before { animation: none; }
 }
+
 /*UPGRADE*/
 /* Sticky header + soft shadow */
 header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
