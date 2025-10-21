@@ -238,53 +238,84 @@ input, textarea, select { cursor:text }
    DRONE FLY-BY (CSS-only)
    - Every 60s: flies for ~5s, then rests with breeze/hover
 ========================= */
+/* === DRONE FLY-BY: slow + soft motion trail === */
 @keyframes droneFlyAcrossMinute {
-  0%   { transform: translateX(-120vw) translateY(-6px) rotate(-15deg); opacity:0; filter:drop-shadow(0 0 0 rgba(0,0,0,0)); }
+  0%   { transform: translateX(-120vw) translateY(-6px) rotate(-15deg);
+         opacity:0; filter:drop-shadow(0 0 0 rgba(0,0,0,0)); }
   3%   { opacity:1; }
-  5%   { transform: translateX(40vw) translateY(-10px) rotate(8deg);  filter:drop-shadow(0 6px 3px rgba(0,0,0,0.4)); }
-  8%   { transform: translateX(0)     translateY(0)     rotate(0);    filter:drop-shadow(0 4px 2px rgba(0,0,0,0.3)); }
-  50%  { transform: translateX(0)     translateY(0)     rotate(0); }
-  53%  { transform: translateX(0)     translateY(-2px); } /* breeze */
-  56%  { transform: translateX(0)     translateY(2px);  }
-  59%  { transform: translateX(0)     translateY(-1px); }
-  100% { transform: translateX(0)     translateY(0);    filter:drop-shadow(0 3px 2px rgba(0,0,0,0.25)); }
+  6%   { transform: translateX(35vw) translateY(-10px) rotate(8deg);
+         filter:drop-shadow(0 6px 3px rgba(0,0,0,0.4)); }
+  10%  { transform: translateX(0) translateY(0) rotate(0);
+         filter:drop-shadow(0 4px 2px rgba(0,0,0,0.3)); }
+  50%  { transform: translateY(0); }
+  55%  { transform: translateY(-2px); }
+  60%  { transform: translateY(2px); }
+  65%  { transform: translateY(-1px); }
+  100% { transform: translateY(0);
+         filter:drop-shadow(0 3px 2px rgba(0,0,0,0.25)); }
 }
 
 .services-drone.fly-in {
-  position:relative; z-index:10;
-  animation:droneFlyAcrossMinute 60s ease-in-out infinite;
+  position:relative;
+  z-index:10;
+  animation:droneFlyAcrossMinute 75s ease-in-out infinite; /* slower 75s cycle */
   animation-fill-mode:forwards;
-  will-change:transform, opacity, filter;
-  pointer-events:none; /* keep header clickable */
+  will-change:transform,opacity,filter;
+  pointer-events:none;
   filter:drop-shadow(0 2px 1px rgba(0,0,0,0.3));
 }
 
-/* Ground shadow under the drone during flight */
+/* ground shadow ellipse */
 .services-drone.fly-in::after {
   content:"";
   position:absolute; left:0; bottom:-6px;
   width:100%; height:4px;
-  background:radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 70%);
-  transform:scale(0); opacity:0; transition:opacity .3s ease;
-  animation:shadowFade 60s ease-in-out infinite;
+  background:radial-gradient(ellipse at center,
+    rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 70%);
+  transform:scale(0); opacity:0;
+  animation:shadowFade 75s ease-in-out infinite;
 }
 @keyframes shadowFade {
-  0%, 3% { opacity:0; transform:scale(0) }
-  5%, 8% { opacity:1; transform:scale(1.3, 1) }
-  100%   { opacity:1; transform:scale(1, 1) }
+  0%,3% {opacity:0;transform:scale(0)}
+  6%,10% {opacity:1;transform:scale(1.3,1)}
+  100% {opacity:1;transform:scale(1,1)}
 }
 
-/* Fade-in the text once (first cycle) */
+/* === soft motion trail === */
+.services-drone.fly-in::before {
+  content:"";
+  position:absolute;
+  left:-40px; top:50%;
+  width:80px; height:6px;
+  background:linear-gradient(90deg,
+    rgba(255,255,255,0) 0%, rgba(200,200,200,0.25) 50%, rgba(255,255,255,0) 100%);
+  border-radius:50%;
+  opacity:0;
+  filter:blur(3px);
+  transform:translateY(-50%) scaleX(0);
+  pointer-events:none;
+  animation:whooshTrail 75s ease-in-out infinite;
+}
+@keyframes whooshTrail {
+  0%,3% {opacity:0;transform:translateY(-50%) scaleX(0);}
+  4%,10% {opacity:0.7;transform:translateY(-50%) scaleX(1);}
+  20% {opacity:0.3;transform:translateY(-50%) scaleX(0.8);}
+  40%,100% {opacity:0;transform:translateY(-50%) scaleX(0);}
+}
+
+/* fade-in text once */
 .services-tag span {
   opacity:0;
   animation:fadeInOnce 1s ease forwards;
-  animation-delay:3s;                 /* ~when the drone lands */
+  animation-delay:4s;
   animation-iteration-count:1;
 }
-@keyframes fadeInOnce { to { opacity:1 } }
+@keyframes fadeInOnce { to {opacity:1;} }
 
-/* Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .services-drone.fly-in { animation:none; opacity:1; transform:none }
-  .services-tag span { animation:none; opacity:1 }
+@media (prefers-reduced-motion:reduce){
+  .services-drone.fly-in,
+  .services-drone.fly-in::before,
+  .services-drone.fly-in::after {animation:none;opacity:1;transform:none;}
+  .services-tag span{animation:none;opacity:1;}
 }
+
