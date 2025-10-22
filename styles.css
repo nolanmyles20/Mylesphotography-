@@ -78,7 +78,7 @@ header {
 ========================= */
 .hero {
   text-align:center;
-  padding:5rem 1rem;
+  padding:2rem 1rem;
   background:radial-gradient(circle at center,#111 0%,#000 100%);
   color:#fff;
 }
@@ -252,11 +252,11 @@ input, textarea, select { cursor:text }
 
 /* tighten spacing between hero and next section */
 .hero {
-  padding-bottom: 2rem;           /* was ~5rem */
+  padding-bottom: 1rem;           /* was ~5rem */
 }
 .intro:first-of-type {
   margin-top: 0;                  /* remove default gap */
-  padding-top: 2rem;              /* optional small breathing room */
+  padding-top: 1rem;              /* optional small breathing room */
 }
 
 /* =========================
