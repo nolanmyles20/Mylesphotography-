@@ -1,0 +1,28 @@
+{
+  "source": "Google",
+  "placeName": "Myles Photography LLC",
+  "placeUrl": "https://maps.google.com/?q=Myles+Photography+LLC",
+  "reviews": [
+    {
+      "author": "Jane R.",
+      "rating": 5,
+      "text": "Great aerial shots! Turnaround was fast and the photos helped us sell quickly.",
+      "time": "2025-02-12",
+      "url": "https://maps.google.com/?cid=YOUR_PLACE_CID"
+    },
+    {
+      "author": "David P.",
+      "rating": 5,
+      "text": "Professional, FAA-certified, and it shows. Highly recommend.",
+      "time": "2025-01-28",
+      "url": "https://maps.google.com/?cid=YOUR_PLACE_CID"
+    },
+    {
+      "author": "Kim S.",
+      "rating": 5,
+      "text": "Killer drone footage of our lakefront listing. Nolan was awesome to work with.",
+      "time": "2025-01-08",
+      "url": "https://maps.google.com/?cid=YOUR_PLACE_CID"
+    }
+  ]
+}
