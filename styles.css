@@ -383,3 +383,21 @@ body { animation: siteFade .6s ease both; }
 /* Scrollbar styling */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+/* Tighten hero height on tablets/desktop */
+@media (min-width: 768px){
+  .hero{
+    /* keep it responsive but not huge */
+    min-height: clamp(360px, 48vh, 600px);
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+  }
+}
+
+/* Remove any extra gap before the next section */
+.intro:first-of-type{
+  margin-top: 0 !important;
+  padding-top: 1.5rem;   /* small breathing room */
+}
+
+/* Just in case the video creates a hairline gap */
+.bg-video{ display:block; margin-bottom:-1px; }
