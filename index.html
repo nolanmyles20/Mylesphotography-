@@ -3,55 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Myles Photography LLC</title>
+
+  <title>Myles Photography LLC | Drone Photography in Northern Michigan</title>
+
+  <!-- Primary SEO -->
   <meta name="description" content="FAA-certified drone photography and aerial imaging for real estate, construction, and landscapes in Northern Michigan. Serving Iosco, Ogemaw, Oscoda, and Alpena counties.">
-  <meta name="keywords" content="drone photography, real estate drone, aerial photographer, Michigan drone services, Myles Photography LLC">
+  <meta name="keywords" content="drone photography, real estate drone, aerial photographer, Michigan drone services, aerial videos, Myles Photography LLC">
   <meta name="author" content="Myles Photography LLC">
   <meta name="robots" content="index, follow">
-  
-  <script type="application/ld+json">
-  {
-     "@context": "https://schema.org",
-     "@type": "LocalBusiness",
-     "name": "Myles Photography LLC",
-     "image": "https://mylesphotographyllc.com/assets/logo.png",
-     "url": "https://mylesphotographyllc.com",
-     "telephone": "+19892549630",
-     "address": {
-       "@type": "PostalAddress",
-       "addressLocality": "Iosco County",
-       "addressRegion": "MI",
-       "addressCountry": "US"
-     },
-     "geo": {
-       "@type": "GeoCoordinates",
-       "latitude": 44.4,
-       "longitude": -83.3
-     },
-     "openingHours": "Mo-Su 08:00-20:00",
-     "sameAs": [
-       "https://www.instagram.com/yourprofile",
-       "https://www.facebook.com/yourpage"
-     ]
-  }
-  </script>
-  <!-- Favicon + Preloads -->
-  
+  <link rel="canonical" href="https://mylesphotographyllc.com/">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/favicon.png" />
+
+  <!-- Preloads (images only; avoid preloading large video) -->
   <link rel="preload" as="image" href="assets/logo.png">
   <link rel="preload" as="image" href="assets/drone_cursor_32x32.png">
-  <link rel="preload" as="video" href="assets/hero.mp4" type="video/mp4">
 
-  <!-- SEO / Social -->
-  <meta name="description" content="FAA-certified drone photo & video for real estate and commercial work across Michigan." />
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
   <meta property="og:title" content="Myles Photography LLC">
   <meta property="og:description" content="FAA-certified drone photo & video for real estate and commercial work across Michigan.">
-  <meta property="og:image" content="assets/favicon.png">
-  <meta property="og:url" content="https://www.mylesphotographyllc.com">
+  <meta property="og:url" content="https://mylesphotographyllc.com/">
+  <meta property="og:image" content="https://mylesphotographyllc.com/assets/logo.png">
+  <meta property="og:site_name" content="Myles Photography LLC">
   <meta name="theme-color" content="#000000">
+
+  <!-- Local Business Structured Data (Google Rich Results) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Myles Photography LLC",
+    "image": "https://mylesphotographyllc.com/assets/logo.png",
+    "url": "https://mylesphotographyllc.com",
+    "telephone": "+19892549630",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Iosco County",
+      "addressRegion": "MI",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 44.4,
+      "longitude": -83.3
+    },
+    "openingHours": "Mo-Su 08:00-20:00",
+    "sameAs": [
+      "https://www.youtube.com/@mylesphotographyllc"
+    ]
+  }
+  </script>
 
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
   <header>
@@ -73,7 +80,7 @@
         <a href="about.html" class="btn">About Us</a>
         <a href="locations.html" class="btn">Locations</a>
         <a href="payment.html" class="btn">Payment</a>
-        <a href="contact.html" class="btn">Contact</a>
+        <a href="mailto:nolanmyles@icloud.com" class="btn">Contact</a>
       </nav>
 
       <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
@@ -84,7 +91,7 @@
 
   <!-- Background hero video -->
   <section class="hero">
-    <video class="bg-video" autoplay muted loop playsinline>
+    <video class="bg-video" autoplay muted loop playsinline poster="assets/hero-poster.jpg">
       <source src="assets/hero.mp4" type="video/mp4">
     </video>
     <div class="hero-inner reveal">
@@ -108,13 +115,25 @@
         <li>Fast turnarounds and MLS-ready exports</li>
       </ul>
     </section>
+
+    <section class="intro reveal" style="text-align:center; margin-top:3rem;">
+      <h2>Watch Our Aerial Highlight Reel</h2>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/iVyg4wXB2MM?si=X_8tFyIOhyMrSe1F" 
+        title="Myles Photography Highlight Reel" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        allowfullscreen>
+      </iframe>
+    </section>
   </main>
 
   <footer>
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+    <p><a href="https://www.youtube.com/@mylesphotographyllc" target="_blank" rel="noopener">YouTube Channel</a></p>
   </footer>
 
-  <!-- Minimal reveal-on-scroll (tiny vanilla JS, optional but recommended) -->
+  <!-- Reveal-on-scroll -->
   <script>
     const els = document.querySelectorAll('.reveal');
     const io = new IntersectionObserver((entries)=>{
