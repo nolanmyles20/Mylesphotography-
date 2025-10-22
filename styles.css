@@ -250,6 +250,15 @@ input, textarea, select { cursor:text }
 .reviews-powered{ color:#999; margin-top:.8rem; font-size:.9rem; text-align:center; }
 .reviews-powered a{ color:#bbb; }
 
+/* tighten spacing between hero and next section */
+.hero {
+  padding-bottom: 2rem;           /* was ~5rem */
+}
+.intro:first-of-type {
+  margin-top: 0;                  /* remove default gap */
+  padding-top: 2rem;              /* optional small breathing room */
+}
+
 /* =========================
    DRONE FLY-BY (CSS-only)
    - Every 60s: flies for ~5s, then rests with breeze/hover
