@@ -259,6 +259,24 @@ input, textarea, select { cursor:text }
   padding-top: 1rem;              /* optional small breathing room */
 }
 
+.reviews-cta{
+  text-align:center;
+  margin-top:0.8rem;
+}
+.btn-review{
+  background:#e0e0e0;
+  color:#000;
+  border:2px solid #000;
+  border-radius:10px;
+  padding:8px 14px;
+  font-weight:600;
+}
+.btn-review:hover{
+  background:#cfcfcf;
+  color:#000;
+  transform:translateY(-1px);
+}
+
 /* =========================
    DRONE FLY-BY (CSS-only)
    - Every 60s: flies for ~5s, then rests with breeze/hover
