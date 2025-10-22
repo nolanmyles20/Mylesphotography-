@@ -234,6 +234,22 @@ a, button, .btn {
 }
 input, textarea, select { cursor:text }
 
+.reviews-grid{
+  display:grid; gap:16px;
+  grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+  margin-top:1rem;
+}
+.review-card{
+  background:#111; border:1px solid #222; border-radius:12px; padding:16px;
+}
+.review-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.review-author{ font-weight:700; }
+.review-stars{ color:#ffd166; font-size:1rem; letter-spacing:1px; }
+.review-date{ color:#aaa; font-size:.85rem; margin-left:8px; }
+.review-text{ color:#ccc; margin:.4rem 0 0; }
+.reviews-powered{ color:#999; margin-top:.8rem; font-size:.9rem; text-align:center; }
+.reviews-powered a{ color:#bbb; }
+
 /* =========================
    DRONE FLY-BY (CSS-only)
    - Every 60s: flies for ~5s, then rests with breeze/hover
