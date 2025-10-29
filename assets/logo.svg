@@ -1,0 +1,88 @@
+<!-- Tactical Offroad: Beveled Triangle + Honeycomb + Outlined T/O with Connectors (Fab-safe) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1000 1000">
+  <!-- ===== Global Settings ===== -->
+  <defs>
+    <!-- Stroke master -->
+    <style>
+      :root { --STROKE_W:16; }
+      .cut { fill:none; stroke:#000; stroke-width:var(--STROKE_W); stroke-linejoin:round; stroke-linecap:round; }
+    </style>
+
+    <!-- Embed Black Ops One so outlines render consistently -->
+    <style id="font-embed">
+      @font-face{
+        font-family:'BlackOpsOneEmbed';
+        src:url('data:font/ttf;base64,{{BASE64_BLACKOPS_TTF}}') format('truetype');
+        font-weight:400; font-style:normal; font-display:block;
+      }
+      .letters { font-family:'BlackOpsOneEmbed'; }
+    </style>
+
+    <!-- Hexagon cell (circumradius R=50; scaled later) -->
+    <g id="hexcell">
+      <path class="cut" d="M 50,0 L 25,43.30127 L -25,43.30127 L -50,0 L -25,-43.30127 L 25,-43.30127 Z"/>
+    </g>
+
+    <!-- Symmetry-locked honeycomb. scale(0.8) => tile 120×69.282 -->
+    <pattern id="honeycomb" patternUnits="userSpaceOnUse"
+             width="150" height="86.60254"
+             patternTransform="translate(440,-8) scale(0.8)">
+      <!-- Row A -->
+      <use href="#hexcell" x="0"   y="43.30127"/>
+      <use href="#hexcell" x="150" y="43.30127"/>
+      <!-- Row B (offset half-step) -->
+      <use href="#hexcell" x="75"  y="0"/>
+      <use href="#hexcell" x="225" y="0"/>
+    </pattern>
+
+    <!-- Beveled triangle outline path -->
+    <path id="triOutline" d="M 535.777,171.554
+                              L 464.223,171.554
+                              L 135.777,828.446
+                              L 180,900
+                              L 820,900
+                              L 864.223,828.446 Z"/>
+  </defs>
+
+  <!-- ===== HONEYCOMB (stroked lines) clipped inside the triangle ===== -->
+  <clipPath id="triClip">
+    <use href="#triOutline"/>
+  </clipPath>
+
+  <rect x="0" y="0" width="1000" height="1000" fill="url(#honeycomb)" clip-path="url(#triClip)"/>
+
+  <!-- Triangle edge (same thickness as honeycomb) -->
+  <use href="#triOutline" class="cut"/>
+
+  <!-- ===== Outlined T / O (no fill), stacked, connected to honeycomb ===== -->
+  <!-- The letters are stroked outlines (ring-like). Connector tabs attach them to honeycomb lines. -->
+  <g class="letters" fill="none" stroke="#000" stroke-width="var(--STROKE_W)" stroke-linejoin="round" stroke-linecap="round">
+    <!-- T -->
+    <text x="500" y="520" font-size="280" text-anchor="middle" dominant-baseline="middle">T</text>
+    <!-- O -->
+    <text x="500" y="760" font-size="280" text-anchor="middle" dominant-baseline="middle">O</text>
+  </g>
+
+  <!-- ===== Connector Tabs (short strokes) =====
+       These tie the letter outlines into the honeycomb so no pieces fall out.
+       You can nudge endpoints if needed; they’re placed to land on comb lines. -->
+  <g class="cut">
+    <!-- T connectors: left/right of cap, and bottom of stem -->
+    <path d="M 365 520 L 335 520"/>  <!-- T cap left to comb -->
+    <path d="M 665 520 L 695 520"/>  <!-- T cap right to comb -->
+    <path d="M 500 640 L 500 670"/>  <!-- T stem bottom to comb -->
+
+    <!-- O connectors: N / E / S / W -->
+    <path d="M 500 630 L 500 600"/>  <!-- top -->
+    <path d="M 615 760 L 645 760"/>  <!-- right -->
+    <path d="M 500 890 L 500 920"/>  <!-- bottom -->
+    <path d="M 385 760 L 355 760"/>  <!-- left -->
+  </g>
+
+  <!-- ===== Notes =====
+    • Everything black & stroked = cut lines.
+    • No fills are used for cutting features.
+    • Adjust global thickness by changing --STROKE_W at the top.
+    • If your laser prefers hairline (e.g., 0.001 in), set stroke-width accordingly.
+  -->
+</svg>
