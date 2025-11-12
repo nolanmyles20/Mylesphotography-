@@ -443,3 +443,10 @@ body { animation: siteFade .6s ease both; }
   height: 20px;
   flex-shrink: 0;
 }
+/* Replace checkmarks with $ in the Costing section */
+.costing li::before {
+  content: "$";
+  color: #00b300;        /* optional: green dollar */
+  font-weight: bold;
+  margin-right: 0.4rem;
+}
