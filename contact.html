@@ -39,7 +39,6 @@
     </div>
   </header>
 
-
   <main class="page contact-page">
     <div class="contact-wrapper">
       <div class="contact-card">
@@ -50,8 +49,9 @@
 
         <!-- Web3Forms Contact Form -->
         <form class="contact-form"
-          action="https://api.web3forms.com/submit"
-          method="POST">
+              action="https://api.web3forms.com/submit"
+              method="POST"
+              enctype="multipart/form-data">
 
           <!-- REQUIRED Web3Forms fields -->
           <input type="hidden" name="access_key" value="b5c5fd48-c435-4f53-8e72-6235e85995f8">
@@ -66,8 +66,12 @@
             <label>Full Name
               <input type="text" name="name" required>
             </label>
+
             <label>Email
-              <input type="email" name="email" required>
+              <div class="input-with-icon">
+                <input type="email" name="email" id="emailField" required>
+                <span class="email-check" aria-hidden="true">✓</span>
+              </div>
             </label>
           </div>
 
@@ -75,6 +79,7 @@
             <label>Phone (optional)
               <input type="tel" name="phone">
             </label>
+
             <label>Property Address
               <input type="text" name="address">
             </label>
@@ -84,9 +89,18 @@
             <textarea name="message" rows="6" placeholder="What do you need captured?"></textarea>
           </label>
 
+          <!-- File upload (optional) -->
+          <label class="full-width">
+            Example File (optional)
+            <input type="file"
+                   name="attachment"
+                   class="file-input"
+                   accept="image/*,application/pdf">
+            <small class="file-help">Up to 5&nbsp;MB. Images or PDF only.</small>
+          </label>
+
           <button class="btn contact-submit" type="submit">Send Message</button>
         </form>
-
       </div>
     </div>
   </main>
@@ -96,5 +110,26 @@
       <a href="mailto:nmyles@mylesphotographyllc.com">nmyles@mylesphotographyllc.com</a>
     </p>
   </footer>
+
+  <!-- Email live checkmark script -->
+  <script>
+    (function () {
+      const emailInput = document.getElementById("emailField");
+      const emailCheck = document.querySelector(".email-check");
+      if (!emailInput || !emailCheck) return;
+
+      function updateEmailState() {
+        const value = emailInput.value.trim();
+        if (value && emailInput.validity.valid) {
+          emailCheck.classList.add("is-valid");
+        } else {
+          emailCheck.classList.remove("is-valid");
+        }
+      }
+
+      emailInput.addEventListener("input", updateEmailState);
+      emailInput.addEventListener("blur", updateEmailState);
+    })();
+  </script>
 </body>
 </html>
