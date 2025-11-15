@@ -450,3 +450,129 @@ body { animation: siteFade .6s ease both; }
   font-weight: bold;
   margin-right: 0.4rem;
 }
+/* ---------- Contact page card layout ---------- */
+
+.contact-page {
+  background: #000;               /* keeps the black section you already have */
+  padding: 2.5rem 1.25rem 3.5rem;
+}
+
+.contact-wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.contact-card {
+  background: #0d0d0d;
+  border-radius: 22px;
+  padding: 2.25rem 1.75rem 2.5rem;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.contact-card h1 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.contact-intro {
+  margin-top: 0;
+  margin-bottom: 1.6rem;
+  color: #e3e3e3;
+}
+
+/* Form layout */
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-form .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.contact-form label {
+  flex: 1 1 230px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f5f5f5;
+}
+
+.contact-form .full-width {
+  flex-basis: 100%;
+}
+
+/* Inputs + textarea inside the card */
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #050505;
+  color: #ffffff;
+  font: inherit;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.08s ease-out;
+}
+
+.contact-form textarea {
+  border-radius: 16px;
+  resize: vertical;
+  min-height: 150px;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: #9a9a9a;
+}
+
+/* Focus + hover states */
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px #ffffff;
+  background: #000000;
+  transform: translateY(-1px);
+}
+
+/* Submit button */
+
+.contact-form .contact-submit {
+  align-self: flex-end;
+  margin-top: 0.5rem;
+  border-radius: 999px;
+  padding-inline: 1.9rem;
+}
+
+/* Make the button full width on small screens */
+@media (max-width: 640px) {
+  .contact-card {
+    padding: 2rem 1.25rem 2.25rem;
+  }
+
+  .contact-form .row {
+    flex-direction: column;
+  }
+
+  .contact-form .contact-submit {
+    align-self: stretch;
+    width: 100%;
+    text-align: center;
+  }
+}
