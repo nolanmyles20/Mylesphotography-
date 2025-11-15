@@ -39,6 +39,7 @@
     </div>
   </header>
 
+  <!-- Contact card page -->
   <main class="page contact-page">
     <div class="contact-wrapper">
       <div class="contact-card">
@@ -59,8 +60,8 @@
           <input type="hidden" name="from_name" value="Myles Photography LLC Website">
           <input type="hidden" name="redirect" value="https://mylesphotographyllc.com/thank-you.html">
 
-          <!-- Honeypot (leave hidden) -->
-          <input type="checkbox" name="botcheck" style="display:none">
+          <!-- Honeypot (anti-bot) -->
+          <input type="checkbox" name="botcheck" style="display:none !important" tabindex="-1" autocomplete="off">
 
           <div class="row">
             <label>Full Name
@@ -85,17 +86,18 @@
             </label>
           </div>
 
-          <label class="full-width">Details
+          <label>Details
             <textarea name="message" rows="6" placeholder="What do you need captured?"></textarea>
           </label>
 
           <!-- File upload (optional) -->
-          <label class="full-width">
-            Example File (optional)
-            <input type="file"
-                   name="attachment"
-                   class="file-input"
-                   accept="image/*,application/pdf">
+          <label>
+            Upload Reference File (optional)
+            <input
+              type="file"
+              name="attachment"
+              class="file-input"
+              accept="image/*,application/pdf">
             <small class="file-help">Up to 5&nbsp;MB. Images or PDF only.</small>
           </label>
 
