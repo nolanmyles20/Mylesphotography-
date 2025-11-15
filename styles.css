@@ -449,7 +449,8 @@ body { animation: siteFade .6s ease both; }
   margin-right: 0.4rem;
 }
 
-/* ---------- Contact page card layout ---------- */
+/* ---------- Contact page card 
+layout ---------- */
 
 /* ---------- Contact page card layout ---------- */
 
@@ -572,4 +573,3 @@ body { animation: siteFade .6s ease both; }
   .contact-form .contact-submit {
     width: 100%;
   }
-}
