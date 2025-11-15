@@ -603,3 +603,31 @@ body { animation: siteFade .6s ease both; }
     margin: 0;
   }
 }
+/* ===== Final form spacing fix for iOS Safari ===== */
+@media (max-width: 640px) {
+
+  .contact-form label {
+    margin: 0 !important;     /* This is the key fix */
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    margin: 0 !important;     /* Remove any default spacing */
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+
+  /* Even smaller line height on labels */
+  .contact-form label {
+    line-height: 1.1;
+  }
+
+  /* Tight form columns */
+  .contact-form .row {
+    gap: 0.2rem !important;
+  }
+
+  .contact-form {
+    gap: 0.2rem !important;
+  }
+}
