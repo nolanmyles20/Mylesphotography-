@@ -695,3 +695,33 @@ body { animation: siteFade .6s ease both; }
     padding-bottom: 0.35rem !important;
   }
 }
+/* ===== iOS mobile: flatten rows + control gap with CSS grid ===== */
+@media (max-width: 640px) {
+
+  /* Turn the form into a single-column grid */
+  .contact-form {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    row-gap: 0.25rem;             /* <--- adjust this for more/less space */
+  }
+
+  /* Make .row just a logical wrapper, not a visual block */
+  .contact-form .row {
+    display: contents !important; /* children act as direct grid items */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Remove any sneaky margins on labels and button */
+  .contact-form label,
+  .contact-form > button {
+    margin: 0 !important;
+  }
+
+  /* Slightly shorter fields so the visual gap is just their height */
+  .contact-form input,
+  .contact-form textarea {
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.4rem !important;
+  }
+}
