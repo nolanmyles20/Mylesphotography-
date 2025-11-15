@@ -575,4 +575,31 @@ body { animation: siteFade .6s ease both; }
     padding-inline: 0.75rem;
   }
 }
+/* ===== Ultra-tight mobile spacing for contact form ===== */
 
+@media (max-width: 640px) {
+  /* kill any extra vertical space between rows */
+  .contact-form {
+    gap: 0.15rem;
+  }
+
+  .contact-form .row {
+    flex-direction: column;   /* keep stacked */
+    gap: 0.15rem;
+  }
+
+  /* tighten label-to-field space and remove any default margins */
+  .contact-form label {
+    gap: 0.05rem;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  /* shorter input/textarea height */
+  .contact-form input,
+  .contact-form textarea {
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+    margin: 0;
+  }
+}
