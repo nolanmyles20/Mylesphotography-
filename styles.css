@@ -609,3 +609,57 @@ body { animation: siteFade .6s ease both; }
 .contact-form .contact-submit:active {
   transform: translateY(0);
 }
+/* Gray card */
+.contact-card {
+  background: #1c1c1c; /* medium-dark neutral gray */
+  border-radius: 18px;
+  padding: 1.75rem 1.25rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+}
+
+/* Reduce spacing between everything */
+.contact-form {
+  gap: 0.5rem; /* was 0.75+ */
+}
+
+.contact-form .row {
+  gap: 0.5rem;
+}
+
+.contact-form label {
+  gap: 0.2rem;
+}
+
+/* Input + textarea refined spacing */
+.contact-form input,
+.contact-form textarea {
+  padding: 0.65rem 0.9rem; /* slightly slimmer */
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+/* Button updated (white with black text) */
+.contact-form .contact-submit {
+  align-self: center;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 14px;
+  padding: 0.85rem 2.2rem;
+  margin-top: 0.25rem;
+  transition: 0.2s ease;
+}
+
+/* Hover/press animation */
+.contact-form .contact-submit:hover {
+  background: #000;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.contact-form .contact-submit:active {
+  transform: translateY(0);
+}
