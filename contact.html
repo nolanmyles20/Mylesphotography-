@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Contact | Myles Photography LLC</title>
+
   <link rel="icon" type="image/png" href="assets/favicon.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <header>
     <div class="container nav">
@@ -16,7 +18,9 @@
       </a>
 
       <div class="services-tag">
-        <img src="assets/drone.png" alt="Drone icon" class="services-drone fly-in">
+        <span class="drone-wrap fly-in">
+          <img src="assets/drone.png" alt="Drone icon" class="services-drone">
+        </span>
         <span>Drone Services</span>
       </div>
 
@@ -35,6 +39,7 @@
     </div>
   </header>
 
+
   <main class="page contact-page">
     <div class="contact-wrapper">
       <div class="contact-card">
@@ -43,37 +48,45 @@
           Tell us about your project and we’ll reply quickly.
         </p>
 
-        <!-- Formspree: replace YOUR_ENDPOINT with your form endpoint -->
-        <form class="contact-form" action="https://formspree.io/f/YOUR_ENDPOINT" method="POST">
+        <!-- Web3Forms Contact Form -->
+        <form class="contact-form"
+          action="https://api.web3forms.com/submit"
+          method="POST">
+
+          <!-- REQUIRED Web3Forms fields -->
+          <input type="hidden" name="access_key" value="b5c5fd48-c435-4f53-8e72-6235e85995f8">
+          <input type="hidden" name="subject" value="New Quote Request - Myles Photography LLC">
+          <input type="hidden" name="from_name" value="Myles Photography LLC Website">
+          <input type="hidden" name="redirect" value="https://mylesphotographyllc.com/thank-you.html">
+
+          <!-- Honeypot (leave hidden) -->
+          <input type="checkbox" name="botcheck" style="display:none">
+
           <div class="row">
-            <label>
-              Full Name
+            <label>Full Name
               <input type="text" name="name" required>
             </label>
-            <label>
-              Email
+            <label>Email
               <input type="email" name="email" required>
             </label>
           </div>
 
           <div class="row">
-            <label>
-              Phone (optional)
+            <label>Phone (optional)
               <input type="tel" name="phone">
             </label>
-            <label>
-              Property Address
+            <label>Property Address
               <input type="text" name="address">
             </label>
           </div>
 
-          <label class="full-width">
-            Details
+          <label class="full-width">Details
             <textarea name="message" rows="6" placeholder="What do you need captured?"></textarea>
           </label>
 
           <button class="btn contact-submit" type="submit">Send Message</button>
         </form>
+
       </div>
     </div>
   </main>
