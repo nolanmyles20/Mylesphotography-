@@ -451,9 +451,11 @@ body { animation: siteFade .6s ease both; }
 
 /* ---------- Contact page card layout ---------- */
 
+/* ---------- Contact page card layout ---------- */
+
 .contact-page {
-  background: #000;               /* keeps the black section you already have */
-  padding: 2.5rem 1.25rem 3.5rem;
+  background: #000;
+  padding: 1.5rem 1rem 3rem; /* Tightened space above */
 }
 
 .contact-wrapper {
@@ -462,124 +464,105 @@ body { animation: siteFade .6s ease both; }
 }
 
 .contact-card {
-  background: #1c1c1c; /* medium-dark neutral gray */
+  background: #2a2a2a; /* LIGHTER GRAY FOR GOOD CONTRAST */
   border-radius: 18px;
-  padding: 1.75rem 1.25rem 2rem;
+  padding: 1.25rem 1rem 2rem; /* Reduced padding = less vertical gap */
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+/* Headings */
 .contact-card h1 {
-  margin-top: 0;
-  margin-bottom: 0.4rem;
-  font-size: 2rem;
-  color: #ffffff;
+  margin: 0 0 .3rem;
+  font-size: 1.85rem;
+  color: #fff;
 }
 
 .contact-intro {
-  margin-top: 0;
-  margin-bottom: 1.6rem;
-  color: #e3e3e3;
+  margin: 0 0 .9rem;
+  color: #d0d0d0;
+  font-size: .95rem;
 }
 
 /* Form layout */
-
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* tighter vertical spacing between rows */
+  gap: .45rem;
 }
 
 .contact-form .row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem; /* tighter spacing between columns */
+  gap: .45rem;
 }
 
 .contact-form label {
-  flex: 1 1 230px;
+  flex: 1 1 210px;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem; /* small label-to-input gap */
-  font-size: 0.9rem;
+  gap: .18rem;
+  font-size: .9rem;
   font-weight: 500;
-  color: #f5f5f5;
+  color: #fff;
 }
 
-.contact-form .full-width {
-  flex-basis: 100%;
-}
-
-/* Inputs + textarea inside the card */
-
+/* Fields */
 .contact-form input,
 .contact-form textarea {
   width: 100%;
-  padding: 0.65rem 0.9rem;       /* slimmer fields */
+  padding: .6rem .85rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: #050505;
-  color: #ffffff;
-  font: inherit;
-  outline: none;
-  font-size: 0.95rem;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease,
-    transform 0.08s ease-out;
+  border: 1px solid rgba(255,255,255,.2);
+  background: #111;
+  color: #fff;
+  font-size: .95rem;
 }
 
 .contact-form textarea {
-  border-radius: 16px;
-  resize: vertical;
-  min-height: 150px;
+  border-radius: 14px;
+  min-height: 120px; /* Slightly shorter default */
 }
 
-.contact-form input::placeholder,
-.contact-form textarea::placeholder {
-  color: #9a9a9a;
-}
-
-/* Focus + hover states */
-
+/* Focus effects */
 .contact-form input:focus,
 .contact-form textarea:focus {
-  border-color: #ffffff;
-  box-shadow: 0 0 0 1px #ffffff;
-  background: #000000;
+  border-color: #fff;
+  background: #000;
   transform: translateY(-1px);
 }
 
-/* Submit button — white filled, black text */
-
+/* Button */
 .contact-form .contact-submit {
   align-self: center;
-  margin-top: 0.25rem;
-  background: #ffffff;
-  color: #000000;
-  border: 2px solid #ffffff;
-  font-weight: 700;
+  background: #fff;
+  color: #000;
+  padding: .75rem 2rem;
   font-size: 1rem;
+  font-weight: 700;
   border-radius: 14px;
-  padding: 0.85rem 2.2rem;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  border: 2px solid #fff;
+  margin-top: .4rem;
+  transition: .2s ease;
 }
 
 .contact-form .contact-submit:hover {
-  background: #000000;
-  color: #ffffff;
+  background: #000;
+  color: #fff;
   transform: translateY(-2px);
 }
 
-.contact-form .contact-submit:active {
-  transform: translateY(0);
-}
-
-/* Make the button full width on small screens */
+/* Mobile layout polish */
 @media (max-width: 640px) {
+
+  .contact-page {
+    padding-top: 1rem; /* Shrinks the top gap */
+  }
+
   .contact-card {
-    padding: 2rem 1.25rem 2.25rem;
+    border-radius: 14px;
+    padding: 1rem .9rem 1.75rem; /* tighter card */
+    margin-top: 0; /* VERY IMPORTANT — removes the visible gap */
   }
 
   .contact-form .row {
@@ -587,8 +570,6 @@ body { animation: siteFade .6s ease both; }
   }
 
   .contact-form .contact-submit {
-    align-self: stretch;
     width: 100%;
-    text-align: center;
   }
 }
