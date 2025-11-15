@@ -667,3 +667,31 @@ body { animation: siteFade .6s ease both; }
     right: 0.6rem;
   }
 }
+/* ===== Super-tight stacking for contact form on small screens ===== */
+@media (max-width: 640px) {
+
+  /* Kill margin on every direct child of the form (rows, labels, button) */
+  .contact-form > * {
+    margin-top: 0.08rem !important;
+    margin-bottom: 0.08rem !important;
+  }
+
+  /* Kill margin inside each row (the labels themselves) */
+  .contact-form .row > * {
+    margin-top: 0.04rem !important;
+    margin-bottom: 0.04rem !important;
+  }
+
+  /* Make sure labels themselves don’t sneak in extra space */
+  .contact-form label {
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Compact inputs further so the “gap” is mostly just the input height */
+  .contact-form input,
+  .contact-form textarea {
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+}
