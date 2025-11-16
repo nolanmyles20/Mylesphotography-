@@ -725,3 +725,19 @@ body { animation: siteFade .6s ease both; }
     padding-bottom: 0.4rem !important;
   }
 }
+/* Active page indicator */
+.navlinks .btn.current {
+  background:#000;
+  color:#fff;
+  border-color:#000;
+  cursor:default;
+  transform:none;
+  box-shadow:0 0 8px rgba(255,255,255,0.25);
+}
+
+/* Prevent hover from undoing the active look */
+.navlinks .btn.current:hover {
+  background:#000;
+  color:#fff;
+  transform:none;
+}
