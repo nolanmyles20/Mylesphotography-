@@ -9,30 +9,8 @@
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
   <!-- Optional: simple SEO description -->
-  <meta name="description" content="360° virtual tours and walkthroughs by Myles Photography LLC. Explore listings online with immersive, interactive tours.">
-
-  <!-- Tiny spinner / loader styles for the virtual tour -->
-  <style>
-    .tour-wrapper {
-      margin: 2rem auto;
-      max-width: 960px;
-      text-align: center;
-      min-height: 260px; /* space reserved before script loads */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    .tour-spinner {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.25);
-      border-top-color: #ffffff;
-      animation: tourSpin .8s linear infinite;
-    }
-    @keyframes tourSpin { to { transform: rotate(360deg); } }
-  </style>
+  <meta name="description"
+        content="360° virtual tours and walkthroughs by Myles Photography LLC. Explore listings online with immersive, interactive tours.">
 </head>
 <body>
 
@@ -73,16 +51,14 @@
       just like you’re really there.
     </p>
 
-    <!-- Lazy-loaded TeliportMe embed -->
-    <div
-      id="tour-wrapper"
-      class="tour-wrapper"
-      data-teliportme="https://teliportme.com/embed/tour/0e7ac92b"
-      data-height="480"
-      data-width="800"
-    >
-      <!-- Spinner shown until the script is injected -->
-      <div class="tour-spinner" aria-hidden="true"></div>
+    <!-- Working TeliportMe embed (no lazy-load, but reliable) -->
+    <div style="margin: 2rem auto; max-width: 960px; text-align: center;">
+      <script
+        src="https://teliportme.com/js/embed.js"
+        data-teliportme="https://teliportme.com/embed/tour/0e7ac92b"
+        data-height="480"
+        data-width="800">
+      </script>
     </div>
 
     <div style="margin-top: 20px; text-align:center;">
@@ -94,51 +70,12 @@
         to schedule a shoot.
       </p>
     </div>
-
   </main>
 
   <footer>
-    <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+    <p>© 2025 Myles Photography LLC •
+      <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
+    </p>
   </footer>
-
-  <!-- Lazy-load TeliportMe only when the section is in view -->
-  <script>
-    (function () {
-      const wrapper = document.getElementById('tour-wrapper');
-      if (!wrapper) return;
-
-      const teliUrl = wrapper.dataset.teliportme;
-      const teliHeight = wrapper.dataset.height || '480';
-      const teliWidth  = wrapper.dataset.width  || '800';
-
-      function injectScript() {
-        // Clear spinner
-        wrapper.innerHTML = "";
-
-        const script = document.createElement('script');
-        script.src = "https://teliportme.com/js/embed.js";
-        script.dataset.teliportme = teliUrl;
-        script.dataset.height = teliHeight;
-        script.dataset.width  = teliWidth;
-
-        wrapper.appendChild(script);
-      }
-
-      if ('IntersectionObserver' in window) {
-        const obs = new IntersectionObserver((entries, observer) => {
-          entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            injectScript();
-            observer.disconnect();
-          });
-        }, { rootMargin: '200px 0px' });
-
-        obs.observe(wrapper);
-      } else {
-        // Fallback: just load immediately
-        injectScript();
-      }
-    })();
-  </script>
 </body>
 </html>
