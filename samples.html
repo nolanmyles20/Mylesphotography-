@@ -7,8 +7,9 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Minimal lightbox styles (kept here so you don't have to edit styles.css) -->
+  <!-- Minimal lightbox + gallery loading styles -->
   <style>
+    /* Lightbox */
     .lightbox {
       position: fixed; inset: 0;
       background: rgba(0,0,0,.8);
@@ -27,6 +28,40 @@
       background: #111; color: #fff; border: 1px solid #333;
       border-radius: 10px; font-size: 20px; line-height: 1;
       padding: 8px 12px; cursor: pointer;
+    }
+
+    /* Spinner on each image while loading */
+    .gallery figure {
+      position: relative; /* needed for spinner positioning */
+    }
+
+    .gallery figure.is-loading::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      margin: -17px 0 0 -17px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25);
+      border-top-color: #ffffff;
+      animation: gallerySpin .8s linear infinite;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    @keyframes gallerySpin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Optional: faint placeholder background while loading */
+    .gallery figure.is-loading img {
+      opacity: 0.2;
+      transition: opacity 0.25s ease;
+    }
+    .gallery figure img.loaded {
+      opacity: 1;
     }
   </style>
 </head>
@@ -116,27 +151,59 @@
   </footer>
 
   <script>
-    // Build gallery from manifest, with lazy-loading + lightbox
-    async function loadGallery(){
+    // Build gallery from manifest with lazy-loading & per-image spinner
+    async function loadGallery() {
       const container = document.getElementById('gallery');
-      try{
-        const res = await fetch('assets/samples/manifest.json');
-        if(!res.ok) throw new Error('manifest not found');
-        const data = await res.json();
-        if(!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
 
-        data.images.forEach(item=>{
+      // Create IntersectionObserver for lazy-loading
+      const observer = 'IntersectionObserver' in window
+        ? new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+              if (!entry.isIntersecting) return;
+              const img = entry.target;
+              const fig = img.closest('figure');
+              const src = img.dataset.src;
+              if (src && !img.src) {
+                img.src = src;
+              }
+              obs.unobserve(img);
+            });
+          }, { rootMargin: '200px 0px' })
+        : null;
+
+      try {
+        const res = await fetch('assets/samples/manifest.json');
+        if (!res.ok) throw new Error('manifest not found');
+        const data = await res.json();
+        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
+
+        data.images.forEach(item => {
           const fig = document.createElement('figure');
+          fig.classList.add('is-loading');   // show spinner
+
           const link = document.createElement('a');
           const img = document.createElement('img');
           const cap = document.createElement('figcaption');
 
-          link.href = 'assets/samples/' + item.src;
+          const fullSrc = 'assets/samples/' + item.src;
+
+          link.href = fullSrc;
           link.className = 'lb';
 
-          img.src = link.href;
-          img.loading = 'lazy';
+          // lazy-load: store real src in data-src, let IO set actual src
+          img.dataset.src = fullSrc;
           img.alt = item.caption || 'Sample image';
+
+          // when the image actually loads, remove spinner and fade in
+          img.addEventListener('load', () => {
+            fig.classList.remove('is-loading');
+            img.classList.add('loaded');
+          });
+
+          img.addEventListener('error', () => {
+            fig.classList.remove('is-loading');
+            img.classList.add('loaded');
+          });
 
           cap.textContent = item.caption || '';
 
@@ -144,39 +211,51 @@
           fig.appendChild(link);
           fig.appendChild(cap);
           container.appendChild(fig);
+
+          // Start observing for lazy-load
+          if (observer) {
+            observer.observe(img);
+          } else {
+            // Fallback: no IntersectionObserver, just load immediately
+            img.src = fullSrc;
+          }
         });
 
         // Lightbox behavior
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         const lbCap = document.getElementById('lightbox-cap');
+        const closeBtn = document.querySelector('.lightbox-close');
 
-        container.addEventListener('click', (e)=>{
+        container.addEventListener('click', (e) => {
           const a = e.target.closest('a.lb');
-          if(!a) return;
+          if (!a) return;
           e.preventDefault();
           lbImg.src = a.href;
           lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
           lb.classList.add('open');
-          lb.setAttribute('aria-hidden','false');
+          lb.setAttribute('aria-hidden', 'false');
           document.body.style.overflow = 'hidden';
         });
 
-        document.querySelector('.lightbox-close').addEventListener('click', ()=>{
+        closeBtn.addEventListener('click', () => {
           lb.classList.remove('open');
-          lb.setAttribute('aria-hidden','true');
+          lb.setAttribute('aria-hidden', 'true');
           lbImg.src = '';
           document.body.style.overflow = '';
         });
 
-        lb.addEventListener('click', (e)=>{
-          if(e.target === lb) document.querySelector('.lightbox-close').click();
+        lb.addEventListener('click', (e) => {
+          if (e.target === lb) closeBtn.click();
         });
 
-      }catch(e){
-        container.innerHTML = '<p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p>';
+      } catch (e) {
+        console.error(e);
+        container.innerHTML =
+          '<p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p>';
       }
     }
+
     loadGallery();
   </script>
 </body>
