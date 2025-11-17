@@ -1,10 +1,4 @@
 {
-  "virtualTour": {
-    "provider": "teliportme",
-    "url": "https://teliportme.com/embed/tour/0e7ac92b",
-    "width": 800,
-    "height": 480
-  },
   "panorama": {
     "title": "",
     "image": "assets/samples/IMG_20251112_214354_206.jpeg"
