@@ -1,22 +1,17 @@
 // virtual-tours.js
 
 (function () {
-  // Assumes virtual-tours.json is in the SAME folder as this HTML file
+  // JSON is in the same folder as this HTML file
   var configUrl = './virtual-tours.json';
 
-  var vtConfig = null;
   var panoConfig = null;
-
-  var virtualTourContainer = null;
   var panoContainer = null;
   var pannellumScriptLoaded = false;
 
   document.addEventListener('DOMContentLoaded', function () {
-    virtualTourContainer = document.getElementById('virtual-tour-embed');
-    panoContainer        = document.getElementById('panorama-viewer');
-
-    if (!virtualTourContainer || !panoContainer) {
-      console.error('Virtual tour or panorama container not found in DOM.');
+    panoContainer = document.getElementById('panorama-viewer');
+    if (!panoContainer) {
+      console.error('Panorama container not found in DOM.');
       return;
     }
 
@@ -28,17 +23,8 @@
         return res.json();
       })
       .then(function (data) {
-        vtConfig   = data.virtualTour || null;
         panoConfig = data.panorama || null;
 
-        // Load TeliportMe tour immediately
-        if (vtConfig) {
-          loadVirtualTour();
-        } else {
-          virtualTourContainer.innerHTML = '<p class="loading-text">No virtual tour configured.</p>';
-        }
-
-        // Setup lazy loading for the Pannellum pano
         if (panoConfig) {
           setupPanoramaLazyLoading();
         } else {
@@ -47,29 +33,10 @@
       })
       .catch(function (err) {
         console.error('Failed to load virtual-tours.json:', err);
-        virtualTourContainer.innerHTML = '<p class="loading-text">Error loading virtual tour.</p>';
         panoContainer.innerHTML = '<p class="loading-text">Error loading 360° view.</p>';
       });
   });
 
-  // ---------- Virtual Tour (TeliportMe) – immediate ----------
-  function loadVirtualTour() {
-    if (!vtConfig || !virtualTourContainer) return;
-    if (virtualTourContainer.getAttribute('data-loaded') === 'true') return;
-
-    virtualTourContainer.innerHTML = ''; // clear "Loading..." text
-
-    var script = document.createElement('script');
-    script.src = 'https://teliportme.com/js/embed.js';
-    script.setAttribute('data-teliportme', vtConfig.url);
-    script.setAttribute('data-height', String(vtConfig.height || 480));
-    script.setAttribute('data-width', String(vtConfig.width || 800));
-
-    virtualTourContainer.appendChild(script);
-    virtualTourContainer.setAttribute('data-loaded', 'true');
-  }
-
-  // ---------- Panorama (Pannellum) – lazy on scroll ----------
   function setupPanoramaLazyLoading() {
     if (!('IntersectionObserver' in window)) {
       loadPanorama();
