@@ -1,10 +1,13 @@
+
 {
-  "panorama": {
-    "title": "",
-    "image": "assets/samples/IMG_20251112_214354_206.jpeg"
-  },
-   "panorama": {
-    "title": "",
-    "image": "assets/samples/IMG_20251117_064413_790.jpeg"
-  }
+  "panoramas": [
+    {
+      "title": "",
+      "image": "assets/samples/IMG_20251112_214354_206.jpeg"
+    },
+    {
+      "title": "",
+      "image": "assets/samples/IMG_20251117_064413_790.jpeg"
+    }
+  ]
 }
