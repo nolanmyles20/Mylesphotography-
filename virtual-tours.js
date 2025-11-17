@@ -1,7 +1,6 @@
 // virtual-tours.js
 
 (function () {
-  // JSON is in the same folder as this HTML file
   var configUrl = './virtual-tours.json';
 
   var panoConfig = null;
@@ -23,10 +22,11 @@
         return res.json();
       })
       .then(function (data) {
+        console.log('virtual-tours.json loaded:', data);
         panoConfig = data.panorama || null;
 
-        if (panoConfig) {
-          setupPanoramaLazyLoading();
+        if (panoConfig && panoConfig.image) {
+          loadPanorama();
         } else {
           panoContainer.innerHTML = '<p class="loading-text">No 360° image configured.</p>';
         }
@@ -37,44 +37,25 @@
       });
   });
 
-  function setupPanoramaLazyLoading() {
-    if (!('IntersectionObserver' in window)) {
-      loadPanorama();
-      return;
-    }
-
-    var observer = new IntersectionObserver(function (entries, obs) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        if (entry.target === panoContainer) {
-          loadPanorama();
-          obs.unobserve(panoContainer);
-        }
-      });
-    }, {
-      threshold: 0.25
-    });
-
-    observer.observe(panoContainer);
-  }
-
   function loadPanorama() {
     if (!panoConfig || !panoContainer) return;
-    if (panoContainer.getAttribute('data-loaded') === 'true') return;
 
     loadPannellumScript(function () {
-      panoContainer.innerHTML = ''; // remove "Loading 360° view…"
+      panoContainer.innerHTML = ''; // remove "Loading..." text
 
-      pannellum.viewer('panorama-viewer', {
-        type: 'equirectangular',
-        panorama: panoConfig.image,
-        autoLoad: true,
-        showZoomCtrl: true,
-        compass: false,
-        title: panoConfig.title || ''
-      });
-
-      panoContainer.setAttribute('data-loaded', 'true');
+      try {
+        pannellum.viewer('panorama-viewer', {
+          type: 'equirectangular',
+          panorama: panoConfig.image,
+          autoLoad: true,
+          showZoomCtrl: true,
+          compass: false,
+          title: panoConfig.title || ''
+        });
+      } catch (e) {
+        console.error('Error creating Pannellum viewer:', e);
+        panoContainer.innerHTML = '<p class="loading-text">Unable to display 360° image.</p>';
+      }
     });
   }
 
@@ -94,6 +75,7 @@
     };
     script.onerror = function () {
       console.error('Failed to load Pannellum script.');
+      panoContainer.innerHTML = '<p class="loading-text">Error loading viewer script.</p>';
     };
 
     document.head.appendChild(script);
