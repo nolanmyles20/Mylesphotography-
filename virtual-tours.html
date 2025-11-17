@@ -8,11 +8,10 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Pannellum CSS (OK to load eagerly; JS will be lazy-loaded) -->
+  <!-- Pannellum CSS (JS is lazy-loaded) -->
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
 
-  <!-- Optional: simple SEO description -->
   <meta name="description"
         content="360° virtual tours and walkthroughs by Myles Photography LLC. Explore listings online with immersive, interactive tours.">
 </head>
@@ -55,19 +54,20 @@
       just like you’re really there.
     </p>
 
-    <!-- Virtual tour (TeliportMe or other) - loaded from JSON + lazy-loaded -->
-    <section id="virtual-tour-section" class="tour-section">
+    <!-- 1. Virtual tour (TeliportMe) - loads normally, NOT lazy -->
+    <section class="tour-section">
       <h2>Interactive Virtual Tour</h2>
       <div class="tour-wrapper">
-        <div id="virtual-tour-embed"
-             class="lazy-embed"
-             data-loaded="false">
-          <p class="loading-text">Loading virtual tour…</p>
-        </div>
+        <script
+          src="https://teliportme.com/js/embed.js"
+          data-teliportme="https://teliportme.com/embed/tour/0e7ac92b"
+          data-height="480"
+          data-width="800">
+        </script>
       </div>
     </section>
 
-    <!-- Single 360° image via Pannellum - loaded from JSON + lazy-loaded -->
+    <!-- 2. Single 360° image via Pannellum - lazy-loaded from JSON -->
     <section id="panorama-section" class="tour-section">
       <h2>360° Image View</h2>
       <div class="tour-wrapper">
@@ -96,7 +96,7 @@
     </p>
   </footer>
 
-  <!-- Page-specific logic -->
+  <!-- Page-specific logic for 360 pano -->
   <script src="virtual-tours.js" defer></script>
 </body>
 </html>
