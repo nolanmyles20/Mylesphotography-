@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Pannellum CSS (JS is lazy-loaded) -->
+  <!-- Pannellum CSS (JS is loaded via virtual-tours.js) -->
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
 
@@ -54,16 +54,13 @@
       just like you’re really there.
     </p>
 
-    <!-- 1. Virtual tour (TeliportMe) - loads normally, NOT lazy -->
+    <!-- 1. Virtual tour (TeliportMe) - loads immediately, URL from JSON -->
     <section class="tour-section">
       <h2>Interactive Virtual Tour</h2>
       <div class="tour-wrapper">
-        <script
-          src="https://teliportme.com/js/embed.js"
-          data-teliportme="https://teliportme.com/embed/tour/0e7ac92b"
-          data-height="480"
-          data-width="800">
-        </script>
+        <div id="virtual-tour-embed" class="vt-embed">
+          <p class="loading-text">Loading virtual tour…</p>
+        </div>
       </div>
     </section>
 
@@ -96,7 +93,7 @@
     </p>
   </footer>
 
-  <!-- Page-specific logic for 360 pano -->
+  <!-- Page-specific logic -->
   <script src="virtual-tours.js" defer></script>
 </body>
 </html>
