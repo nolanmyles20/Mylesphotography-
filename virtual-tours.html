@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Pannellum CSS (JS is loaded via virtual-tours.js) -->
+  <!-- Pannellum CSS -->
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
 
@@ -40,7 +40,7 @@
         <a href="contact.html" class="btn">Contact</a>
       </nav>
 
-      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
+      <a class="faa-badge" href="about.html#faa-cert">
         <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
       </a>
     </div>
@@ -48,53 +48,45 @@
 
   <main class="page">
     <h1>Virtual Tours</h1>
-    <p>
-      Explore immersive 360° virtual tours created by Myles Photography LLC.
-      Use your mouse or finger to look around the space, and navigate between rooms
-      just like you’re really there.
-    </p>
+    <p>Explore immersive 360° virtual tours created by Myles Photography LLC.</p>
 
-    <!-- 1. Virtual tour (TeliportMe) - original working embed -->
-    <section class="tour-section">
+    <!-- TeliportMe embed (original working version) -->
+    <section>
       <h2>Interactive Virtual Tour</h2>
-      <div class="tour-wrapper">
+      <div style="margin: 2rem auto; max-width: 960px; text-align: center;">
         <script
           src="https://teliportme.com/js/embed.js"
           data-teliportme="https://teliportme.com/embed/tour/0e7ac92b"
-          data-height="480"
-          data-width="800">
+          data-height="360"
+          data-width="640">
         </script>
       </div>
     </section>
 
-    <!-- 2. Single 360° image via Pannellum - config from JSON -->
-    <section id="panorama-section" class="tour-section">
+    <!-- 360° IMAGE -->
+    <section>
       <h2>360° Image View</h2>
-      <div class="tour-wrapper">
-        <div id="panorama-viewer" class="pano-viewer">
-          <p class="loading-text">Loading 360° view…</p>
+      <div style="margin: 2rem auto; max-width: 960px;">
+        <div id="panorama-viewer"
+             style="width: 100%; height: 480px; background:#111; border-radius:8px;">
+          <p class="loading-text" style="color:#ccc; text-align:center; padding-top:2rem;">
+            Loading 360° view…
+          </p>
         </div>
       </div>
     </section>
 
-    <div style="margin-top: 20px; text-align:center;">
-      <p style="color:#ccc; text-align:center; max-width:700px; margin: 0 auto;">
-        Want a virtual tour for your property or business?<br>
-        <a href="mailto:nmyles@mylesphotographyllc.com" style="color:#fff; text-decoration:underline;">
-          Contact us
-        </a>
-        to schedule a shoot.
-      </p>
-    </div>
+    <p style="text-align:center;">
+      Want a virtual tour for your property?<br>
+      <a href="mailto:nmyles@mylesphotographyllc.com" style="color:#00ccff;">Contact us</a>
+    </p>
+
   </main>
 
   <footer>
-    <p>© 2025 Myles Photography LLC •
-      <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
-    </p>
+    <p>© 2025 Myles Photography LLC</p>
   </footer>
 
-  <!-- Page-specific logic for 360 pano -->
   <script src="virtual-tours.js" defer></script>
 </body>
 </html>
