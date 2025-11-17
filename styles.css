@@ -741,3 +741,30 @@ body { animation: siteFade .6s ease both; }
   color:#fff;
   transform:none;
 }
+.tour-section {
+  margin: 2rem auto;
+  max-width: 960px;
+}
+
+.tour-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* 16:9 */
+  background: #111;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tour-wrapper iframe,
+.tour-wrapper .pnlm-container,
+.tour-wrapper .vt-embed,
+.tour-wrapper .lazy-embed {
+  position: absolute;
+  inset: 0;
+}
+
+.loading-text {
+  color: #ccc;
+  text-align: center;
+  padding-top: 2rem;
+  font-size: 0.9rem;
+}
