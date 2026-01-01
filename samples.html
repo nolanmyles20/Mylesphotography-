@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sample Images | Myles Photography LLC</title>
 
-  <!-- Global site styles -->
+  <!-- Your global site styles -->
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
   <!-- Swiper CSS for stacked deck -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-  <!-- Page-specific styles -->
+  <!-- Page-specific tweaks -->
   <style>
     /* Use same scrolling behavior as index */
     main.page {
@@ -21,21 +21,12 @@
       overscroll-behavior-y: contain;
     }
 
-    /* Don’t dim panels on this page via index “active” logic */
+    /* Make sure panels on this page aren’t dimmed by index “active” logic */
     body.page-samples .panel,
     body.page-samples .panel .content {
       opacity: 1 !important;
       transform: none !important;
       filter: none !important;
-    }
-
-    /* 🔥 Kill the full-screen flex layout JUST for these panels */
-    body.page-samples .panel-samples-intro,
-    body.page-samples .panel-more-video {
-      display: block !important;
-      min-height: auto !important;
-      align-items: stretch !important;
-      justify-content: flex-start !important;
     }
 
     /* Grey gradient card look for intro & outro */
@@ -45,32 +36,36 @@
       border-radius: 24px;
       width: min(92%, 900px);
       margin: 0 auto;
-      padding: 1.4rem 1.5rem 0.7rem !important; /* trimmed bottom */
+      padding: 1.8rem 1.5rem 2.1rem;
     }
 
     body.page-samples .panel-samples-intro h1 {
       margin-top: 0;
     }
 
-    /* -------- VIDEO WRAPPER (intro + bottom card) -------- */
-    body.page-samples .video-lazy {
-      width: 110%;
+    /* ---------- VIDEO WRAPPER (intro + bottom) ---------- */
+    .video-lazy {
+      position: relative;
+      width: 110%;          /* a little wider than the card */
+      margin: 1rem -5% 0.4rem;
       max-width: none;
-      margin: 0.9rem -5% 0.2rem; /* small bottom margin so card hugs it */
       background: #000;
       border-radius: 18px;
-      aspect-ratio: 18 / 7;      /* a bit taller than 21:9 */
       overflow: hidden;
-      position: relative;
     }
 
-    body.page-samples .video-lazy iframe {
+    /* fixed aspect ratio ~21:9 */
+    .video-lazy::before {
+      content: "";
+      display: block;
+      padding-bottom: 42%;  /* adjust up/down if you want taller/shorter */
+    }
+
+    .video-lazy iframe {
       position: absolute;
       inset: 0;
-      width: 120%;
-      height: 120%;
-      left: -10%;
-      top: -10%;
+      width: 100%;
+      height: 100%;
       border: 0;
     }
 
@@ -135,7 +130,7 @@
       opacity: 1;
     }
 
-    /* Panels snap nicely on this page */
+    /* Make panels snap nicely on this page */
     body.page-samples .panel {
       scroll-snap-align: center;
       padding: 1.8rem 0 2.6rem;
@@ -144,7 +139,7 @@
 </head>
 
 <body class="page-samples">
-  <!-- Global header -->
+  <!-- Global header that matches other pages -->
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
@@ -175,7 +170,7 @@
   </header>
 
   <main class="page">
-    <!-- Intro grey gradient card -->
+    <!-- Intro grey gradient card for Samples page -->
     <section class="panel panel-samples-intro">
       <div class="morph-bg">
         <h1>Sample Work</h1>
@@ -191,7 +186,7 @@
       </div>
     </section>
 
-    <!-- Outro card with more videos -->
+    <!-- Outro grey card with extra videos -->
     <section class="panel panel-more-video">
       <div class="morph-bg">
         <h2>More Video Samples</h2>
@@ -213,30 +208,26 @@
   <script>
     // Load images from manifest into stacked deck
     async function loadGallery() {
-      try {
-        const res = await fetch('assets/samples/manifest.json');
-        const data = await res.json();
-        const wrap = document.getElementById('gallery-wrapper');
+      const res = await fetch('assets/samples/manifest.json');
+      const data = await res.json();
+      const wrap = document.getElementById('gallery-wrapper');
 
-        if (!data.images || !Array.isArray(data.images)) return;
+      if (!data.images || !Array.isArray(data.images)) return;
 
-        data.images.forEach(item => {
-          const slide = document.createElement('div');
-          slide.className = 'swiper-slide';
-          slide.innerHTML = `
-            <figure>
-              <img src="assets/samples/${item.src}" alt="${item.caption || 'Sample image'}">
-              <figcaption>${item.caption || ''}</figcaption>
-            </figure>
-          `;
-          wrap.appendChild(slide);
-        });
-      } catch (e) {
-        console.error('Error loading manifest', e);
-      }
+      data.images.forEach(item => {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        slide.innerHTML = `
+          <figure>
+            <img src="assets/samples/${item.src}" alt="${item.caption || 'Sample image'}">
+            <figcaption>${item.caption || ''}</figcaption>
+          </figure>
+        `;
+        wrap.appendChild(slide);
+      });
     }
 
-    // Swap video placeholders for real iframes (keeping wrapper)
+    // Swap video placeholders for real iframes (keep wrapper so CSS works)
     function initLazyVideos() {
       const vids = document.querySelectorAll('.video-lazy');
       vids.forEach(div => {
@@ -251,8 +242,8 @@
         iframe.allow =
           'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
-        div.innerHTML = '';
-        div.appendChild(iframe);
+        div.innerHTML = "";      // clear placeholder
+        div.appendChild(iframe); // keep wrapper for aspect-ratio CSS
       });
     }
 
@@ -265,7 +256,7 @@
         centeredSlides: true,
         slidesPerView: 'auto',
         spaceBetween: -140,       // overlap for deck feel
-        freeMode: true,           // natural scroll / swipe
+        freeMode: true,           // allows natural scroll / swipe
         freeModeSticky: true,
         mousewheel: true,         // scroll wheel or swipe up/down shuffles
         grabCursor: true
