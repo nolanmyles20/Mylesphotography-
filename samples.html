@@ -36,7 +36,12 @@
       border-radius: 24px;
       width: min(92%, 900px);
       margin: 0 auto;
-      padding: 1.6rem 1.5rem 0.4rem; /* << smaller bottom padding = less dead space */
+      padding: 1.4rem 1.5rem 0.1rem !important; /* 🔥 almost no bottom padding */
+    }
+
+    /* also trim the panel’s own bottom padding a bit */
+    body.page-samples .panel-samples-intro {
+      padding-bottom: 1.4rem !important;
     }
 
     body.page-samples .panel-samples-intro h1 {
@@ -46,12 +51,12 @@
     /* -------- VIDEO WRAPPER (intro + bottom card) -------- */
     /* Scoped to page-samples so it overrides any global .video-lazy */
     body.page-samples .video-lazy {
-      width: 112%;              /* wider = visually bigger video */
+      width: 116%;              /* bigger, bleeds a bit past card edges */
       max-width: none;
-      margin: 1.1rem -6% 0;     /* negative side margin to keep centered */
+      margin: 1rem -8% 0;       /* negative side margin to keep centered */
       background: #000;
       border-radius: 18px;
-      aspect-ratio: 20 / 9;     /* a bit taller than ultra-wide */
+      aspect-ratio: 18 / 7;     /* slightly taller player */
       overflow: hidden;
       position: relative;
     }
