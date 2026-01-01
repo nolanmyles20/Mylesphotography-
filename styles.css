@@ -1168,3 +1168,67 @@ body:not(.page-samples) .panel.panel-reviews {
   margin-bottom: 6rem;   /* extra scroll room AFTER reviews */
   scroll-snap-align: start;  /* still a snap target */
 }
+/* =========================
+   SAMPLES PAGE: STACKED PHOTO DECK
+   ========================= */
+
+/* Base for gallery cards */
+body.page-samples .panel-gallery {
+  position: relative;
+  z-index: 1;
+  transition:
+    transform 260ms ease-out,
+    opacity 260ms ease-out,
+    filter 260ms ease-out;
+}
+
+/* Keep the peek/overlap effect between gallery panels */
+body.page-samples .panel-gallery {
+  min-height: 78vh;
+  padding: 1.25rem 1rem 3rem;
+  scroll-snap-align: start;
+}
+
+body.page-samples .panel-gallery + .panel-gallery {
+  margin-top: -5rem; /* adjust for more/less overlap */
+}
+
+/* Image/card itself */
+body.page-samples .gallery {
+  display: block;
+}
+body.page-samples .gallery figure {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 auto;
+  max-width: 94vw;
+}
+body.page-samples .gallery img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+}
+
+/* Deck states */
+body.page-samples .panel-gallery.card-top {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  z-index: 40;
+  filter: none;
+}
+
+body.page-samples .panel-gallery.card-behind {
+  transform: translateY(22px) scale(0.97);
+  opacity: 0.85;
+  z-index: 30;
+  filter: brightness(0.95);
+}
+
+body.page-samples .panel-gallery.card-past {
+  transform: translateY(-24px) scale(0.94);
+  opacity: 0.35;
+  z-index: 20;
+  filter: brightness(0.8);
+}
