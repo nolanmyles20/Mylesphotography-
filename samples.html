@@ -1,256 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sample Images | Myles Photography LLC</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sample Images | Myles Photography LLC</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Your global site styles -->
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" type="image/png" href="assets/favicon.png" />
+<style>
+  /****************************************
+   * PAGE SCROLL + PANEL SNAP BEHAVIOR
+   ****************************************/
+  main.page {
+    scroll-snap-type: y mandatory;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
 
-  <!-- Swiper CSS for stacked deck -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  .panel {
+    scroll-snap-align: center;
+    padding: 1rem 0 2.2rem;
+    position: relative;
+    transition: opacity .35s ease;
+  }
 
-  <!-- Page-specific tweaks -->
-  <style>
-    /* Use same scrolling behavior as index */
-    main.page {
-      scroll-snap-type: y mandatory;
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
-    }
+  .panel.active {
+    opacity: 1;
+  }
 
-    /* Make sure panels on this page aren’t dimmed by index “active” logic */
-    body.page-samples .panel,
-    body.page-samples .panel .content {
-      opacity: 1 !important;
-      transform: none !important;
-      filter: none !important;
-    }
+  /****************************************
+   * INTRO + MORE VIDEO PANELS — GREY CARD
+   ****************************************/
+  .panel-samples-intro .morph-bg,
+  .panel-more-video .morph-bg {
+    background: linear-gradient(135deg, #8b8b8b, #333333);
+    opacity: 1;
+    border-radius: 25px;
+    padding: 2rem;
+    max-width: 90%;
+    margin: 0 auto;
+  }
 
-    /* Grey gradient card look for intro & outro */
-    body.page-samples .panel-samples-intro .morph-bg,
-    body.page-samples .panel-more-video .morph-bg {
-      background: linear-gradient(135deg, #8b8b8b, #333333);
-      border-radius: 24px;
-      width: min(92%, 900px);
-      margin: 0 auto;
-      padding: 1.8rem 1.5rem 2.1rem;
-    }
+  .panel-samples-intro .content,
+  .panel-more-video .content {
+    max-width: 90%;
+    margin: 0 auto;
+  }
 
-    body.page-samples .panel-samples-intro h1 {
-      margin-top: 0;
-    }
+  /****************************************
+   * STACKED DECK — IMAGE GALLERY PANELS
+   ****************************************/
+  .panel-gallery {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+    pointer-events: none;
+  }
 
-    /* Video placeholder (we still lazy-replace with iframe) */
-    .video-lazy {
-      width: 100%;
-      margin: 1.2rem auto 0;
-      max-width: 100%;
-      background: #111;
-      border-radius: 18px;
-      aspect-ratio: 16 / 9;
-      overflow: hidden;
-    }
+  .panel-gallery .content {
+    pointer-events: auto;
+  }
 
-    /* -------- STACKED DECK GALLERY (Swiper) -------- */
+  .panel-gallery .gallery figure {
+    max-width: 80vw;
+    margin: 0 auto;
+    border-radius: 22px;
+    text-align: center;
+  }
 
-    .samples-swiper {
-      width: 100%;
-      padding: 3rem 0 4rem;
-      height: 440px; /* visible card zone */
-      touch-action: pan-y pan-x;
-    }
+  .panel-gallery .gallery img {
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    border-radius: 22px;
+    object-fit: contain;
+  }
 
-    .samples-swiper .swiper-wrapper {
-      align-items: center;
-    }
+  .panel-gallery .gallery figcaption {
+    font-size: 1.15rem;
+    margin-top: 0.4rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: white;
+  }
 
-    .samples-swiper .swiper-slide {
-      width: 82vw;
-      max-width: 460px;
-      background: #111;
-      border-radius: 20px;
-      opacity: 0.35;
-      transform: scale(0.92);
-      transition: transform 0.4s ease, opacity 0.4s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-    }
+  /* hover / active brightness */
+  .panel-gallery:not(.active) img {
+    filter: brightness(55%);
+  }
 
-    .samples-swiper .swiper-slide-active {
-      opacity: 1;
-      transform: scale(1);
-      z-index: 30;
-    }
+  /****************************************
+   * STACKED CARD EFFECT
+   ****************************************/
+  main.page {
+    perspective: 1100px;
+  }
 
-    .samples-swiper .swiper-slide-next,
-    .samples-swiper .swiper-slide-prev {
-      opacity: 0.65;
-    }
+  .panel-gallery {
+    transform-style: preserve-3d;
+    transform-origin: center bottom;
+    opacity: .8;
+    transform: translateY(60px) scale(.92) rotateX(-9deg);
+  }
 
-    .samples-swiper img {
-      width: 100%;
-      height: auto;
-      border-radius: 20px;
-      display: block;
-    }
+  .panel-gallery.active {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0);
+  }
 
-    .samples-swiper figcaption {
-      font-size: 1.15rem;
-      margin-top: 0.55rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: #ffffff;
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      text-align: center;
-    }
+  /****************************************
+   * ✨ FIX VIDEO ASPECT RATIO (ALL SAMPLE VIDEOS)
+   ****************************************/
+  .video-lazy,
+  .panel-samples-intro .video-lazy,
+  .panel-more-video .video-lazy {
+    width: 100%;
+    max-width: 90%;
+    margin: 1.3rem auto 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
 
-    .samples-swiper .swiper-slide-active figcaption {
-      opacity: 1;
-    }
+    /* Matches your images — prevents tall stretching */
+    aspect-ratio: 16 / 9;
+    background: #111; /* prevents white flash */
+  }
 
-    /* Make panels snap nicely on this page */
-    body.page-samples .panel {
-      scroll-snap-align: center;
-      padding: 1.8rem 0 2.6rem;
-    }
-  </style>
+  .video-lazy iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /****************************************
+   * LIGHTBOX
+   ****************************************/
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    display: none; place-items: center;
+    z-index: 9999; padding: 20px;
+  }
+  .lightbox.open { display: grid; }
+  .lightbox img {
+    max-width: 92vw; max-height: 88vh;
+    border-radius: 16px;
+  }
+  .lightbox-close {
+    position: absolute; top: 14px; right: 18px;
+    background: #111; color: #fff;
+    border: 1px solid #333;
+    border-radius: 10px;
+    font-size: 20px; line-height: 1;
+    padding: 8px 12px; cursor: pointer;
+  }
+</style>
 </head>
 
+
 <body class="page-samples">
-  <!-- ✅ Restored global header that matches other pages -->
-  <header>
-    <div class="container nav">
-      <a class="brand" href="index.html">
-        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
-        <span>Myles Photography LLC</span>
-      </a>
 
-      <div class="services-tag">
-        <span class="drone-wrap fly-in" aria-hidden="true">
-          <img src="assets/drone.png" alt="Drone icon" class="services-drone">
-        </span>
-        <span>Drone Services</span>
-      </div>
-
-      <nav class="navlinks">
-        <a href="samples.html" class="btn current">Sample Images</a>
-        <a href="virtual-tours.html" class="btn">Virtual Tours</a>
-        <a href="about.html" class="btn">About Us</a>
-        <a href="locations.html" class="btn">Locations</a>
-        <a href="payment.html" class="btn">Payment</a>
-        <a href="contact.html" class="btn">Contact</a>
-      </nav>
-
-      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
-        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
-      </a>
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+      <span>Myles Photography LLC</span>
+    </a>
+    <div class="services-tag">
+      <img src="assets/drone.png" class="services-drone" alt="Drone icon" />
+      <span>Drone Services</span>
     </div>
-  </header>
+    <nav class="navlinks">
+      <a href="samples.html" class="btn current">Sample Images</a>
+      <a href="virtual-tours.html" class="btn">Virtual Tours</a>
+      <a href="about.html" class="btn">About Us</a>
+      <a href="locations.html" class="btn">Locations</a>
+      <a href="payment.html" class="btn">Payment</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
+  </div>
+</header>
 
-  <main class="page">
-    <!-- Intro grey gradient card for Samples page -->
-    <section class="panel panel-samples-intro">
-      <div class="morph-bg">
+
+<!-- ====================== PAGE BODY ======================== -->
+<main class="page">
+
+  <section class="panel panel-samples-intro">
+    <div class="morph-bg">
+      <div class="content">
         <h1>Sample Work</h1>
-        <p>Premium waterfront, downtown commercial, and remote properties — we capture it all in high resolution.</p>
-        <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
-      </div>
-    </section>
+        <p>Premium waterfront, downtown commercial & remote — we capture it all.</p>
 
-    <!-- Stacked deck gallery -->
-    <section class="panel">
-      <div class="samples-swiper swiper">
-        <div class="swiper-wrapper" id="gallery-wrapper"></div>
-      </div>
-    </section>
+        <!-- Intro Sample Video -->
+        <div class="video-lazy" data-video-id="iVyg4wXB2MM"></div>
 
-    <!-- Outro grey card with extra videos -->
-    <section class="panel panel-more-video">
-      <div class="morph-bg">
+      </div>
+    </div>
+  </section>
+
+  <div id="gallery-panels-anchor"></div>
+
+  <section class="panel panel-more-video">
+    <div class="morph-bg">
+      <div class="content">
         <h2>More Video Samples</h2>
-        <div class="video-lazy" data-video-id="INyz0gTMGc4" data-autoplay="0"></div>
-        <div class="video-lazy" data-video-id="_XxktVZ8k-M" data-autoplay="0"></div>
+
+        <div class="video-lazy" data-video-id="INyz0gTMGc4"></div>
+        <div class="video-lazy" data-video-id="_XxktVZ8k-M"></div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
+</main>
 
-  <footer>
-    <p>© 2025 Myles Photography LLC •
-      <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
-    </p>
-  </footer>
 
-  <!-- Swiper JS -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox" aria-hidden="true">
+  <button class="lightbox-close">×</button>
+  <img id="lightbox-img" alt=""/>
+</div>
 
-  <script>
-    // Load images from manifest into stacked deck
-    async function loadGallery() {
-      const res = await fetch('assets/samples/manifest.json');
-      const data = await res.json();
-      const wrap = document.getElementById('gallery-wrapper');
 
-      if (!data.images || !Array.isArray(data.images)) return;
+<footer>
+  <p>© 2025 Myles Photography LLC •
+    <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+</footer>
 
-      data.images.forEach(item => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `
-          <figure>
-            <img src="assets/samples/${item.src}" alt="${item.caption || 'Sample image'}">
-            <figcaption>${item.caption || ''}</figcaption>
-          </figure>
-        `;
-        wrap.appendChild(slide);
-      });
-    }
 
-    // Swap video placeholders for real iframes
-    function initLazyVideos() {
-      const vids = document.querySelectorAll('.video-lazy');
-      vids.forEach(div => {
-        const id = div.dataset.videoId;
-        if (!id) return;
-        const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
+<!-- ====================== SCRIPTS ======================== -->
+<script>
+let panelObserver = null;
 
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-        iframe.allowFullscreen = true;
-        iframe.loading = 'lazy';
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+function setupPanelObserver() {
+  if (panelObserver) return;
+  panelObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+        entry.target.classList.add("active");
+      }
+    });
+  },{threshold:.45});
+}
 
-        div.replaceWith(iframe);
-      });
-    }
+async function loadGallery(){
+  const anchor = document.getElementById('gallery-panels-anchor');
+  try{
+    const res = await fetch('assets/samples/manifest.json');
+    const data = await res.json();
+    data.images.forEach(item=>{
+      const panel = document.createElement('section');
+      panel.className='panel panel-gallery';
+      const content=document.createElement('div');
+      content.className='content';
+      const wrap=document.createElement('div');
+      wrap.className='gallery';
+      const fig=document.createElement('figure');
+      const link=document.createElement('a');
+      link.className='lb';
+      const img=document.createElement('img');
+      img.src='assets/samples/'+item.src;
+      img.alt=item.caption||'Sample';
+      const cap=document.createElement('figcaption');
+      cap.textContent=item.caption||'';
+      link.appendChild(img);
+      fig.appendChild(link);
+      fig.appendChild(cap);
+      wrap.appendChild(fig);
+      content.appendChild(wrap);
+      panel.appendChild(content);
+      anchor.appendChild(panel);
+      setupPanelObserver();
+      panelObserver.observe(panel);
+    });
+  }catch(err){
+    console.log(err);
+  }
+}
 
-    async function init() {
-      await loadGallery();
+/* Lazy YouTube */
+function initLazyVideos(){
+  document.querySelectorAll('.video-lazy').forEach(div=>{
+    const id=div.dataset.videoId;
+    const iframe=document.createElement('iframe');
+    iframe.src=`https://www.youtube.com/embed/${id}?autoplay=0&mute=1`;
+    iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen=true;
+    iframe.loading="lazy";
+    div.appendChild(iframe);
+  });
+}
 
-      // Swiper stacked deck config
-      new Swiper('.samples-swiper', {
-        effect: 'slide',
-        centeredSlides: true,
-        slidesPerView: 'auto',
-        spaceBetween: -140,       // overlap for deck feel
-        freeMode: true,           // allows natural scroll / swipe
-        freeModeSticky: true,
-        mousewheel: true,         // scroll wheel or swipe up/down shuffles
-        grabCursor: true
-      });
+/* Lightbox */
+document.addEventListener('click',e=>{
+  const lb=document.getElementById('lightbox');
+  const imgElem=document.getElementById('lightbox-img');
+  const openLink=e.target.closest('a.lb');
+  if(openLink){
+    e.preventDefault();
+    imgElem.src=openLink.querySelector('img').src;
+    lb.classList.add('open');
+    return;
+  }
+  if(e.target.classList.contains('lightbox-close')||e.target===lb){
+    lb.classList.remove('open');
+    imgElem.src='';
+  }
+});
 
-      initLazyVideos();
-    }
+document.addEventListener('DOMContentLoaded', ()=>{
+  setupPanelObserver();
+  document.querySelectorAll('.panel').forEach(p=>panelObserver.observe(p));
+  loadGallery();
+  initLazyVideos();
+});
+</script>
 
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
 </body>
 </html>
