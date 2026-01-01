@@ -1068,3 +1068,36 @@ header {
   text-align: center;
   font-size: 0.9rem;
 }
+/* === FORCE PAGE BACKGROUND TO SOLID BLACK === */
+html, body {
+  background: #000 !important;
+}
+
+/* === MORPH CARD GRADIENT (medium grey → black) === */
+.panel,
+.morph-bg,
+section.reveal,
+section.morph-section {
+  background: radial-gradient(circle at 20% -10%, #d3d3d3, #000000 65%) !important;
+}
+
+/* === SAMPLE GALLERY: REMOVE GRADIENT + TIGHTEN SPACING === */
+.page {
+  background: #000 !important;
+}
+
+.gallery figure {
+  margin: 1rem auto !important;   /* closer spacing */
+  max-width: 92vw !important;     /* wider but still fitting */
+}
+
+.gallery figure img {
+  border-radius: 20px;            /* matches morph style */
+  display: block;
+}
+
+/* make the next sample slightly visible so users know more exist */
+.gallery figure:not(:last-child) {
+  margin-bottom: -0.5rem !important;
+  padding-bottom: 2rem;
+}
