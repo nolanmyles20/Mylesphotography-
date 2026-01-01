@@ -1125,7 +1125,7 @@ body.page-samples .panel-gallery {
 
 /* Overlap panels so you can see part of the next card */
 body.page-samples .panel-gallery + .panel-gallery {
-  margin-top: -5rem;           /* adjust this for more/less overlap */
+  margin-top: -8rem;           /* adjust this for more/less overlap */
 }
 
 /* Tighten the image/card itself */
