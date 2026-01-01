@@ -166,7 +166,34 @@
   <script>
     let panelObserver = null;
 
-    /* --- MARK MOST VISIBLE PANEL ACTIVE (fixes faded-on-scroll-back-up) --- */
+    /* --- Assign deck classes based on which gallery panel is active --- */
+    function updateGalleryStack(activePanel) {
+      const cards = Array.from(document.querySelectorAll('.panel-gallery'));
+      // Clear deck classes first
+      cards.forEach(card => {
+        card.classList.remove('card-top', 'card-behind', 'card-past');
+      });
+
+      // Only apply deck state if the active thing is a gallery card
+      if (!activePanel || !activePanel.classList || !activePanel.classList.contains('panel-gallery')) {
+        return;
+      }
+
+      const idx = cards.indexOf(activePanel);
+      if (idx === -1) return;
+
+      cards.forEach((card, i) => {
+        if (i === idx) {
+          card.classList.add('card-top');
+        } else if (i > idx) {
+          card.classList.add('card-behind');
+        } else {
+          card.classList.add('card-past');
+        }
+      });
+    }
+
+    /* --- MARK MOST VISIBLE PANEL ACTIVE --- */
     function setupPanelObserver() {
       if (panelObserver) return;
 
@@ -181,6 +208,9 @@
 
         document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
         mostVisible.target.classList.add("active");
+
+        // Update the deck classes for gallery cards
+        updateGalleryStack(mostVisible.target);
       }, {
         threshold: [0.1, 0.3, 0.6]
       });
