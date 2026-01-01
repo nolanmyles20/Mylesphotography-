@@ -986,3 +986,8 @@ header {
   text-align: center;
   font-size: 0.9rem;
 }
+/* === Allow scrolling past the last panel (no snap on last) === */
+.page > .panel:last-of-type {
+  scroll-snap-align: none !important;
+  padding-bottom: 40vh; /* gives room to reach footer */
+}
