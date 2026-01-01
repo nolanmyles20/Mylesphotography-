@@ -1300,3 +1300,18 @@ body.page-samples .panel-gallery.card-past {
   z-index: 20;
   filter: brightness(0.8);
 }
+/* === Tighter stacked deck spacing for gallery cards === */
+body.page-samples .panel-gallery {
+  min-height: auto;              /* don't force full screen height */
+  padding: 2.2rem 0 2.8rem;      /* a bit of top/bottom breathing room */
+}
+
+/* Make the next photo card visibly peek into view */
+body.page-samples .panel-gallery + .panel-gallery {
+  margin-top: -9rem;             /* increase overlap (tweak as you like) */
+}
+
+/* Give the last gallery card some room above the "More Video" panel */
+body.page-samples .panel-gallery:last-of-type {
+  margin-bottom: 3.5rem;
+}
