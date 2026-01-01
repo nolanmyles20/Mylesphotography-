@@ -1154,3 +1154,17 @@ body.page-samples .gallery img {
   display: block;
   border-radius: 18px;
 }
+/* ===== Allow extra scrolling on the Reviews panel (index page) ===== */
+
+/* Give the scroll container some breathing room at the bottom */
+body:not(.page-samples) .page {
+  scroll-padding-bottom: 6rem;
+}
+
+/* Make the Reviews panel a bit shorter and add space below it */
+body:not(.page-samples) .panel.panel-reviews {
+  min-height: 78vh;      /* shorter than the viewport/snap area */
+  padding-bottom: 4rem;  /* space inside for cards & text */
+  margin-bottom: 6rem;   /* extra scroll room AFTER reviews */
+  scroll-snap-align: start;  /* still a snap target */
+}
