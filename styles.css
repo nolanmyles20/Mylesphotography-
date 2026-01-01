@@ -1029,3 +1029,26 @@ body.footer-visible .home-footer {
 body.footer-visible .page {
   padding-bottom: 3.5rem;
 }
+/* =========================
+   STRONGER SNAP + MORPH ON INDEX ONLY
+   ========================= */
+
+/* Hard snap on index (Samples page still uses its own proximity rule) */
+body:not(.page-samples) .page {
+  scroll-snap-type: y mandatory;
+}
+
+/* Base state: non-active panels are dim and slightly pushed back */
+body:not(.page-samples) .panel {
+  opacity: 0.2;
+  transform: translateY(40px) scale(0.96);
+  transition:
+    opacity 320ms ease-out,
+    transform 320ms ease-out;
+}
+
+/* Active panel: bright and fully in place */
+body:not(.page-samples) .panel.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
