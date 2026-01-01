@@ -10,7 +10,7 @@
 
   <!-- PAGE-SPECIFIC STYLES -->
   <style>
-    /* Same snap feel as index */
+    /* Use same snap feel as index */
     main.page {
       scroll-snap-type: y proximity;
     }
@@ -119,14 +119,17 @@
        STACKED PHOTO DECK
        ----------------------- */
 
-    /* Base for each gallery panel/card */
+    /* Each gallery panel behaves like a full-screen slide */
     body.page-samples .panel-gallery {
       position: relative;
-      margin: 0 auto;
-      max-width: 100%;
-      min-height: 70vh;
-      padding: 1.5rem 1rem 3rem;
-      scroll-snap-align: start;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      max-width: 100% !important;
+      min-height: 100vh !important;      /* full viewport */
+      padding: 0 1rem 8vh !important;
+      margin: 0 auto !important;
+      scroll-snap-align: center;
       transition:
         transform 260ms ease-out,
         opacity 260ms ease-out,
@@ -134,14 +137,14 @@
       z-index: 1;
     }
 
-    /* Overlap so next photo peeks up from under the current one */
+    /* Big negative margin so cards overlap like a deck */
     body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -5rem; /* increase magnitude for more overlap */
+      margin-top: -40vh !important;  /* increase for more overlap */
     }
 
     /* Card / image styling */
     body.page-samples .gallery {
-      display: block;
+      width: 100%;
     }
     body.page-samples .gallery figure {
       background: none !important;
@@ -163,28 +166,29 @@
       letter-spacing: 0.06em;
     }
 
-    /* Top card (the one nearest the center of the screen) */
+    /* Bright top card */
     body.page-samples .panel-gallery.card-top {
       transform: translateY(0) scale(1);
       opacity: 1;
       z-index: 40;
-      filter: none;
+      filter: brightness(1) contrast(1.02);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.7);
     }
 
-    /* Cards still ahead in the stack */
+    /* Cards still ahead in the deck (beneath current) */
     body.page-samples .panel-gallery.card-behind {
-      transform: translateY(22px) scale(0.97);
-      opacity: 0.88;
+      transform: translateY(50px) scale(0.92);
+      opacity: 0.75;
       z-index: 30;
-      filter: brightness(0.97);
+      filter: brightness(0.85);
     }
 
-    /* Cards you’ve already peeled past */
+    /* Cards you already scrolled past (above current) */
     body.page-samples .panel-gallery.card-past {
-      transform: translateY(-24px) scale(0.94);
+      transform: translateY(-50px) scale(0.9);
       opacity: 0.35;
       z-index: 20;
-      filter: brightness(0.82);
+      filter: brightness(0.75);
     }
   </style>
 </head>
@@ -375,7 +379,7 @@
       });
     }
 
-    /* STACKED PHOTO DECK: choose card nearest middle of screen */
+    /* STACKED PHOTO DECK: card nearest middle of screen is "top" */
     function initDeckScroll() {
       const cards = Array.from(document.querySelectorAll('.panel-gallery'));
       if (!cards.length) return;
@@ -423,7 +427,7 @@
       }
 
       window.addEventListener('scroll', onScroll, { passive: true });
-      applyDeckClasses(); // initial state
+      applyDeckClasses();
     }
 
     /* Lazy YouTube videos */
