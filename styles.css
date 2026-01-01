@@ -1082,3 +1082,34 @@ body:not(.page-samples) .page > .panel:last-of-type {
   padding-bottom: 4rem;          /* extra breathing room inside */
   scroll-snap-align: start !important; /* still a real snap target */
 }
+/* =========================
+   STRONGER SNAP ON SAMPLES PAGE
+   ========================= */
+
+/* Make samples scroll container snap hard like index */
+body.page-samples .page {
+  scroll-snap-type: y mandatory;   /* was proximity */
+  scroll-padding-top: 1px;
+  scroll-padding-bottom: 6rem;     /* small extra space after last image */
+}
+
+/* Each gallery image panel should snap exactly to top */
+body.page-samples .panel-gallery {
+  scroll-snap-align: start;
+  min-height: 85vh;   /* slightly shorter so they pass quicker */
+  padding-bottom: 3rem;
+}
+
+/* Add morph-like fade + scale (optional to match index feel) */
+body.page-samples .panel-gallery {
+  opacity: 0.45;
+  transform: translateY(40px) scale(0.96);
+  transition:
+    opacity 300ms ease-out,
+    transform 300ms ease-out;
+}
+
+body.page-samples .panel-gallery.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
