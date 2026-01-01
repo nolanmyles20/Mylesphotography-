@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sample Images | Myles Photography LLC</title>
 
-  <!-- Your global site styles -->
+  <!-- Global site styles -->
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
   <!-- Swiper CSS for stacked deck -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-  <!-- Page-specific tweaks -->
+  <!-- Page-specific styles -->
   <style>
     /* Use same scrolling behavior as index */
     main.page {
@@ -21,7 +21,7 @@
       overscroll-behavior-y: contain;
     }
 
-    /* Make sure panels on this page aren’t dimmed by index “active” logic */
+    /* Don’t dim panels on this page via index “active” logic */
     body.page-samples .panel,
     body.page-samples .panel .content {
       opacity: 1 !important;
@@ -36,31 +36,32 @@
       border-radius: 24px;
       width: min(92%, 900px);
       margin: 0 auto;
-      padding: 1.8rem 1.5rem 2.1rem;
+      padding: 1.6rem 1.5rem 0.9rem; /* tighter bottom padding */
     }
 
     body.page-samples .panel-samples-intro h1 {
       margin-top: 0;
     }
 
-    /* ---------- CROPPED VIDEO WRAPPER (removes black bars) ---------- */
+    /* -------- VIDEO WRAPPER (intro + bottom card) -------- */
     .video-lazy {
-      width: 100%;
-      max-width: 100%;
-      margin: 1.2rem auto 0;
+      width: 106%;               /* slightly past card edges */
+      max-width: none;
+      margin: 1.1rem -3% 0;      /* negative side margin to stay centered */
       background: #000;
       border-radius: 18px;
-      aspect-ratio: 21 / 9;      /* cinematic window */
-      overflow: hidden;          /* clip the iframe inside */
+      aspect-ratio: 20 / 9;      /* a little taller than 21:9 */
+      overflow: hidden;
       position: relative;
     }
 
     .video-lazy iframe {
       position: absolute;
       inset: 0;
-      width: 120%;               /* zoom in to push letterbox out */
+      width: 120%;
       height: 120%;
-      margin: -10% 0 0 -10%;     /* keep it centered after zoom */
+      left: -10%;
+      top: -10%;
       border: 0;
     }
 
@@ -125,7 +126,7 @@
       opacity: 1;
     }
 
-    /* Make panels snap nicely on this page */
+    /* Panels snap nicely on this page */
     body.page-samples .panel {
       scroll-snap-align: center;
       padding: 1.8rem 0 2.6rem;
@@ -134,7 +135,7 @@
 </head>
 
 <body class="page-samples">
-  <!-- Global header that matches other pages -->
+  <!-- Global header -->
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
@@ -165,7 +166,7 @@
   </header>
 
   <main class="page">
-    <!-- Intro grey gradient card for Samples page -->
+    <!-- Intro grey gradient card -->
     <section class="panel panel-samples-intro">
       <div class="morph-bg">
         <h1>Sample Work</h1>
@@ -181,7 +182,7 @@
       </div>
     </section>
 
-    <!-- Outro grey card with extra videos -->
+    <!-- Outro card with more videos -->
     <section class="panel panel-more-video">
       <div class="morph-bg">
         <h2>More Video Samples</h2>
@@ -203,33 +204,35 @@
   <script>
     // Load images from manifest into stacked deck
     async function loadGallery() {
-      const res = await fetch('assets/samples/manifest.json');
-      const data = await res.json();
-      const wrap = document.getElementById('gallery-wrapper');
+      try {
+        const res = await fetch('assets/samples/manifest.json');
+        const data = await res.json();
+        const wrap = document.getElementById('gallery-wrapper');
 
-      if (!data.images || !Array.isArray(data.images)) return;
+        if (!data.images || !Array.isArray(data.images)) return;
 
-      data.images.forEach(item => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `
-          <figure>
-            <img src="assets/samples/${item.src}" alt="${item.caption || 'Sample image'}">
-            <figcaption>${item.caption || ''}</figcaption>
-          </figure>
-        `;
-        wrap.appendChild(slide);
-      });
+        data.images.forEach(item => {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          slide.innerHTML = `
+            <figure>
+              <img src="assets/samples/${item.src}" alt="${item.caption || 'Sample image'}">
+              <figcaption>${item.caption || ''}</figcaption>
+            </figure>
+          `;
+          wrap.appendChild(slide);
+        });
+      } catch (e) {
+        console.error('Error loading manifest', e);
+      }
     }
 
-    // Insert iframes *inside* the .video-lazy wrapper so it can crop them
+    // Swap video placeholders for real iframes (keeping wrapper)
     function initLazyVideos() {
       const vids = document.querySelectorAll('.video-lazy');
-
       vids.forEach(div => {
         const id = div.dataset.videoId;
         if (!id) return;
-
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
 
         const iframe = document.createElement('iframe');
@@ -238,7 +241,7 @@
         iframe.loading = 'lazy';
         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
-        // Clear any placeholder spinner (if you add one later) and insert iframe
+        // clear any placeholder content and insert iframe into wrapper
         div.innerHTML = '';
         div.appendChild(iframe);
       });
@@ -253,7 +256,7 @@
         centeredSlides: true,
         slidesPerView: 'auto',
         spaceBetween: -140,       // overlap for deck feel
-        freeMode: true,           // allows natural scroll / swipe
+        freeMode: true,           // natural scroll / swipe
         freeModeSticky: true,
         mousewheel: true,         // scroll wheel or swipe up/down shuffles
         grabCursor: true
