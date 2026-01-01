@@ -883,7 +883,7 @@ body {
 .panel-reviews.active .morph-bg {
   inset: 8%;
   border-radius: 2.5rem;
-  background: radial-gradient(circle at 0% 50%, #ffd633, #05070b 55%);
+  background: radial-gradient(circle at 20% -10%, #e6e6e6, #b3b3b3 60%);
 }
 
 /* Keep header above panels if it has a background */
