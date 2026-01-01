@@ -9,16 +9,15 @@
 
   <!-- PAGE-SPECIFIC STYLES -->
   <style>
-    /* Use scroll snap like index, but we’ll still let you scroll normally */
+    /* Scroll snapping similar to index */
     main.page {
-      scroll-snap-type: y proximity;
+      scroll-snap-type: y mandatory;
       overflow-y: auto;
       overscroll-behavior-y: contain;
     }
-
     body.page-samples .panel {
       scroll-snap-align: center;
-      padding: 1.2rem 0 2.4rem;
+      padding: 1.6rem 0 2.6rem;
     }
 
     /* Intro + More Video panels keep the grey morph card */
@@ -33,29 +32,30 @@
       margin: 0 auto;
     }
 
-    /* ---------- DECK-LIKE GALLERY PANELS (simple, reliable) ---------- */
+    /* ---------- DECK STYLE GALLERY ---------- */
 
+    /* Each gallery panel reacts to --deckProgress (0 far, 1 centered) */
     body.page-samples .panel-gallery {
+      --deckProgress: 0;
+
       display: flex !important;
       justify-content: center;
       align-items: center;
       padding: 0.8rem 0 2.8rem;
       transition: transform 0.25s ease, opacity 0.25s ease;
-      opacity: 0.75;
-      transform: translateY(2vh);
+
+      opacity: calc(0.45 + var(--deckProgress) * 0.55);
+      transform:
+        translateY(calc((1 - var(--deckProgress)) * 14px))
+        scale(calc(0.94 + var(--deckProgress) * 0.06));
     }
 
-    /* The “active” one (in center) feels more in-hand */
-    body.page-samples .panel-gallery.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Overlap panels so next image clearly peeks behind */
+    /* Overlap so the next card peeks from behind */
     body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -6.5rem; /* tweak this for more or less overlap */
+      margin-top: -6.5rem;
     }
 
+    /* ---------- IMAGE SIZING ---------- */
     body.page-samples .gallery {
       width: 100%;
       display: flex;
@@ -64,7 +64,7 @@
 
     body.page-samples .gallery figure {
       margin: 0 auto;
-      max-width: 80vw !important;
+      max-width: 80vw !important;  /* narrower card */
       border: none !important;
       background: transparent !important;
       text-align: center;
@@ -81,9 +81,9 @@
     }
 
     body.page-samples .gallery figcaption {
-      margin-top: .7rem;
+      margin-top: 0.7rem;
       font-size: 1.1rem;
-      letter-spacing: .04em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       color: #e4e4e4;
     }
@@ -92,27 +92,35 @@
     body.page-samples .gallery figure.is-loading::after {
       content: "";
       position: absolute;
-      top: 50%; left: 50%;
-      width: 32px; height: 32px;
-      margin:-16px 0 0 -16px;
+      top: 50%;
+      left: 50%;
+      width: 32px;
+      height: 32px;
+      margin: -16px 0 0 -16px;
       border-radius: 50%;
       border: 3px solid rgba(255,255,255,0.25);
-      border-top-color:#fff;
-      animation: gallerySpin .9s linear infinite;
-      pointer-events:none;
+      border-top-color: #fff;
+      animation: gallerySpin 0.9s linear infinite;
+      pointer-events: none;
     }
-    @keyframes gallerySpin { to { transform: rotate(360deg); } }
+    @keyframes gallerySpin {
+      to { transform: rotate(360deg); }
+    }
 
     /* ---------- Lightbox ---------- */
     .lightbox {
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background: rgba(0,0,0,.85);
-      display: none; place-items: center;
-      z-index: 9999; padding: 20px;
+      display: none;
+      place-items: center;
+      z-index: 9999;
+      padding: 20px;
     }
     .lightbox.open { display: grid; }
     .lightbox img {
-      max-width: 92vw; max-height: 88vh;
+      max-width: 92vw;
+      max-height: 88vh;
       border-radius: 16px;
     }
     .lightbox-cap {
@@ -122,12 +130,17 @@
       max-width: 90vw;
     }
     .lightbox-close {
-      position: absolute; top: 14px; right: 18px;
-      background: #111; color: #fff;
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: #111;
+      color: #fff;
       border: 1px solid #333;
       border-radius: 10px;
-      font-size: 20px; line-height: 1;
-      padding: 8px 12px; cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      padding: 8px 12px;
+      cursor: pointer;
     }
 
     /* ---------- Video placeholder (lazy load) ---------- */
@@ -143,15 +156,19 @@
     .video-lazy::after {
       content: "";
       position: absolute;
-      top: 50%; left: 50%;
-      width: 34px; height: 34px;
-      margin:-17px 0 0 -17px;
+      top: 50%;
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      margin: -17px 0 0 -17px;
       border-radius: 50%;
       border: 3px solid rgba(255,255,255,0.25);
-      border-top-color:#fff;
-      animation: videoSpin .8s linear infinite;
+      border-top-color: #fff;
+      animation: videoSpin 0.8s linear infinite;
     }
-    @keyframes videoSpin { to { transform: rotate(360deg); } }
+    @keyframes videoSpin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 
@@ -230,6 +247,38 @@
       }, { threshold: 0.35 });
     }
 
+    /* NEW: deck-style fade/scale based on distance from screen center */
+    let deckEffectsAttached = false;
+    function initDeckEffects() {
+      if (deckEffectsAttached) return;
+
+      const scroller = document.querySelector('main.page') || window;
+      if (!scroller) return;
+
+      const update = () => {
+        const vh = window.innerHeight || scroller.clientHeight || 1;
+        const center = vh / 2;
+
+        document.querySelectorAll('.panel-gallery').forEach(p => {
+          const rect = p.getBoundingClientRect();
+          const cardCenter = rect.top + rect.height / 2;
+          const dist = Math.abs(cardCenter - center);
+
+          // 0 when centered, approaching 1 as it gets farther away
+          const norm = Math.min(1, dist / (vh * 0.7));
+          const progress = 1 - norm; // 1 = centered, 0 = far
+
+          p.style.setProperty('--deckProgress', progress.toFixed(3));
+        });
+      };
+
+      const target = scroller === window ? window : scroller;
+      target.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      deckEffectsAttached = true;
+      update();
+    }
+
     async function loadGallery() {
       const anchor = document.getElementById('gallery-panels-anchor');
 
@@ -294,6 +343,9 @@
           setupPanelObserver();
           panelObserver.observe(panel);
         });
+
+        // after all panels are added, enable deck animation
+        initDeckEffects();
 
       } catch (e) {
         console.error(e);
@@ -364,7 +416,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       setupPanelObserver();
-      // observe the static panels too so intro/more-video get "active"
+      // observe the static panels so intro/more-video get "active"
       document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
       loadGallery();
       initLazyVideos();
