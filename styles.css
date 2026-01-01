@@ -1113,3 +1113,44 @@ body.page-samples .panel-gallery.active {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+/* === SAMPLES PAGE: stacked cards with visible next panel === */
+
+/* Make each gallery panel shorter so the next one can peek in */
+body.page-samples .panel-gallery {
+  background: transparent;
+  min-height: 78vh;            /* shorter than viewport */
+  padding: 1.25rem 1rem 3rem;  /* extra bottom so card doesn't feel cut off */
+  scroll-snap-align: start;
+}
+
+/* Overlap panels so you can see part of the next card */
+body.page-samples .panel-gallery + .panel-gallery {
+  margin-top: -5rem;           /* adjust this for more/less overlap */
+}
+
+/* Tighten the image/card itself */
+body.page-samples .gallery {
+  display: block;
+}
+
+body.page-samples .gallery figure {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 auto;
+  max-width: 94vw;
+}
+
+/* Slight hint of "more below" inside each panel */
+body.page-samples .gallery figure:not(:last-child) {
+  margin-bottom: -0.5rem;
+  padding-bottom: 1.8rem;
+}
+
+/* Image styling */
+body.page-samples .gallery img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+}
