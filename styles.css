@@ -1101,3 +1101,53 @@ section.morph-section {
   margin-bottom: -0.5rem !important;
   padding-bottom: 2rem;
 }
+/* === GLOBAL BACKGROUND === */
+html, body {
+  background: #000 !important;
+}
+
+/* === SECTION BACKGROUND SHOULD BE BLACK (no gradient here) === */
+section.reveal,
+section.morph-section,
+main,
+.page {
+  background: #000 !important;
+}
+
+/* === MORPH CARD / PANEL GRADIENT (grey → black) === */
+.morph-bg,
+.panel,
+section.reveal > div,
+section.morph-section > div,
+.intro.morph-bg {
+  background: radial-gradient(circle at 20% -10%, #c2c2c2, #000 70%) !important;
+  border-radius: 32px;
+  padding: 2rem;
+  margin: 1.6rem auto;
+  max-width: 900px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+/* === TOP CORNERS MUST ALWAYS BE ROUNDED === */
+.morph-bg:first-child,
+.panel:first-child {
+  border-top-left-radius: 48px;
+  border-top-right-radius: 48px;
+}
+
+/* ==== OPTIONAL: TIGHTEN SPACING BETWEEN MULTIPLE CARDS === */
+section.reveal + section.reveal {
+  margin-top: -1rem;
+}
+
+/* === SAMPLE IMAGES: KEEP BLACK BACKGROUND & CLOSE SPACING === */
+.gallery figure {
+  background: none !important;
+  margin: 0.6rem auto !important;
+  max-width: 94vw;
+}
+
+.gallery figure:not(:last-child) {
+  margin-bottom: -0.5rem !important;
+  padding-bottom: 1.8rem;
+}
