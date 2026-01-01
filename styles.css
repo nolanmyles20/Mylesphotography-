@@ -1028,3 +1028,43 @@ header {
   background: linear-gradient(#00000010, #00000030);
   z-index: -1;
 }
+/* ============================================
+   SAMPLES PAGE OVERRIDES (page-samples body)
+   ============================================ */
+
+/* Kill gradients for gallery panels on Samples page */
+.page-samples .panel-gallery {
+  background: none !important;
+  background-color: transparent !important;
+}
+
+/* Also make sure any morph-bg can't leak in here */
+.page-samples .panel-gallery .morph-bg {
+  display: none !important;
+}
+
+/* Tight stacked layout so the next image is clearly visible */
+.page-samples .panel-gallery {
+  min-height: 65vh;        /* shorter than viewport */
+  padding: 1.25rem 1rem;   /* tighter padding */
+}
+
+/* Strong overlap between image panels */
+.page-samples .panel-gallery + .panel-gallery {
+  margin-top: -6rem;       /* more negative = more overlap/peek */
+}
+
+/* Ensure gallery image fills nicely */
+.page-samples .panel-gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+}
+
+/* Caption styling inside stacked cards */
+.page-samples .panel-gallery figcaption {
+  margin-top: 0.6rem;
+  color: #ddd;
+  text-align: center;
+  font-size: 0.9rem;
+}
