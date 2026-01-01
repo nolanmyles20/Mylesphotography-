@@ -7,14 +7,13 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- PAGE-SPECIFIC SNAP BEHAVIOR -->
+  <!-- PAGE-SPECIFIC snap + gallery/lightbox styles -->
   <style>
-    /* Make scrolling less strict on this page so next panel peeks */
-    main.page { scroll-snap-type: y proximity; }
-  </style>
+    /* Softer scroll snap on this page so next panel can peek */
+    main.page {
+      scroll-snap-type: y proximity;
+    }
 
-  <!-- GALLERY/VIDEO LOADING + LIGHTBOX -->
-  <style>
     /* Lightbox */
     .lightbox {
       position: fixed; inset: 0;
@@ -83,7 +82,7 @@
     }
     @keyframes videoSpin { to { transform: rotate(360deg); } }
 
-    /* Page-specific sizing overrides */
+    /* Intro content width */
     .panel-samples-intro .content {
       max-width: 88%;
       margin: 0 auto;
@@ -91,7 +90,7 @@
   </style>
 </head>
 
-<body>
+<body class="page-samples">
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
@@ -121,7 +120,7 @@
   <!-- SNAPPING CONTAINER -->
   <main class="page">
 
-    <!-- PANEL 1 ─ Intro + Featured Video -->
+    <!-- PANEL 1: Intro + Featured Video -->
     <section class="panel panel-samples-intro">
       <div class="morph-bg"></div>
       <div class="content">
@@ -134,10 +133,10 @@
       </div>
     </section>
 
-    <!-- GALLERY IMAGES WILL BE INSERTED HERE AS PANEL PER IMAGE -->
+    <!-- GALLERY PANELS INSERT HERE -->
     <div id="gallery-panels-anchor"></div>
 
-    <!-- PANEL 3 ─ More videos -->
+    <!-- PANEL 3: More Videos -->
     <section class="panel panel-more-video">
       <div class="morph-bg"></div>
       <div class="content">
@@ -164,7 +163,6 @@
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
   </footer>
 
-  <!-- BUILD GALLERY + PANELIZE IMAGES -->
   <script>
     let panelObserver = null;
 
@@ -199,12 +197,13 @@
         const res = await fetch('assets/samples/manifest.json');
         if (!res.ok) throw new Error('manifest not found');
         const data = await res.json();
+        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
 
         data.images.forEach(item => {
           const panel = document.createElement('section');
           panel.className = 'panel panel-gallery';
 
-          // *** NO morph-bg for gallery images — spacing only handled via CSS in styles.css ***
+          // NOTE: no morph-bg for gallery panels – just content
           const content = document.createElement('div');
           content.className = 'content';
 
@@ -281,6 +280,7 @@
         });
 
       } catch (e) {
+        console.error(e);
         anchor.innerHTML =
           '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
         setupPanelObserver();
@@ -288,14 +288,15 @@
       }
     }
 
-    // Lazy-load videos
     function initLazyVideos() {
       const videos = document.querySelectorAll('.video-lazy');
       if (!videos.length) return;
 
       function loadIframe(div) {
         const id = div.dataset.videoId;
+        if (!id) return;
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
+
         const iframe = document.createElement('iframe');
         iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
         iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
@@ -316,7 +317,9 @@
         }, { rootMargin: '300px 0px' });
 
         videos.forEach(div => observer.observe(div));
-      } else videos.forEach(loadIframe);
+      } else {
+        videos.forEach(loadIframe);
+      }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
