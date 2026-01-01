@@ -16,6 +16,9 @@
       scroll-snap-type: y proximity;
       overflow-y: auto;
     }
+    body.page-samples .panel {
+      scroll-snap-align: center;
+    }
 
     /************************************
      * PANEL: GALLERY CARDS (DECK STACK)
@@ -27,22 +30,15 @@
       justify-content: center;
       max-width: 100% !important;
 
-      /* Slightly shorter card so it fits viewport better */
-      min-height: 75vh !important;
-      padding: 0 1rem 10vh !important;
+      /* let content decide height so iOS doesn’t zoom */
+      padding: 3rem 1.25rem 4.5rem !important;
       margin: 0 auto !important;
-      scroll-snap-align: center;
-
-      transition:
-        transform 260ms ease-out,
-        opacity 260ms ease-out,
-        filter 260ms ease-out;
       z-index: 1;
     }
 
-    /* OVERLAP: next card slides underneath but not crazy */
+    /* OVERLAP: next card peeks under the current one */
     body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -55vh !important;
+      margin-top: -6rem !important;  /* adjust for more/less overlap */
     }
 
     /************************************
@@ -61,8 +57,8 @@
     body.page-samples .gallery img {
       width: 100%;
       height: auto;
-      max-height: 60vh;        /* keep image inside the card */
-      object-fit: cover;       /* crop slightly instead of stretching */
+      max-height: 70vh;       /* keep image inside the viewport */
+      object-fit: cover;
       display: block;
       border-radius: 22px;
     }
@@ -157,8 +153,10 @@
 
 <main class="page">
 
-  <!-- INTRO PANEL -->
+  <!-- INTRO PANEL (WITH GREY GRADIENT CARD) -->
   <section class="panel panel-samples-intro">
+    <!-- this uses your existing .morph-bg / card gradient from styles.css -->
+    <div class="morph-bg"></div>
     <div class="content">
       <h1>Sample Work</h1>
       <p>We can do anything from premium waterfront property to commercial buildings downtown to even the middle of nowhere.</p>
@@ -172,8 +170,9 @@
   <!-- DYNAMIC GALLERY CARDS -->
   <div id="gallery-panels-anchor"></div>
 
-  <!-- MORE VIDEOS -->
+  <!-- MORE VIDEOS PANEL (also on grey card) -->
   <section class="panel panel-more-video">
+    <div class="morph-bg"></div>
     <div class="content">
       <h2 style="margin-bottom:1.5rem; text-align:center;">More Sample Videos</h2>
       <div class="video-grid">
