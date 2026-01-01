@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -58,6 +58,8 @@
 
   <link rel="stylesheet" href="styles.css" />
 </head>
+
+<!-- Reviews loader (unchanged) -->
 <script>
 (async function(){
   try{
@@ -124,6 +126,7 @@
 
 <body>
 
+  <!-- Header stays above the snapping panels -->
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
@@ -147,103 +150,138 @@
         <a href="contact.html" class="btn">Contact</a>
       </nav>
 
-
       <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
         <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
       </a>
     </div>
   </header>
 
-  <!-- Background hero video -->
-  <section class="hero">
-    <video class="bg-video" autoplay muted loop playsinline poster="assets/hero-poster.jpg">
-      <source src="assets/hero.mp4" type="video/mp4">
-    </video>
-    <div class="hero-inner reveal">
-      <h1>Capturing Michigan from a Higher Perspective</h1>
-      <p>FAA-certified aerial imaging for real estate and commercial projects. VIRTUAL TOURS AND 3D Available!</p>
-      <a href="samples.html" class="cta">View Our Work</a>
-    </div>
-  </section>
+  <!-- Scroll-snapping container for panels -->
+  <div class="page">
 
-  <main>
-    <section class="intro reveal">
-      <h2>Precision, Passion, Perspective</h2>
-      <p>From waterfront estates to downtown commercial properties, we deliver cinematic aerial visuals as well as inside virtual tours that sell the story and the space.</p>
+    <!-- Panel 1: Hero (keeps your background video & CTA) -->
+    <section class="panel panel-hero hero">
+      <div class="morph-bg"></div>
+      <div class="hero-inner reveal content">
+        <video class="bg-video" autoplay muted loop playsinline poster="assets/hero-poster.jpg">
+          <source src="assets/hero.mp4" type="video/mp4">
+        </video>
+        <div class="hero-text">
+          <h1>Capturing Michigan from a Higher Perspective</h1>
+          <p>FAA-certified aerial imaging for real estate and commercial projects. VIRTUAL TOURS AND 3D Available!</p>
+          <a href="samples.html" class="cta">View Our Work</a>
+        </div>
+      </div>
     </section>
 
-    <section class="intro reveal">
-      <h2>Why Choose Us</h2>
-      <ul class="why">
-        <li>FAA Part 107 Certified</li>
-        <li>Real estate photo, video, and mapping, Virtual Tours and Dollhouse style 3D</li> 
-        <li>Fast turnarounds and MLS-ready exports</li>
-      </ul>
-    </section>
-    <!-- NEW COSTING SECTION -->
-    <section class="intro reveal">
-      <h2>Residential Real Estate Costing</h2>
-      <ul class="costing">
-        <li>Travel Cost – <strong>$TBD</strong></li>
-        <li>Drone Aerial Photo & Video – <strong>$50</strong></li>
-        <li>Indoor Photo and/or Virtual Tour – <strong>$50</strong></li>
-        <li>3D Dollhouse View Tour Add-On – <strong>$10</strong></li>
-        <li>PREMIUM PACKAGE. DRONE, VIRTUAL TOUR & 3D Dollhouse View – <strong>$100</strong></li>
-        <li>Floor Plan 2D – <strong>$40</strong></li>
-      </ul>
-      <h2>Commercial Costing</h2>
-      <ul class="costing">
-        <li>COMMERCIAL PROPERTIES– <strong>$TBD</strong></li>
-      </ul>
-    </section>
-    <section class="intro reveal" style="text-align:center; margin-top:3rem;">
-      <h2>Watch Our Aerial Highlight Reel</h2>
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/iVyg4wXB2MM?si=X_8tFyIOhyMrSe1F" 
-        title="Myles Photography Highlight Reel" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        referrerpolicy="strict-origin-when-cross-origin" 
-        allowfullscreen>
-      </iframe>
-    </section>
-  </main>
-  <section class="intro reveal" id="reviews" style="margin-top:3rem;">
-    <h2>Recent Google Reviews</h2>
-    <div class="reviews-grid" aria-live="polite"></div>
-    <p class="reviews-powered">
-      ★ Reviews powered by <a href="https://maps.google.com" target="_blank" rel="noopener">Google</a>
-    </p>
-  </section>
-  <p class="reviews-cta">
-   <a class="btn btn-review"
-      href="https://maps.google.com/?cid=2136735421680008957"
-      target="_blank" rel="noopener">
-     Leave a Google Review
-   </a>
-  </p>
+    <!-- Panel 2: Intro + Why Choose Us -->
+    <section class="panel panel-intro">
+      <div class="morph-bg"></div>
+      <main class="content">
+        <section class="intro reveal">
+          <h2>Precision, Passion, Perspective</h2>
+          <p>From waterfront estates to downtown commercial properties, we deliver cinematic aerial visuals as well as inside virtual tours that sell the story and the space.</p>
+        </section>
 
+        <section class="intro reveal">
+          <h2>Why Choose Us</h2>
+          <ul class="why">
+            <li>FAA Part 107 Certified</li>
+            <li>Real estate photo, video, and mapping, Virtual Tours and Dollhouse style 3D</li>
+            <li>Fast turnarounds and MLS-ready exports</li>
+          </ul>
+        </section>
+      </main>
+    </section>
+
+    <!-- Panel 3: Costing / Pricing -->
+    <section class="panel panel-pricing">
+      <div class="morph-bg"></div>
+      <main class="content">
+        <section class="intro reveal">
+          <h2>Residential Real Estate Costing</h2>
+          <ul class="costing">
+            <li>Travel Cost – <strong>$TBD</strong></li>
+            <li>Drone Aerial Photo &amp; Video – <strong>$50</strong></li>
+            <li>Indoor Photo and/or Virtual Tour – <strong>$50</strong></li>
+            <li>3D Dollhouse View Tour Add-On – <strong>$10</strong></li>
+            <li>PREMIUM PACKAGE. DRONE, VIRTUAL TOUR &amp; 3D Dollhouse View – <strong>$100</strong></li>
+            <li>Floor Plan 2D – <strong>$40</strong></li>
+          </ul>
+
+          <h2>Commercial Costing</h2>
+          <ul class="costing">
+            <li>COMMERCIAL PROPERTIES– <strong>$TBD</strong></li>
+          </ul>
+        </section>
+      </main>
+    </section>
+
+    <!-- Panel 4: Highlight Reel Video -->
+    <section class="panel panel-video">
+      <div class="morph-bg"></div>
+      <main class="content">
+        <section class="intro reveal" style="text-align:center; margin-top:3rem;">
+          <h2>Watch Our Aerial Highlight Reel</h2>
+          <div class="video-embed-wrap">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/iVyg4wXB2MM?si=X_8tFyIOhyMrSe1F"
+              title="Myles Photography Highlight Reel"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <!-- Panel 5: Google Reviews (dynamic content preserved) -->
+    <section class="panel panel-reviews" id="reviews">
+      <div class="morph-bg"></div>
+      <main class="content">
+        <section class="intro reveal" style="margin-top:3rem;">
+          <h2>Recent Google Reviews</h2>
+          <div class="reviews-grid" aria-live="polite"></div>
+          <p class="reviews-powered">
+            ★ Reviews powered by <a href="https://maps.google.com" target="_blank" rel="noopener">Google</a>
+          </p>
+          <p class="reviews-cta">
+            <a class="btn btn-review"
+               href="https://maps.google.com/?cid=2136735421680008957"
+               target="_blank" rel="noopener">
+             Leave a Google Review
+            </a>
+          </p>
+        </section>
+      </main>
+    </section>
+
+  </div><!-- /.page -->
+
+  <!-- Footer unchanged, just scrolls to last -->
   <footer>
-   <p>© 2025 Myles Photography LLC • 
-     <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
-   </p>
+    <p>© 2025 Myles Photography LLC • 
+      <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
+    </p>
 
-   <div class="youtube-follow">
-     <a href="https://www.youtube.com/@MylesPhotographyLLC"
-        target="_blank"
-        rel="noopener"
-        class="btn-youtube">
-      <span class="yt-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path fill="#FF0000" d="M23.5 6.2s-.2-1.7-.8-2.4c-.8-.9-1.7-.9-2.1-1C17.6 2.5 12 2.5 12 2.5h-.1s-5.6 0-8.6.3c-.5.1-1.3.1-2.1 1-.6.7-.8 2.4-.8 2.4S0 8.2 0 10.2v1.6c0 2 .2 4 .2 4s.2 1.7.8 2.4c.8.9 1.8.9 2.2 1C6.4 19.5 12 19.5 12 19.5s5.6 0 8.6-.3c.4 0 1.3-.1 2.1-1 .6-.7.8-2.4.8-2.4s.2-2 .2-4v-1.6c0-2-.2-4-.2-4z"/>
-          <path fill="#FFF" d="M9.75 15.02v-6.04l5.75 3.02-5.75 3.02z"/>
-        </svg>
-      </span>
-      Follow us on YouTube
-    </a>
-   </div>
+    <div class="youtube-follow">
+      <a href="https://www.youtube.com/@MylesPhotographyLLC"
+         target="_blank"
+         rel="noopener"
+         class="btn-youtube">
+       <span class="yt-logo">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+           <path fill="#FF0000" d="M23.5 6.2s-.2-1.7-.8-2.4c-.8-.9-1.7-.9-2.1-1C17.6 2.5 12 2.5 12 2.5h-.1s-5.6 0-8.6.3c-.5.1-1.3.1-2.1 1-.6.7-.8 2.4-.8 2.4S0 8.2 0 10.2v1.6c0 2 .2 4 .2 4s.2 1.7.8 2.4c.8.9 1.8.9 2.2 1C6.4 19.5 12 19.5 12 19.5s5.6 0 8.6-.3c.4 0 1.3-.1 2.1-1 .6-.7.8-2.4.8-2.4s.2-2 .2-4v-1.6c0-2-.2-4-.2-4z"/>
+           <path fill="#FFF" d="M9.75 15.02v-6.04l5.75 3.02-5.75 3.02z"/>
+         </svg>
+       </span>
+       Follow us on YouTube
+     </a>
+    </div>
   </footer>
 
-  <!-- Reveal-on-scroll -->
+  <!-- Reveal-on-scroll (kept as-is; still works for .reveal elements) -->
   <script>
     const els = document.querySelectorAll('.reveal');
     const io = new IntersectionObserver((entries)=>{
@@ -252,6 +290,34 @@
       });
     }, {threshold: 0.15});
     els.forEach(el=>io.observe(el));
+  </script>
+
+  <!-- NEW: Morphing scroll panels logic -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const panels = document.querySelectorAll(".panel");
+
+      if (!panels.length) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              panels.forEach((p) => p.classList.remove("active"));
+              entry.target.classList.add("active");
+            }
+          });
+        },
+        {
+          threshold: 0.55
+        }
+      );
+
+      panels.forEach((panel) => observer.observe(panel));
+
+      // Ensure first panel starts active
+      panels[0].classList.add("active");
+    });
   </script>
 </body>
 </html>
