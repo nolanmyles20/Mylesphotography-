@@ -9,11 +9,16 @@
 
   <!-- PAGE-SPECIFIC STYLES -->
   <style>
-    /* No snap on this page – scroll is used as a scrubber for the deck */
+    /* Use scroll snap like index, but we’ll still let you scroll normally */
     main.page {
-      min-height: 100vh;
-      scroll-snap-type: none;
+      scroll-snap-type: y proximity;
       overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+
+    body.page-samples .panel {
+      scroll-snap-align: center;
+      padding: 1.2rem 0 2.4rem;
     }
 
     /* Intro + More Video panels keep the grey morph card */
@@ -28,87 +33,77 @@
       margin: 0 auto;
     }
 
-    /* ---------- DECK AREA ---------- */
+    /* ---------- DECK-LIKE GALLERY PANELS (simple, reliable) ---------- */
 
-    /* Whole gallery section just provides scroll height */
-    .panel-gallery-deck {
-      position: relative;
-      padding: 3rem 0;
-    }
-
-    /* The actual “hand of photos” lives here and stays put */
-    .deck-root {
-      position: sticky;
-      top: 7rem; /* sits just below your nav on mobile */
-      height: calc(100vh - 10rem);
-      display: flex;
-      align-items: center;
+    body.page-samples .panel-gallery {
+      display: flex !important;
       justify-content: center;
-      pointer-events: none; /* re-enabled on top card only */
+      align-items: center;
+      padding: 0.8rem 0 2.8rem;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0.75;
+      transform: translateY(2vh);
     }
 
-    .deck-inner {
-      position: relative;
+    /* The “active” one (in center) feels more in-hand */
+    body.page-samples .panel-gallery.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Overlap panels so next image clearly peeks behind */
+    body.page-samples .panel-gallery + .panel-gallery {
+      margin-top: -6.5rem; /* tweak this for more or less overlap */
+    }
+
+    body.page-samples .gallery {
       width: 100%;
-      max-width: 80vw;
-      height: 100%;
-    }
-
-    .deck-card {
-      position: absolute;
-      inset: 0;
       display: flex;
-      align-items: center;
       justify-content: center;
-      opacity: 0;
-      transform: scale(0.9);
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      pointer-events: none;
     }
 
-    .deck-card img {
+    body.page-samples .gallery figure {
+      margin: 0 auto;
+      max-width: 80vw !important;
+      border: none !important;
+      background: transparent !important;
+      text-align: center;
+      position: relative;
+    }
+
+    body.page-samples .gallery img {
       display: block;
-      width: 100%;
-      height: auto;
-      max-height: 70vh;
-      object-fit: contain;
+      width: 100% !important;
+      height: auto !important;
+      max-height: 40vh !important;
+      object-fit: contain !important;
       border-radius: 22px;
     }
 
-    .deck-caption {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -2.2rem;
-      text-align: center;
-      font-size: 1.05rem;
-      letter-spacing: 0.05em;
+    body.page-samples .gallery figcaption {
+      margin-top: .7rem;
+      font-size: 1.1rem;
+      letter-spacing: .04em;
       text-transform: uppercase;
       color: #e4e4e4;
     }
 
-    /* Current card – bright & on top */
-    .deck-card.is-current {
-      opacity: 1;
-      transform: scale(1);
-      z-index: 3;
-      pointer-events: auto; /* clicks allowed for lightbox */
+    /* Loading spinner */
+    body.page-samples .gallery figure.is-loading::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 32px; height: 32px;
+      margin:-16px 0 0 -16px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25);
+      border-top-color:#fff;
+      animation: gallerySpin .9s linear infinite;
+      pointer-events:none;
     }
+    @keyframes gallerySpin { to { transform: rotate(360deg); } }
 
-    /* Next card – very subtle shadow behind current */
-    .deck-card.is-next {
-      opacity: 0.25;
-      transform: scale(0.96);
-      z-index: 2;
-    }
-
-    /* Previous cards are completely hidden */
-    .deck-card.is-prev {
-      opacity: 0;
-      z-index: 1;
-    }
-
-    /* Lightbox */
+    /* ---------- Lightbox ---------- */
     .lightbox {
       position: fixed; inset: 0;
       background: rgba(0,0,0,.85);
@@ -135,7 +130,7 @@
       padding: 8px 12px; cursor: pointer;
     }
 
-    /* Lazy video placeholder */
+    /* ---------- Video placeholder (lazy load) ---------- */
     .video-lazy {
       position: relative;
       width: 92vw;
@@ -181,9 +176,6 @@
         <a href="payment.html" class="btn">Payment</a>
         <a href="contact.html" class="btn">Contact</a>
       </nav>
-      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
-        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
-      </a>
     </div>
   </header>
 
@@ -198,14 +190,8 @@
       </div>
     </section>
 
-    <!-- DECK PANEL (all images live here, stacked) -->
-    <section class="panel panel-gallery-deck" id="deck-panel">
-      <div class="deck-root">
-        <div class="deck-inner" id="deck-inner">
-          <!-- JS injects .deck-card elements -->
-        </div>
-      </div>
-    </section>
+    <!-- Gallery panels get injected here -->
+    <div id="gallery-panels-anchor"></div>
 
     <!-- Extra video panel at the end -->
     <section class="panel panel-more-video">
@@ -230,7 +216,92 @@
   </footer>
 
   <script>
-    // ---------- Lazy YouTube ----------
+    let panelObserver = null;
+
+    function setupPanelObserver() {
+      if (panelObserver) return;
+      panelObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+            entry.target.classList.add("active");
+          }
+        });
+      }, { threshold: 0.35 });
+    }
+
+    async function loadGallery() {
+      const anchor = document.getElementById('gallery-panels-anchor');
+
+      const imgObserver = 'IntersectionObserver' in window
+        ? new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+              if (!entry.isIntersecting) return;
+              const img = entry.target;
+              const src = img.dataset.src;
+              if (src && !img.src) img.src = src;
+              obs.unobserve(img);
+            });
+          }, { rootMargin: '200px 0px' })
+        : null;
+
+      try {
+        const res = await fetch('assets/samples/manifest.json');
+        if (!res.ok) throw new Error('manifest not found');
+        const data = await res.json();
+        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
+
+        data.images.forEach(item => {
+          const panel = document.createElement('section');
+          panel.className = 'panel panel-gallery';
+
+          const content = document.createElement('div');
+          content.className = 'content';
+
+          const galleryWrap = document.createElement('div');
+          galleryWrap.className = 'gallery';
+
+          const fig = document.createElement('figure');
+          fig.classList.add('is-loading');
+
+          const link = document.createElement('a');
+          link.className = 'lb';
+
+          const img = document.createElement('img');
+          img.dataset.src = 'assets/samples/' + item.src;
+          img.alt = item.caption || 'Sample image';
+
+          img.addEventListener('load', () => {
+            fig.classList.remove('is-loading');
+            img.classList.add('loaded');
+          });
+
+          if (imgObserver) imgObserver.observe(img);
+          else img.src = img.dataset.src;
+
+          const cap = document.createElement('figcaption');
+          cap.textContent = item.caption || '';
+
+          link.href = img.dataset.src;
+          link.appendChild(img);
+          fig.appendChild(link);
+          fig.appendChild(cap);
+          galleryWrap.appendChild(fig);
+          content.appendChild(galleryWrap);
+          panel.appendChild(content);
+          anchor.appendChild(panel);
+
+          setupPanelObserver();
+          panelObserver.observe(panel);
+        });
+
+      } catch (e) {
+        console.error(e);
+        anchor.innerHTML =
+          '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
+      }
+    }
+
     function initLazyVideos() {
       const videos = document.querySelectorAll('.video-lazy');
       if (!videos.length) return;
@@ -241,10 +312,8 @@
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
 
         const iframe = document.createElement('iframe');
-        iframe.src =
-          `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-        iframe.allow =
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
         iframe.allowFullscreen = true;
         iframe.loading = "lazy";
         iframe.style.width = "100%";
@@ -268,129 +337,37 @@
       }
     }
 
-    // ---------- Build deck from manifest ----------
-    async function buildDeck() {
-      const deckInner = document.getElementById('deck-inner');
-      const deckPanel = document.getElementById('deck-panel');
-      if (!deckInner || !deckPanel) return;
+    // Lightbox behavior
+    document.addEventListener('click', (e) => {
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightbox-img');
+      const lbCap = document.getElementById('lightbox-cap');
 
-      try {
-        const res = await fetch('assets/samples/manifest.json');
-        if (!res.ok) throw new Error('manifest not found');
-        const data = await res.json();
-        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
-
-        const cards = [];
-
-        data.images.forEach((item, idx) => {
-          const card = document.createElement('article');
-          card.className = 'deck-card';
-
-          const link = document.createElement('a');
-          link.href = 'assets/samples/' + item.src;
-          link.className = 'deck-link';
-
-          const img = document.createElement('img');
-          img.src = 'assets/samples/' + item.src;
-          img.alt = item.caption || 'Sample image';
-
-          const cap = document.createElement('div');
-          cap.className = 'deck-caption';
-          cap.textContent = item.caption || '';
-
-          link.appendChild(img);
-          card.appendChild(link);
-          card.appendChild(cap);
-          deckInner.appendChild(card);
-
-          cards.push(card);
-        });
-
-        // Give the deck panel enough scroll height: one "step" per image
-        const step = window.innerHeight * 0.7;
-        const extra = window.innerHeight * 0.3;
-        deckPanel.style.minHeight = (step * (cards.length - 1) + extra) + 'px';
-
-        // Scroll-driven card selection
-        function updateDeck() {
-          const rect = deckPanel.getBoundingClientRect();
-          const totalScrollable = deckPanel.offsetHeight - window.innerHeight;
-          let offsetInside = -rect.top;
-
-          if (offsetInside < 0) offsetInside = 0;
-          if (totalScrollable > 0 && offsetInside > totalScrollable) {
-            offsetInside = totalScrollable;
-          }
-
-          const index = Math.round(offsetInside / step);
-
-          cards.forEach((card, i) => {
-            const diff = i - index;
-            card.classList.remove('is-current', 'is-next', 'is-prev');
-
-            if (diff === 0) {
-              card.classList.add('is-current');
-            } else if (diff === 1) {
-              card.classList.add('is-next');
-            } else if (diff < 0) {
-              card.classList.add('is-prev');
-            } else {
-              // future cards beyond next: keep hidden default
-            }
-          });
-        }
-
-        updateDeck();
-        window.addEventListener('scroll', updateDeck);
-        window.addEventListener('resize', () => {
-          // Recompute panel height on resize
-          const stepNew = window.innerHeight * 0.7;
-          const extraNew = window.innerHeight * 0.3;
-          deckPanel.style.minHeight =
-            (stepNew * (cards.length - 1) + extraNew) + 'px';
-          updateDeck();
-        });
-
-        // ---------- Lightbox ----------
-        const lb = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightbox-img');
-        const lbCap = document.getElementById('lightbox-cap');
-        const closeBtn = document.querySelector('.lightbox-close');
-
-        deckInner.addEventListener('click', (e) => {
-          const link = e.target.closest('.deck-link');
-          if (!link) return;
-          e.preventDefault();
-          const card = link.closest('.deck-card');
-          lbImg.src = link.href;
-          lbCap.textContent =
-            card.querySelector('.deck-caption')?.textContent || '';
-          lb.classList.add('open');
-          lb.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden';
-        });
-
-        closeBtn.addEventListener('click', () => {
-          lb.classList.remove('open');
-          lb.setAttribute('aria-hidden', 'true');
-          lbImg.src = '';
-          document.body.style.overflow = '';
-        });
-
-        lb.addEventListener('click', (e) => {
-          if (e.target === lb) closeBtn.click();
-        });
-
-      } catch (e) {
-        console.error(e);
-        deckInner.innerHTML =
-          '<p style="color:#bbb;text-align:center;">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p>';
+      const openLink = e.target.closest('a.lb');
+      if (openLink) {
+        e.preventDefault();
+        lbImg.src = openLink.querySelector('img').src;
+        lbCap.textContent = openLink.parentElement.querySelector('figcaption')?.textContent || '';
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        return;
       }
-    }
 
-    document.addEventListener('DOMContentLoaded', () => {
+      if (e.target.classList.contains('lightbox-close') || e.target === lb) {
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden', 'true');
+        lbImg.src = '';
+        document.body.style.overflow = '';
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      setupPanelObserver();
+      // observe the static panels too so intro/more-video get "active"
+      document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
+      loadGallery();
       initLazyVideos();
-      buildDeck();
     });
   </script>
 </body>
