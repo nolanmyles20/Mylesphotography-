@@ -46,12 +46,13 @@
     /* Video placeholder (we still lazy-replace with iframe) */
     .video-lazy {
       width: 100%;
-      margin: 1.2rem auto 0;
-      max-width: 100%;
+      max-width: min(80vw, 640px);   /* <— NEW: card-like width */
+      margin: 1.2rem auto 0;         /* centered inside the grey card */
       background: #111;
       border-radius: 18px;
       aspect-ratio: 16 / 9;
       overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
     }
 
     /* -------- STACKED DECK GALLERY (Swiper) -------- */
