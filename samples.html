@@ -9,9 +9,9 @@
 
   <!-- PAGE-SPECIFIC snap + gallery/lightbox styles -->
   <style>
-    /* Softer scroll snap on this page so next panel can peek */
+    /* Fallback snap on this page (main behavior in styles.css via .page-samples .page) */
     main.page {
-      scroll-snap-type: y proximity;
+      scroll-snap-type: y mandatory;
     }
 
     /* Lightbox */
@@ -168,14 +168,18 @@
 
     function setupPanelObserver() {
       if (panelObserver) return;
+
       panelObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
-            entry.target.classList.add("active");
-          }
+          if (!entry.isIntersecting) return;
+
+          // mark active panel (for fade/scale in CSS)
+          document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+          entry.target.classList.add("active");
         });
-      }, { threshold: 0.55 });
+      }, {
+        threshold: 0.1   // 👈 tighter, earlier snap like index
+      });
     }
 
     async function loadGallery() {
@@ -324,7 +328,10 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       setupPanelObserver();
+
+      // Observe the static panels (intro + more video) immediately
       document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
+
       const firstPanel = document.querySelector('.panel');
       if (firstPanel) firstPanel.classList.add('active');
 
