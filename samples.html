@@ -1,321 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Sample Images | Myles Photography LLC</title>
-<link rel="stylesheet" href="styles.css" />
-<link rel="icon" type="image/png" href="assets/favicon.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sample Images | Myles Photography LLC</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-<style>
-  /****************************************
-   * PAGE SCROLL + PANEL SNAP BEHAVIOR
-   ****************************************/
-  main.page {
-    scroll-snap-type: y mandatory;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-  }
+  <!-- PAGE-SPECIFIC STYLES -->
+  <style>
+    /* Scroll snapping like index */
+    main.page {
+      scroll-snap-type: y mandatory;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+    body.page-samples .panel {
+      scroll-snap-align: center;
+      padding: 1.6rem 0 2.6rem;
+    }
 
-  .panel {
-    scroll-snap-align: center;
-    padding: 1rem 0 2.2rem;
-    position: relative;
-    transition: opacity .35s ease;
-  }
+    /* Intro + More Video panels keep the grey morph card */
+    body.page-samples .panel-samples-intro .morph-bg,
+    body.page-samples .panel-more-video .morph-bg {
+      background: linear-gradient(135deg, #8b8b8b, #333333);
+      opacity: 1;
+    }
+    body.page-samples .panel-samples-intro .content,
+    body.page-samples .panel-more-video .content {
+      max-width: 88%;
+      margin: 0 auto;
+    }
 
-  .panel.active {
-    opacity: 1;
-  }
+    /* ---------- DECK STYLE GALLERY ---------- */
 
-  /****************************************
-   * INTRO + MORE VIDEO PANELS — GREY CARD
-   ****************************************/
-  .panel-samples-intro .morph-bg,
-  .panel-more-video .morph-bg {
-    background: linear-gradient(135deg, #8b8b8b, #333333);
-    opacity: 1;
-    border-radius: 25px;
-    padding: 2rem;
-    max-width: 90%;
-    margin: 0 auto;
-  }
+    /* Each gallery panel basically just centers its card */
+    body.page-samples .panel-gallery {
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      padding: 1.25rem 0 2.5rem;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0.6;
+      transform: translateY(3vh);   /* slightly pushed down by default */
+    }
 
-  .panel-samples-intro .content,
-  .panel-more-video .content {
-    max-width: 90%;
-    margin: 0 auto;
-  }
+    /* The “active” one lifts and brightens a bit */
+    body.page-samples .panel-gallery.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-  /****************************************
-   * STACKED DECK — IMAGE GALLERY PANELS
-   ****************************************/
-  .panel-gallery {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 85vh;
-    pointer-events: none;
-  }
+    /* Make the next card peek up a tiny bit */
+    body.page-samples .panel-gallery + .panel-gallery {
+      margin-top: -3.6rem;
+    }
 
-  .panel-gallery .content {
-    pointer-events: auto;
-  }
+    /* ---------- IMAGE SIZING (CARD LOOK) ---------- */
+    body.page-samples .gallery {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
 
-  .panel-gallery .gallery figure {
-    max-width: 80vw;
-    margin: 0 auto;
-    border-radius: 22px;
-    text-align: center;
-  }
+    body.page-samples .gallery figure {
+      margin: 0 auto;
+      max-width: 80vw !important;   /* card width */
+      border: none !important;
+      background: transparent !important;
+      text-align: center;
+      position: relative;
+    }
 
-  .panel-gallery .gallery img {
-    width: 100%;
-    height: auto;
-    max-height: 40vh;
-    border-radius: 22px;
-    object-fit: contain;
-  }
+    body.page-samples .gallery img {
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+      max-height: 40vh !important;
+      object-fit: contain !important;
+      border-radius: 22px;
+    }
 
-  .panel-gallery .gallery figcaption {
-    font-size: 1.15rem;
-    margin-top: 0.4rem;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    color: white;
-  }
+    /* Caption: only active card shows text */
+    body.page-samples .panel-gallery figcaption {
+      margin-top: .7rem;
+      font-size: 1.1rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: #e4e4e4;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .25s ease, transform .25s ease;
+      pointer-events: none;
+    }
+    body.page-samples .panel-gallery.active figcaption {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-  /* hover / active brightness */
-  .panel-gallery:not(.active) img {
-    filter: brightness(55%);
-  }
+    /* Loading spinner (optional) */
+    body.page-samples .gallery figure.is-loading::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 32px; height: 32px;
+      margin:-16px 0 0 -16px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25);
+      border-top-color:#fff;
+      animation: gallerySpin .9s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes gallerySpin { to { transform: rotate(360deg); } }
 
-  /****************************************
-   * STACKED CARD EFFECT
-   ****************************************/
-  main.page {
-    perspective: 1100px;
-  }
+    /* ---------- Lightbox ---------- */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.85);
+      display: none; place-items: center;
+      z-index: 9999; padding: 20px;
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img {
+      max-width: 92vw; max-height: 88vh;
+      border-radius: 16px;
+    }
+    .lightbox-cap {
+      color: #ccc;
+      margin-top: 10px;
+      text-align: center;
+      max-width: 90vw;
+    }
+    .lightbox-close {
+      position: absolute; top: 14px; right: 18px;
+      background: #111; color: #fff;
+      border: 1px solid #333;
+      border-radius: 10px;
+      font-size: 20px; line-height: 1;
+      padding: 8px 12px; cursor: pointer;
+    }
 
-  .panel-gallery {
-    transform-style: preserve-3d;
-    transform-origin: center bottom;
-    opacity: .8;
-    transform: translateY(60px) scale(.92) rotateX(-9deg);
-  }
+    /* ---------- Video card (intro + bottom) ---------- */
+    .sample-video-shell {
+      margin-top: 1.4rem;
+      display: flex;
+      justify-content: center;
+    }
+    .sample-video-frame {
+      width: 100%;
+      max-width: 80vw;
+      border-radius: 22px;
+      overflow: hidden;
+      background:#000;
+      box-shadow: 0 18px 45px rgba(0,0,0,.45);
+    }
 
-  .panel-gallery.active {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotateX(0);
-  }
-
-  /****************************************
-   * ✨ FIX VIDEO ASPECT RATIO (ALL SAMPLE VIDEOS)
-   ****************************************/
-  .video-lazy,
-  .panel-samples-intro .video-lazy,
-  .panel-more-video .video-lazy {
-    width: 100%;
-    max-width: 90%;
-    margin: 1.3rem auto 0 auto;
-    border-radius: 18px;
-    overflow: hidden;
-
-    /* Matches your images — prevents tall stretching */
-    aspect-ratio: 16 / 9;
-    background: #111; /* prevents white flash */
-  }
-
-  .video-lazy iframe {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /****************************************
-   * LIGHTBOX
-   ****************************************/
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.85);
-    display: none; place-items: center;
-    z-index: 9999; padding: 20px;
-  }
-  .lightbox.open { display: grid; }
-  .lightbox img {
-    max-width: 92vw; max-height: 88vh;
-    border-radius: 16px;
-  }
-  .lightbox-close {
-    position: absolute; top: 14px; right: 18px;
-    background: #111; color: #fff;
-    border: 1px solid #333;
-    border-radius: 10px;
-    font-size: 20px; line-height: 1;
-    padding: 8px 12px; cursor: pointer;
-  }
-</style>
+    .video-lazy {
+      position: relative;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+    }
+    .video-lazy::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 34px; height: 34px;
+      margin:-17px 0 0 -17px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25);
+      border-top-color:#fff;
+      animation: videoSpin .8s linear infinite;
+    }
+    @keyframes videoSpin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 
-
 <body class="page-samples">
-
-<header>
-  <div class="container nav">
-    <a class="brand" href="index.html">
-      <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
-      <span>Myles Photography LLC</span>
-    </a>
-    <div class="services-tag">
-      <img src="assets/drone.png" class="services-drone" alt="Drone icon" />
-      <span>Drone Services</span>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+        <span>Myles Photography LLC</span>
+      </a>
+      <div class="services-tag">
+        <span class="drone-wrap fly-in" aria-hidden="true">
+          <img src="assets/drone.png" alt="Drone icon" class="services-drone">
+        </span>
+        <span>Drone Services</span>
+      </div>
+      <nav class="navlinks">
+        <a href="samples.html" class="btn current">Sample Images</a>
+        <a href="virtual-tours.html" class="btn">Virtual Tours</a>
+        <a href="about.html" class="btn">About Us</a>
+        <a href="locations.html" class="btn">Locations</a>
+        <a href="payment.html" class="btn">Payment</a>
+        <a href="contact.html" class="btn">Contact</a>
+      </nav>
+      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
+        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
+      </a>
     </div>
-    <nav class="navlinks">
-      <a href="samples.html" class="btn current">Sample Images</a>
-      <a href="virtual-tours.html" class="btn">Virtual Tours</a>
-      <a href="about.html" class="btn">About Us</a>
-      <a href="locations.html" class="btn">Locations</a>
-      <a href="payment.html" class="btn">Payment</a>
-      <a href="contact.html" class="btn">Contact</a>
-    </nav>
-  </div>
-</header>
+  </header>
 
-
-<!-- ====================== PAGE BODY ======================== -->
-<main class="page">
-
-  <section class="panel panel-samples-intro">
-    <div class="morph-bg">
+  <main class="page">
+    <!-- Intro panel with grey card + featured video -->
+    <section class="panel panel-samples-intro">
+      <div class="morph-bg"></div>
       <div class="content">
         <h1>Sample Work</h1>
-        <p>Premium waterfront, downtown commercial & remote — we capture it all.</p>
+        <p>Premium waterfront, downtown commercial &amp; remote — we capture it all.</p>
 
-        <!-- Intro Sample Video -->
-        <div class="video-lazy" data-video-id="iVyg4wXB2MM"></div>
-
+        <div class="sample-video-shell">
+          <div class="sample-video-frame">
+            <div class="video-lazy"
+                 data-video-id="iVyg4wXB2MM"
+                 data-autoplay="1"></div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <div id="gallery-panels-anchor"></div>
+    <!-- Gallery panels get injected here -->
+    <div id="gallery-panels-anchor"></div>
 
-  <section class="panel panel-more-video">
-    <div class="morph-bg">
+    <!-- Extra video panel at the end -->
+    <section class="panel panel-more-video">
+      <div class="morph-bg"></div>
       <div class="content">
-        <h2>More Video Samples</h2>
+        <h2 style="text-align:center;">More Video Samples</h2>
 
-        <div class="video-lazy" data-video-id="INyz0gTMGc4"></div>
-        <div class="video-lazy" data-video-id="_XxktVZ8k-M"></div>
+        <div class="sample-video-shell">
+          <div class="sample-video-frame">
+            <div class="video-lazy"
+                 data-video-id="INyz0gTMGc4"
+                 data-autoplay="0"></div>
+          </div>
+        </div>
+
+        <div class="sample-video-shell">
+          <div class="sample-video-frame">
+            <div class="video-lazy"
+                 data-video-id="_XxktVZ8k-M"
+                 data-autoplay="0"></div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
 
+  <!-- Lightbox overlay -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close">×</button>
+    <img id="lightbox-img" alt="" />
+    <div id="lightbox-cap" class="lightbox-cap"></div>
+  </div>
 
-<!-- LIGHTBOX -->
-<div id="lightbox" class="lightbox" aria-hidden="true">
-  <button class="lightbox-close">×</button>
-  <img id="lightbox-img" alt=""/>
-</div>
+  <footer>
+    <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+  </footer>
 
+  <script>
+    let panelObserver = null;
 
-<footer>
-  <p>© 2025 Myles Photography LLC •
-    <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
-</footer>
+    function setupPanelObserver() {
+      if (panelObserver) return;
+      panelObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+            entry.target.classList.add("active");
+          }
+        });
+      }, { threshold: 0.35 });
+    }
 
+    async function loadGallery() {
+      const anchor = document.getElementById('gallery-panels-anchor');
 
-<!-- ====================== SCRIPTS ======================== -->
-<script>
-let panelObserver = null;
+      const imgObserver = 'IntersectionObserver' in window
+        ? new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+              if (!entry.isIntersecting) return;
+              const img = entry.target;
+              const src = img.dataset.src;
+              if (src && !img.src) img.src = src;
+              obs.unobserve(img);
+            });
+          }, { rootMargin: '200px 0px' })
+        : null;
 
-function setupPanelObserver() {
-  if (panelObserver) return;
-  panelObserver = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-        entry.target.classList.add("active");
+      try {
+        const res = await fetch('assets/samples/manifest.json');
+        if (!res.ok) throw new Error('manifest not found');
+        const data = await res.json();
+        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
+
+        data.images.forEach(item => {
+          const panel = document.createElement('section');
+          panel.className = 'panel panel-gallery';
+
+          const content = document.createElement('div');
+          content.className = 'content';
+
+          const galleryWrap = document.createElement('div');
+          galleryWrap.className = 'gallery';
+
+          const fig = document.createElement('figure');
+          fig.classList.add('is-loading');
+
+          const link = document.createElement('a');
+          link.className = 'lb';
+
+          const img = document.createElement('img');
+          img.dataset.src = 'assets/samples/' + item.src;
+          img.alt = item.caption || 'Sample image';
+
+          img.addEventListener('load', () => {
+            fig.classList.remove('is-loading');
+            img.classList.add('loaded');
+          });
+
+          if (imgObserver) imgObserver.observe(img);
+          else img.src = img.dataset.src;
+
+          const cap = document.createElement('figcaption');
+          cap.textContent = item.caption || '';
+
+          link.href = img.dataset.src;
+          link.appendChild(img);
+          fig.appendChild(link);
+          fig.appendChild(cap);
+          galleryWrap.appendChild(fig);
+          content.appendChild(galleryWrap);
+          panel.appendChild(content);
+          anchor.appendChild(panel);
+
+          setupPanelObserver();
+          panelObserver.observe(panel);
+        });
+
+      } catch (e) {
+        console.error(e);
+        anchor.innerHTML =
+          '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
+      }
+    }
+
+    function initLazyVideos() {
+      const videos = document.querySelectorAll('.video-lazy');
+      if (!videos.length) return;
+
+      function loadIframe(div) {
+        const id = div.dataset.videoId;
+        if (!id) return;
+        const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
+
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        iframe.loading = "lazy";
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+
+        div.replaceWith(iframe);
+      }
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            loadIframe(entry.target);
+            obs.unobserve(entry.target);
+          });
+        }, { rootMargin: '300px 0px' });
+
+        videos.forEach(div => observer.observe(div));
+      } else {
+        videos.forEach(loadIframe);
+      }
+    }
+
+    // Lightbox behavior
+    document.addEventListener('click', (e) => {
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightbox-img');
+      const lbCap = document.getElementById('lightbox-cap');
+
+      const openLink = e.target.closest('a.lb');
+      if (openLink) {
+        e.preventDefault();
+        lbImg.src = openLink.querySelector('img').src;
+        lbCap.textContent = openLink.parentElement.querySelector('figcaption')?.textContent || '';
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        return;
+      }
+
+      if (e.target.classList.contains('lightbox-close') || e.target === lb) {
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden', 'true');
+        lbImg.src = '';
+        document.body.style.overflow = '';
       }
     });
-  },{threshold:.45});
-}
 
-async function loadGallery(){
-  const anchor = document.getElementById('gallery-panels-anchor');
-  try{
-    const res = await fetch('assets/samples/manifest.json');
-    const data = await res.json();
-    data.images.forEach(item=>{
-      const panel = document.createElement('section');
-      panel.className='panel panel-gallery';
-      const content=document.createElement('div');
-      content.className='content';
-      const wrap=document.createElement('div');
-      wrap.className='gallery';
-      const fig=document.createElement('figure');
-      const link=document.createElement('a');
-      link.className='lb';
-      const img=document.createElement('img');
-      img.src='assets/samples/'+item.src;
-      img.alt=item.caption||'Sample';
-      const cap=document.createElement('figcaption');
-      cap.textContent=item.caption||'';
-      link.appendChild(img);
-      fig.appendChild(link);
-      fig.appendChild(cap);
-      wrap.appendChild(fig);
-      content.appendChild(wrap);
-      panel.appendChild(content);
-      anchor.appendChild(panel);
+    document.addEventListener("DOMContentLoaded", () => {
       setupPanelObserver();
-      panelObserver.observe(panel);
+      // observe the static panels too so intro/more-video get "active"
+      document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
+      loadGallery();
+      initLazyVideos();
     });
-  }catch(err){
-    console.log(err);
-  }
-}
-
-/* Lazy YouTube */
-function initLazyVideos(){
-  document.querySelectorAll('.video-lazy').forEach(div=>{
-    const id=div.dataset.videoId;
-    const iframe=document.createElement('iframe');
-    iframe.src=`https://www.youtube.com/embed/${id}?autoplay=0&mute=1`;
-    iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-    iframe.allowFullscreen=true;
-    iframe.loading="lazy";
-    div.appendChild(iframe);
-  });
-}
-
-/* Lightbox */
-document.addEventListener('click',e=>{
-  const lb=document.getElementById('lightbox');
-  const imgElem=document.getElementById('lightbox-img');
-  const openLink=e.target.closest('a.lb');
-  if(openLink){
-    e.preventDefault();
-    imgElem.src=openLink.querySelector('img').src;
-    lb.classList.add('open');
-    return;
-  }
-  if(e.target.classList.contains('lightbox-close')||e.target===lb){
-    lb.classList.remove('open');
-    imgElem.src='';
-  }
-});
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  setupPanelObserver();
-  document.querySelectorAll('.panel').forEach(p=>panelObserver.observe(p));
-  loadGallery();
-  initLazyVideos();
-});
-</script>
-
+  </script>
 </body>
 </html>
