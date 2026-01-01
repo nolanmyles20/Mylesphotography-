@@ -991,3 +991,15 @@ header {
   scroll-snap-align: none !important;
   padding-bottom: 40vh; /* gives room to reach footer */
 }
+/* === Fix: allow scrolling into the last panel (Reviews) === */
+
+/* Use softer snapping so the browser doesn't force-jump */
+.page {
+  scroll-snap-type: y proximity;
+}
+
+/* Let the last panel (Reviews) snap normally again */
+.page > .panel:last-of-type {
+  scroll-snap-align: start;
+  padding-bottom: 0;
+}
