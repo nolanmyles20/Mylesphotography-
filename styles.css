@@ -1052,3 +1052,19 @@ body:not(.page-samples) .panel.active {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+/* === Fix: make sure the last panel (Reviews) can still snap === */
+
+/* All panels should have a snap point */
+.page > .panel {
+  scroll-snap-align: start;
+}
+
+/* If any old rule disabled snap on the last panel, override it */
+.page > .panel:last-of-type {
+  scroll-snap-align: start !important;
+}
+
+/* Tiny padding so the scroll container can fully settle on last panel */
+.page {
+  scroll-padding-bottom: 1px;
+}
