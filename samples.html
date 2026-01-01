@@ -7,13 +7,8 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- PAGE-SPECIFIC snap + gallery/lightbox styles -->
+  <!-- PAGE-SPECIFIC lightbox + intro width only -->
   <style>
-    /* Fallback snap on this page (main behavior in styles.css via .page-samples .page) */
-    main.page {
-      scroll-snap-type: y mandatory;
-    }
-
     /* Lightbox */
     .lightbox {
       position: fixed; inset: 0;
@@ -23,19 +18,23 @@
     }
     .lightbox.open { display: grid; }
     .lightbox img {
-      max-width: 90vw; max-height: 85vh; border-radius: 12px; display: block;
+      max-width: 90vw; max-height: 85vh;
+      border-radius: 12px; display: block;
     }
     .lightbox-cap {
-      color: #ccc; margin-top: 10px; text-align: center; max-width: 90vw;
+      color: #ccc; margin-top: 10px;
+      text-align: center; max-width: 90vw;
     }
     .lightbox-close {
       position: absolute; top: 14px; right: 18px;
-      background: #111; color: #fff; border: 1px solid #333;
-      border-radius: 10px; font-size: 20px; line-height: 1;
+      background: #111; color: #fff;
+      border: 1px solid #333;
+      border-radius: 10px;
+      font-size: 20px; line-height: 1;
       padding: 8px 12px; cursor: pointer;
     }
 
-    /* Spinner on each image while loading */
+    /* Spinner while loading images */
     .gallery figure { position: relative; }
     .gallery figure.is-loading::after {
       content: "";
@@ -82,7 +81,7 @@
     }
     @keyframes videoSpin { to { transform: rotate(360deg); } }
 
-    /* Intro content width */
+    /* Intro width */
     .panel-samples-intro .content {
       max-width: 88%;
       margin: 0 auto;
@@ -117,7 +116,7 @@
     </div>
   </header>
 
-  <!-- SNAPPING CONTAINER -->
+  <!-- SCROLL-SNAPPING CONTAINER -->
   <main class="page">
 
     <!-- PANEL 1: Intro + Featured Video -->
@@ -133,10 +132,10 @@
       </div>
     </section>
 
-    <!-- GALLERY PANELS INSERT HERE -->
+    <!-- GALLERY PANELS GET INSERTED HERE -->
     <div id="gallery-panels-anchor"></div>
 
-    <!-- PANEL 3: More Videos -->
+    <!-- PANEL N: More Videos -->
     <section class="panel panel-more-video">
       <div class="morph-bg"></div>
       <div class="content">
@@ -163,25 +162,31 @@
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
   </footer>
 
+  <!-- SCRIPT: snapping, gallery build, lazy video, lightbox -->
   <script>
     let panelObserver = null;
 
+    /* --- MARK MOST VISIBLE PANEL ACTIVE (fixes faded-on-scroll-back-up) --- */
     function setupPanelObserver() {
       if (panelObserver) return;
 
       panelObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+        const visible = entries.filter(e => e.isIntersecting);
+        if (!visible.length) return;
 
-          // mark active panel (for fade/scale in CSS)
-          document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
-          entry.target.classList.add("active");
-        });
+        const mostVisible = visible.reduce((max, e) =>
+          e.intersectionRatio > max.intersectionRatio ? e : max,
+          visible[0]
+        );
+
+        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+        mostVisible.target.classList.add("active");
       }, {
-        threshold: 0.1   // 👈 tighter, earlier snap like index
+        threshold: [0.1, 0.3, 0.6]
       });
     }
 
+    /* --- BUILD GALLERY PANELS --- */
     async function loadGallery() {
       const anchor = document.getElementById('gallery-panels-anchor');
 
@@ -207,7 +212,6 @@
           const panel = document.createElement('section');
           panel.className = 'panel panel-gallery';
 
-          // NOTE: no morph-bg for gallery panels – just content
           const content = document.createElement('div');
           content.className = 'content';
 
@@ -255,7 +259,7 @@
           panelObserver.observe(panel);
         });
 
-        // LIGHTBOX
+        /* --- LIGHTBOX --- */
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         const lbCap = document.getElementById('lightbox-cap');
@@ -266,7 +270,8 @@
           if (!a) return;
           e.preventDefault();
           lbImg.src = a.href;
-          lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
+          lbCap.textContent =
+            a.parentElement.querySelector('figcaption')?.textContent || '';
           lb.classList.add('open');
           lb.setAttribute('aria-hidden', 'false');
           document.body.style.overflow = 'hidden';
@@ -292,6 +297,7 @@
       }
     }
 
+    /* --- LAZY YOUTUBE VIDEOS --- */
     function initLazyVideos() {
       const videos = document.querySelectorAll('.video-lazy');
       if (!videos.length) return;
@@ -302,8 +308,10 @@
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
 
         const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.src =
+          `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
         iframe.allowFullscreen = true;
         iframe.loading = "lazy";
         iframe.style.width = "100%";
@@ -326,12 +334,10 @@
       }
     }
 
+    /* --- INIT --- */
     document.addEventListener("DOMContentLoaded", () => {
       setupPanelObserver();
-
-      // Observe the static panels (intro + more video) immediately
       document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
-
       const firstPanel = document.querySelector('.panel');
       if (firstPanel) firstPanel.classList.add('active');
 
