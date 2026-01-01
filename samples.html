@@ -27,9 +27,9 @@
       justify-content: center;
       max-width: 100% !important;
 
-      /* card size determines how much shows */
-      min-height: 82vh !important;
-      padding: 0 1rem 12vh !important;
+      /* Slightly shorter card so it fits viewport better */
+      min-height: 75vh !important;
+      padding: 0 1rem 10vh !important;
       margin: 0 auto !important;
       scroll-snap-align: center;
 
@@ -40,9 +40,9 @@
       z-index: 1;
     }
 
-    /* OVERLAP: next card slides underneath */
+    /* OVERLAP: next card slides underneath but not crazy */
     body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -62vh !important;
+      margin-top: -55vh !important;
     }
 
     /************************************
@@ -61,6 +61,8 @@
     body.page-samples .gallery img {
       width: 100%;
       height: auto;
+      max-height: 60vh;        /* keep image inside the card */
+      object-fit: cover;       /* crop slightly instead of stretching */
       display: block;
       border-radius: 22px;
     }
@@ -153,7 +155,6 @@
   </div>
 </header>
 
-
 <main class="page">
 
   <!-- INTRO PANEL -->
@@ -186,7 +187,6 @@
 
 </main>
 
-
 <!-- LIGHTBOX -->
 <div id="lightbox" class="lightbox" aria-hidden="true">
   <button class="lightbox-close" aria-label="Close">×</button>
@@ -194,11 +194,9 @@
   <div id="lightbox-cap" class="lightbox-cap"></div>
 </div>
 
-
 <footer>
   <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
 </footer>
-
 
 <script>
   let panelObserver = null;
@@ -245,7 +243,6 @@
       else card.classList.add('card-past');
     });
   }
-
 
   /* --- LOAD GALLERY IMAGES --- */
   async function loadGallery() {
@@ -318,20 +315,23 @@
     }
   }
 
-
   /* --- YOUTUBE LAZY LOAD --- */
   function initLazyVideos() {
     document.querySelectorAll('.video-lazy').forEach(div => {
       const id = div.dataset.videoId;
+      const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
+
       const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${div.dataset.autoplay}&mute=1`;
+      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
       iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
       iframe.allowFullscreen = true;
       iframe.loading = "lazy";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+
       div.replaceWith(iframe);
     });
   }
-
 
   document.addEventListener("DOMContentLoaded", () => {
     setupPanelObserver();
