@@ -1003,3 +1003,29 @@ header {
   scroll-snap-align: start;
   padding-bottom: 0;
 }
+/* === Floating footer on HOME (index) only === */
+.home-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.85rem 1.5rem;
+  background: #000;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.9rem;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  z-index: 25;
+}
+
+/* When Reviews panel is active, slide footer in */
+body.footer-visible .home-footer {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Give a bit of breathing room so footer doesn’t cover text */
+body.footer-visible .page {
+  padding-bottom: 3.5rem;
+}
