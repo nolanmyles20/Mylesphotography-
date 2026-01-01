@@ -923,3 +923,20 @@ header {
     padding: 3rem 1.5rem;
   }
 }
+/* --- SAMPLE PAGE PANEL BEHAVIOR --- */
+
+/* No colored morph background on gallery images */
+.panel-gallery .morph-bg {
+  display: none;
+}
+
+/* Make gallery panels shorter so next image peeks in */
+.panel-gallery {
+  min-height: 80vh;
+  padding: 3rem 1.5rem;
+}
+
+/* Slight overlap so scrolling hints at more images */
+.panel-gallery + .panel-gallery {
+  margin-top: -2rem;
+}
