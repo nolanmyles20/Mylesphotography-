@@ -4,97 +4,105 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sample Images | Myles Photography LLC</title>
-
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- PAGE-SPECIFIC STYLES -->
+  <!-- PAGE-SPECIFIC deck overlap + gallery/lightbox -->
   <style>
-    /* Use same snap feel as index */
+    /************************************
+     * SCROLL SNAP
+     ************************************/
     main.page {
       scroll-snap-type: y proximity;
+      overflow-y: auto;
     }
 
-    /* Kill the global panel fade/offset on this page */
-    body.page-samples .panel {
-      opacity: 1 !important;
-      transform: none !important;
+    /************************************
+     * PANEL: GALLERY CARDS (DECK STACK)
+     ************************************/
+    body.page-samples .panel-gallery {
+      position: relative;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      max-width: 100% !important;
+
+      /* card size determines how much shows */
+      min-height: 82vh !important;
+      padding: 0 1rem 12vh !important;
+      margin: 0 auto !important;
+      scroll-snap-align: center;
+
+      transition:
+        transform 260ms ease-out,
+        opacity 260ms ease-out,
+        filter 260ms ease-out;
+      z-index: 1;
     }
 
-    .panel-samples-intro .content {
-      max-width: 88%;
+    /* OVERLAP: next card slides underneath */
+    body.page-samples .panel-gallery + .panel-gallery {
+      margin-top: -62vh !important;
+    }
+
+    /************************************
+     * IMAGE DISPLAY
+     ************************************/
+    body.page-samples .gallery {
+      width: 100%;
+    }
+    body.page-samples .gallery figure {
       margin: 0 auto;
-      padding-bottom: 4rem;
+      border: none !important;
+      background: transparent !important;
+      text-align: center;
+      max-width: 94vw;
+    }
+    body.page-samples .gallery img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 22px;
+    }
+    body.page-samples .gallery figcaption {
+      margin-top: .8rem;
+      font-size: 1.3rem;
+      letter-spacing: .04rem;
+      text-transform: uppercase;
+      color: #dadada;
     }
 
-    /* -----------------------
-       Lightbox + gallery
-       ----------------------- */
+    /************************************
+     * LIGHTBOX
+     ************************************/
     .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.8);
-      display: none;
-      place-items: center;
-      z-index: 9999;
-      padding: 20px;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.85);
+      display: none; place-items: center;
+      z-index: 9999; padding: 20px;
     }
     .lightbox.open { display: grid; }
     .lightbox img {
-      max-width: 90vw;
-      max-height: 85vh;
+      max-width: 90vw; max-height: 85vh;
       border-radius: 12px;
       display: block;
     }
     .lightbox-cap {
-      color: #ccc;
-      margin-top: 10px;
-      text-align: center;
-      max-width: 90vw;
+      color: #ccc; margin-top: 10px;
+      text-align: center; max-width: 90vw;
     }
     .lightbox-close {
-      position: absolute;
-      top: 14px;
-      right: 18px;
-      background: #111;
-      color: #fff;
+      position: absolute; top: 14px; right: 18px;
+      background: #111; color: #fff;
       border: 1px solid #333;
       border-radius: 10px;
-      font-size: 20px;
-      line-height: 1;
-      padding: 8px 12px;
-      cursor: pointer;
+      font-size: 20px; line-height: 1;
+      padding: 8px 12px; cursor: pointer;
     }
 
-    /* Spinner */
-    .gallery figure {
-      position: relative;
-    }
-    .gallery figure.is-loading::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 34px;
-      height: 34px;
-      margin: -17px 0 0 -17px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.25);
-      border-top-color: #ffffff;
-      animation: gallerySpin .8s linear infinite;
-      pointer-events: none;
-      z-index: 2;
-    }
-    @keyframes gallerySpin { to { transform: rotate(360deg); } }
-    .gallery figure.is-loading img {
-      opacity: 0.2;
-      transition: opacity 0.25s ease;
-    }
-    .gallery figure img.loaded {
-      opacity: 1;
-    }
-
-    /* Lazy YouTube placeholders */
+    /************************************
+     * VIDEO PLACEHOLDER FOR LAZY LOAD
+     ************************************/
     .video-lazy {
       position: relative;
       width: 100%;
@@ -108,263 +116,181 @@
     .video-lazy::after {
       content: "";
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 40px;
-      height: 40px;
+      top: 50%; left: 50%;
+      width: 40px; height: 40px;
       margin: -20px 0 0 -20px;
       border-radius: 50%;
       border: 3px solid rgba(255,255,255,0.25);
       border-top-color: #ffffff;
       animation: videoSpin .8s linear infinite;
-      pointer-events: none;
     }
     @keyframes videoSpin { to { transform: rotate(360deg); } }
-
-    /* -----------------------
-       STACKED PHOTO DECK
-       ----------------------- */
-
-    /* Each gallery panel behaves like a large card */
-    body.page-samples .panel-gallery {
-      position: relative;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      max-width: 100% !important;
-
-      /* ~3/4 of viewport so next one can peek */
-      min-height: 75vh !important;
-
-      padding: 0 1rem 8vh !important;
-      margin: 0 auto !important;
-      scroll-snap-align: center;
-
-      transition:
-        transform 260ms ease-out,
-        opacity 260ms ease-out,
-        filter 260ms ease-out;
-      z-index: 1;
-    }
-
-    /* Big negative margin so cards overlap like a deck */
-    body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -32vh !important; /* tweak this for more/less overlap */
-    }
-
-    /* Card / image styling */
-    body.page-samples .gallery {
-      width: 100%;
-    }
-    body.page-samples .gallery figure {
-      background: none !important;
-      border: none !important;
-      border-radius: 0 !important;
-      margin: 0 auto;
-      max-width: 94vw;
-      text-align: center;
-    }
-    body.page-samples .gallery img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 18px;
-    }
-    body.page-samples .gallery figcaption {
-      margin-top: 0.75rem;
-      font-size: 0.95rem;
-      letter-spacing: 0.06em;
-    }
-
-    /* Bright top card */
-    body.page-samples .panel-gallery.card-top {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-      z-index: 40;
-      filter: brightness(1) contrast(1.02);
-      box-shadow: 0 14px 40px rgba(0,0,0,0.7);
-    }
-
-    /* Cards still ahead in the deck (beneath current) */
-    body.page-samples .panel-gallery.card-behind {
-      transform: translateY(45px) scale(0.93);
-      opacity: 0.8;
-      z-index: 30;
-      filter: brightness(0.9);
-    }
-
-    /* Cards you already scrolled past (above current) */
-    body.page-samples .panel-gallery.card-past {
-      transform: translateY(-45px) scale(0.9);
-      opacity: 0.4;
-      z-index: 20;
-      filter: brightness(0.75);
-    }
   </style>
 </head>
 
 <body class="page-samples">
-  <header>
-    <div class="container nav">
-      <a class="brand" href="index.html">
-        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
-        <span>Myles Photography LLC</span>
-      </a>
-      <div class="services-tag">
-        <span class="drone-wrap fly-in" aria-hidden="true">
-          <img src="assets/drone.png" alt="Drone icon" class="services-drone">
-        </span>
-        <span>Drone Services</span>
-      </div>
-      <nav class="navlinks">
-        <a href="samples.html" class="btn current">Sample Images</a>
-        <a href="virtual-tours.html" class="btn">Virtual Tours</a>
-        <a href="about.html" class="btn">About Us</a>
-        <a href="locations.html" class="btn">Locations</a>
-        <a href="payment.html" class="btn">Payment</a>
-        <a href="contact.html" class="btn">Contact</a>
-      </nav>
-      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
-        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
-      </a>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+      <span>Myles Photography LLC</span>
+    </a>
+    <div class="services-tag">
+      <span class="drone-wrap fly-in" aria-hidden="true">
+        <img src="assets/drone.png" alt="Drone icon" class="services-drone">
+      </span>
+      <span>Drone Services</span>
     </div>
-  </header>
-
-  <!-- SNAPPING CONTAINER -->
-  <main class="page">
-
-    <!-- PANEL 1: Intro + Featured Video -->
-    <section class="panel panel-samples-intro">
-      <div class="morph-bg"></div>
-      <div class="content">
-        <h1>Sample Work</h1>
-        <p>Premium waterfront, downtown commercial, and rural properties — we cover it all.</p>
-
-        <div class="video-grid" style="margin-top:2rem;">
-          <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- GALLERY PANELS INSERTED HERE -->
-    <div id="gallery-panels-anchor"></div>
-
-    <!-- PANEL 3: More Videos -->
-    <section class="panel panel-more-video">
-      <div class="morph-bg"></div>
-      <div class="content">
-        <h2 style="margin-bottom:1.5rem; text-align:center;">More Sample Videos</h2>
-        <div class="video-grid">
-          <div class="video-lazy" data-video-id="INyz0gTMGc4" data-autoplay="0"></div>
-        </div>
-        <div class="video-grid">
-          <div class="video-lazy" data-video-id="_XxktVZ8k-M" data-autoplay="0"></div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- LIGHTBOX -->
-  <div id="lightbox" class="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close">×</button>
-    <img id="lightbox-img" alt="" />
-    <div id="lightbox-cap" class="lightbox-cap"></div>
+    <nav class="navlinks">
+      <a href="samples.html" class="btn current">Sample Images</a>
+      <a href="virtual-tours.html" class="btn">Virtual Tours</a>
+      <a href="about.html" class="btn">About Us</a>
+      <a href="locations.html" class="btn">Locations</a>
+      <a href="payment.html" class="btn">Payment</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
   </div>
+</header>
 
-  <footer>
-    <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
-  </footer>
 
-  <!-- ======================
-       SCRIPTS
-       ====================== -->
-  <script>
-    async function loadGallery() {
-      const anchor = document.getElementById('gallery-panels-anchor');
+<main class="page">
 
-      const imgObserver = 'IntersectionObserver' in window
-        ? new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
-              if (!entry.isIntersecting) return;
-              const img = entry.target;
-              const src = img.dataset.src;
-              if (src && !img.src) img.src = src;
-              obs.unobserve(img);
-            });
-          }, { rootMargin: '300px 0px' })
-        : null;
+  <!-- INTRO PANEL -->
+  <section class="panel panel-samples-intro">
+    <div class="content">
+      <h1>Sample Work</h1>
+      <p>We can do anything from premium waterfront property to commercial buildings downtown to even the middle of nowhere.</p>
 
-      try {
-        const res = await fetch('assets/samples/manifest.json');
-        if (!res.ok) throw new Error('manifest not found');
-        const data = await res.json();
-        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
+      <div class="video-grid" style="margin-top:2rem;">
+        <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
+      </div>
+    </div>
+  </section>
 
-        data.images.forEach(item => {
-          const panel = document.createElement('section');
-          panel.className = 'panel panel-gallery';
+  <!-- DYNAMIC GALLERY CARDS -->
+  <div id="gallery-panels-anchor"></div>
 
-          const content = document.createElement('div');
-          content.className = 'content';
+  <!-- MORE VIDEOS -->
+  <section class="panel panel-more-video">
+    <div class="content">
+      <h2 style="margin-bottom:1.5rem; text-align:center;">More Sample Videos</h2>
+      <div class="video-grid">
+        <div class="video-lazy" data-video-id="INyz0gTMGc4" data-autoplay="0"></div>
+      </div>
+      <div class="video-grid">
+        <div class="video-lazy" data-video-id="_XxktVZ8k-M" data-autoplay="0"></div>
+      </div>
+    </div>
+  </section>
 
-          const galleryWrap = document.createElement('div');
-          galleryWrap.className = 'gallery';
+</main>
 
-          const fig = document.createElement('figure');
-          fig.classList.add('is-loading');
 
-          const link = document.createElement('a');
-          const img = document.createElement('img');
-          const cap = document.createElement('figcaption');
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close">×</button>
+  <img id="lightbox-img" alt="" />
+  <div id="lightbox-cap" class="lightbox-cap"></div>
+</div>
 
-          const fullSrc = 'assets/samples/' + item.src;
 
-          link.href = fullSrc;
-          link.className = 'lb';
+<footer>
+  <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+</footer>
 
-          img.dataset.src = fullSrc;
-          img.alt = item.caption || 'Sample image';
 
-          img.addEventListener('load', () => {
-            fig.classList.remove('is-loading');
-            img.classList.add('loaded');
-          });
+<script>
+  let panelObserver = null;
 
-          img.addEventListener('error', () => {
-            fig.classList.remove('is-loading');
-            img.classList.add('loaded');
-          });
+  function setupPanelObserver() {
+    if (panelObserver) return;
+    panelObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const activePanel = entry.target;
+          document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+          activePanel.classList.add("active");
+          updateGalleryStack(activePanel);
+        }
+      });
+    }, { threshold: 0.5 });
+  }
 
-          cap.textContent = item.caption || '';
+  /* --- DECK LOGIC --- */
+  function updateGalleryStack(activePanel) {
+    const cards = Array.from(document.querySelectorAll('.panel-gallery'));
+    if (!cards.length) return;
 
-          link.appendChild(img);
-          fig.appendChild(link);
-          fig.appendChild(cap);
-          galleryWrap.appendChild(fig);
-          content.appendChild(galleryWrap);
-          panel.appendChild(content);
-          anchor.appendChild(panel);
+    cards.forEach(card => card.classList.remove('card-top', 'card-behind', 'card-past'));
 
-          if (imgObserver) imgObserver.observe(img);
-          else img.src = fullSrc;
-        });
-
-        initDeckScroll();
-        initLightbox(anchor);
-
-      } catch (e) {
-        console.error(e);
-        anchor.innerHTML =
-          '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
-      }
+    let idx;
+    if (activePanel && activePanel.classList.contains('panel-gallery')) {
+      idx = cards.indexOf(activePanel);
+    } else {
+      const midY = window.innerHeight * 0.5;
+      let best = 0, bestDist = Infinity;
+      cards.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        const dist = Math.abs((rect.top + rect.height/2) - midY);
+        if (dist < bestDist) { bestDist = dist; best = i; }
+      });
+      idx = best;
     }
+    if (idx < 0) return;
 
-    function initLightbox(anchor) {
+    cards.forEach((card, i) => {
+      if (i === idx) card.classList.add('card-top');
+      else if (i > idx) card.classList.add('card-behind');
+      else card.classList.add('card-past');
+    });
+  }
+
+
+  /* --- LOAD GALLERY IMAGES --- */
+  async function loadGallery() {
+    const anchor = document.getElementById('gallery-panels-anchor');
+
+    try {
+      const res = await fetch('assets/samples/manifest.json');
+      const data = await res.json();
+
+      data.images.forEach(item => {
+        const panel = document.createElement('section');
+        panel.className = 'panel panel-gallery';
+
+        const content = document.createElement('div');
+        content.className = 'content';
+
+        const fig = document.createElement('figure');
+        const link = document.createElement('a');
+        link.className = 'lb';
+
+        const img = document.createElement('img');
+        img.src = 'assets/samples/' + item.src;
+        img.alt = item.caption || 'Sample image';
+
+        const cap = document.createElement('figcaption');
+        cap.textContent = item.caption || '';
+
+        link.href = img.src;
+        link.appendChild(img);
+        fig.appendChild(link);
+        fig.appendChild(cap);
+        content.appendChild(fig);
+        panel.appendChild(content);
+        anchor.appendChild(panel);
+
+        setupPanelObserver();
+        panelObserver.observe(panel);
+      });
+
+      updateGalleryStack(); // ensure correct first card
+
+      /* LIGHTBOX CLICK */
       const lb = document.getElementById('lightbox');
       const lbImg = document.getElementById('lightbox-img');
       const lbCap = document.getElementById('lightbox-cap');
-      const closeBtn = document.querySelector('.lightbox-close');
 
       anchor.addEventListener('click', (e) => {
         const a = e.target.closest('a.lb');
@@ -373,115 +299,46 @@
         lbImg.src = a.href;
         lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
         lb.classList.add('open');
-        lb.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
       });
 
-      closeBtn.addEventListener('click', () => {
+      document.querySelector('.lightbox-close').onclick = () => {
         lb.classList.remove('open');
-        lb.setAttribute('aria-hidden', 'true');
         lbImg.src = '';
         document.body.style.overflow = '';
+      };
+
+      lb.addEventListener('click', e => {
+        if (e.target === lb) document.querySelector('.lightbox-close').click();
       });
 
-      lb.addEventListener('click', (e) => {
-        if (e.target === lb) closeBtn.click();
-      });
+    } catch (e) {
+      anchor.innerHTML =
+        '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code>.</p></div></section>';
     }
+  }
 
-    /* STACKED PHOTO DECK: card nearest middle of screen is "top" */
-    function initDeckScroll() {
-      const cards = Array.from(document.querySelectorAll('.panel-gallery'));
-      if (!cards.length) return;
 
-      let ticking = false;
-
-      function applyDeckClasses() {
-        const midY = window.innerHeight * 0.5;
-        let bestIdx = 0;
-        let bestDist = Infinity;
-
-        cards.forEach((card, i) => {
-          const rect = card.getBoundingClientRect();
-          const center = rect.top + rect.height / 2;
-          const dist = Math.abs(center - midY);
-          if (dist < bestDist) {
-            bestDist = dist;
-            bestIdx = i;
-          }
-        });
-
-        cards.forEach(card => {
-          card.classList.remove('card-top', 'card-behind', 'card-past');
-        });
-
-        cards.forEach((card, i) => {
-          if (i === bestIdx) {
-            card.classList.add('card-top');
-          } else if (i > bestIdx) {
-            card.classList.add('card-behind');
-          } else {
-            card.classList.add('card-past');
-          }
-        });
-      }
-
-      function onScroll() {
-        if (!ticking) {
-          ticking = true;
-          requestAnimationFrame(() => {
-            applyDeckClasses();
-            ticking = false;
-          });
-        }
-      }
-
-      window.addEventListener('scroll', onScroll, { passive: true });
-      applyDeckClasses();
-    }
-
-    /* Lazy YouTube videos */
-    function initLazyVideos() {
-      const videos = document.querySelectorAll('.video-lazy');
-      if (!videos.length) return;
-
-      function loadIframe(div) {
-        const id = div.dataset.videoId;
-        if (!id) return;
-        const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
-
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-        iframe.frameBorder = "0";
-        iframe.allow =
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-        iframe.allowFullscreen = true;
-        iframe.loading = "lazy";
-        iframe.style.width = "100%";
-        iframe.style.height = "100%";
-
-        div.replaceWith(iframe);
-      }
-
-      if ('IntersectionObserver' in window) {
-       const observer = new IntersectionObserver((entries, obs) => {
-          entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            loadIframe(entry.target);
-            obs.unobserve(entry.target);
-          });
-        }, { rootMargin: '300px 0px' });
-
-        videos.forEach(div => observer.observe(div));
-      } else {
-        videos.forEach(loadIframe);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadGallery();
-      initLazyVideos();
+  /* --- YOUTUBE LAZY LOAD --- */
+  function initLazyVideos() {
+    document.querySelectorAll('.video-lazy').forEach(div => {
+      const id = div.dataset.videoId;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${div.dataset.autoplay}&mute=1`;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen = true;
+      iframe.loading = "lazy";
+      div.replaceWith(iframe);
     });
-  </script>
+  }
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setupPanelObserver();
+    loadGallery();
+    initLazyVideos();
+  });
+</script>
+
 </body>
 </html>
