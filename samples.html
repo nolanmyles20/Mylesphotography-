@@ -34,26 +34,36 @@
 
     /* ---------- DECK STYLE GALLERY ---------- */
 
-    /* Each gallery panel basically just centers its card */
+    /* Override global .panel height so gallery panels can overlap */
     body.page-samples .panel-gallery {
+      position: relative;
+      min-height: auto;
+      height: auto;
       display: flex !important;
       justify-content: center;
       align-items: center;
       padding: 1.25rem 0 2.5rem;
-      transition: transform 0.3s ease, opacity 0.3s ease;
       opacity: 0.6;
-      transform: translateY(3vh);   /* slightly pushed down by default */
+      transform: translateY(3vh) scale(0.96);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      z-index: 1;
     }
 
-    /* The “active” one lifts and brightens a bit */
+    /* Stack them by pulling each one up over the previous */
+    body.page-samples .panel-gallery:not(:first-of-type) {
+      margin-top: -38vh; /* tweak this for more or less overlap */
+    }
+
+    /* Let the last card breathe at the bottom */
+    body.page-samples .panel-gallery:last-of-type {
+      margin-bottom: 5rem;
+    }
+
+    /* The “active” one lifts, centers, and brightens */
     body.page-samples .panel-gallery.active {
       opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Make the next card peek up a tiny bit */
-    body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -3.6rem;
+      transform: translateY(0) scale(1);
+      z-index: 5;
     }
 
     /* ---------- IMAGE SIZING (CARD LOOK) ---------- */
@@ -61,6 +71,7 @@
       width: 100%;
       display: flex;
       justify-content: center;
+      pointer-events: none; /* so scroll gestures hit the page, not the img */
     }
 
     body.page-samples .gallery figure {
@@ -70,6 +81,7 @@
       background: transparent !important;
       text-align: center;
       position: relative;
+      pointer-events: auto; /* but clicks still work for lightbox */
     }
 
     body.page-samples .gallery img {
