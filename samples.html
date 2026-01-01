@@ -7,139 +7,170 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- PAGE-SPECIFIC deck overlap + gallery/lightbox -->
-  <style>
-    /************************************
-     * SCROLL SNAP
-     ************************************/
-    main.page {
-      scroll-snap-type: y proximity;
-      overflow-y: auto;
-    }
-    body.page-samples .panel {
-      scroll-snap-align: center;
-    }
+<style>
+/* ---------------------------------------------------------------
+   PAGE-SPECIFIC STYLES — overrides used only on Sample Images page
+   --------------------------------------------------------------- */
 
-    /************************************
-     * PANEL: GALLERY CARDS (DECK STACK)
-     ************************************/
-    body.page-samples .panel-gallery {
-      position: relative;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      max-width: 100% !important;
+/* Tight snap so you always land near-center of image */
+main.page {
+  scroll-snap-type: y mandatory;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
 
-      /* keep things compact so the whole card fits on screen */
-      padding: 2rem 1.25rem 3.25rem !important;
-      margin: 0 auto !important;
-      z-index: 1;
-    }
+/* Section spacing */
+.panel {
+  scroll-snap-align: center;
+  padding-top: 2.25rem;
+  padding-bottom: 3.25rem;
+}
 
-    /* OVERLAP: next card peeks under the current one */
-    body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -4.5rem !important; /* tweak for more/less overlap */
-    }
+/* ----------------------------------------
+   FIRST PANEL — grey card like your index
+   ----------------------------------------*/
+.panel-samples-intro .morph-bg {
+  background: linear-gradient(130deg, #8a8a8a, #3b3b3b);
+  opacity: 1;
+}
 
-    /************************************
-     * IMAGE DISPLAY
-     ************************************/
-    body.page-samples .gallery {
-      width: 100%;
-    }
-    body.page-samples .gallery figure {
-      margin: 0 auto;
-      border: none !important;
-      background: transparent !important;
-      text-align: center;
-      max-width: 94vw;
-    }
-    body.page-samples .gallery img {
-      width: 100%;
-      height: auto;
-      max-height: 55vh;        /* <— smaller so full card fits with nav + caption */
-      object-fit: cover;
-      display: block;
-      border-radius: 22px;
-    }
-    body.page-samples .gallery figcaption {
-      margin-top: .8rem;
-      font-size: 1.3rem;
-      letter-spacing: .04rem;
-      text-transform: uppercase;
-      color: #dadada;
-    }
+.panel-samples-intro .content {
+  max-width: 88%;
+  margin: 0 auto;
+}
 
-    /************************************
-     * LIGHTBOX
-     ************************************/
-    .lightbox {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.85);
-      display: none; place-items: center;
-      z-index: 9999; padding: 20px;
-    }
-    .lightbox.open { display: grid; }
-    .lightbox img {
-      max-width: 90vw; max-height: 85vh;
-      border-radius: 12px;
-      display: block;
-    }
-    .lightbox-cap {
-      color: #ccc; margin-top: 10px;
-      text-align: center; max-width: 90vw;
-    }
-    .lightbox-close {
-      position: absolute; top: 14px; right: 18px;
-      background: #111; color: #fff;
-      border: 1px solid #333;
-      border-radius: 10px;
-      font-size: 20px; line-height: 1;
-      padding: 8px 12px; cursor: pointer;
-    }
+/* ----------------------------------------
+   CARD STACKING ILLUSION
+   ----------------------------------------*/
+.panel-gallery .content {
+  display: flex;
+  justify-content: center;
+}
 
-    /************************************
-     * VIDEO PLACEHOLDER FOR LAZY LOAD
-     ************************************/
-    .video-lazy {
-      position: relative;
-      width: 100%;
-      max-width: 960px;
-      margin: 1.5rem auto;
-      background: #111;
-      border-radius: 12px;
-      overflow: hidden;
-      aspect-ratio: 16 / 9;
-    }
-    .video-lazy::after {
-      content: "";
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 40px; height: 40px;
-      margin: -20px 0 0 -20px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.25);
-      border-top-color: #ffffff;
-      animation: videoSpin .8s linear infinite;
-    }
-    @keyframes videoSpin { to { transform: rotate(360deg); } }
-  </style>
+/* each panel is slightly overlapped visually */
+.panel-gallery {
+  transform: translateY(-3vh);
+}
+
+/* active (nearest) panel brightens and pops upward */
+.panel-gallery.active {
+  transform: translateY(0);
+}
+
+.panel-gallery {
+  transition: transform 0.30s ease, opacity 0.35s ease;
+  opacity: .6;
+}
+.panel-gallery.active {
+  opacity: 1;
+}
+
+/* ----------------------------------------
+   IMAGE SIZE + NO ZOOM CROPPING
+   ----------------------------------------*/
+.gallery figure {
+  max-width: 88vw;
+  margin: 0 auto;
+}
+
+.gallery img {
+  width: 100%;
+  height: auto;
+  max-height: 45vh;
+  object-fit: contain;   /* prevents zoom / cropping */
+  border-radius: 24px;
+}
+
+/* caption spacing */
+.gallery figcaption {
+  text-align: center;
+  margin-top: .6rem;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  color: #e3e3e3;
+}
+
+/* ----------------------------------------
+   LIGHTBOX
+   ----------------------------------------*/
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.8);
+  display: none; place-items: center;
+  z-index: 9999; padding: 20px;
+}
+.lightbox.open { display: grid; }
+.lightbox img {
+  max-width: 92vw; max-height: 88vh;
+  border-radius: 16px;
+}
+.lightbox-close {
+  position: absolute; top: 14px; right: 18px;
+  background: #111; color: #fff; border: 1px solid #333;
+  border-radius: 10px; font-size: 20px; line-height: 1;
+  padding: 8px 12px; cursor: pointer;
+}
+
+/* subtle spinner while loading */
+.gallery figure { position: relative; }
+.gallery figure.is-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 34px; height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top-color: #ffffff;
+  animation: gallerySpin .9s linear infinite;
+  pointer-events: none;
+}
+@keyframes gallerySpin { to { transform: rotate(360deg); } }
+.gallery figure img.loaded { opacity: 1; }
+
+/* ----------------------------------------
+   SMALLER VIDEO BOXES SO STACK LOOKS CONSISTENT
+   ----------------------------------------*/
+.video-lazy {
+  position: relative;
+  width: 92vw;
+  margin: 1rem auto 0 auto;
+  background: #111;
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+.video-lazy::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 34px; height: 34px;
+  margin:-17px 0 0 -17px;
+  border-radius:50%;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top-color:#fff;
+  animation: videoSpin .8s linear infinite;
+}
+@keyframes videoSpin { to { transform: rotate(360deg); } }
+
+</style>
 </head>
 
 <body class="page-samples">
-
 <header>
   <div class="container nav">
     <a class="brand" href="index.html">
       <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
       <span>Myles Photography LLC</span>
     </a>
+
     <div class="services-tag">
       <span class="drone-wrap fly-in" aria-hidden="true">
         <img src="assets/drone.png" alt="Drone icon" class="services-drone">
       </span>
       <span>Drone Services</span>
     </div>
+
     <nav class="navlinks">
       <a href="samples.html" class="btn current">Sample Images</a>
       <a href="virtual-tours.html" class="btn">Virtual Tours</a>
@@ -148,47 +179,44 @@
       <a href="payment.html" class="btn">Payment</a>
       <a href="contact.html" class="btn">Contact</a>
     </nav>
+
+    <a class="faa-badge" href="about.html#faa-cert">
+      <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
+    </a>
   </div>
 </header>
 
 <main class="page">
 
-  <!-- INTRO PANEL (GREY GRADIENT CARD VIA morph-bg) -->
-  <section class="panel panel-samples-intro">
-    <div class="morph-bg"></div>
-    <div class="content">
-      <h1>Sample Work</h1>
-      <p>We can do anything from premium waterfront property to commercial buildings downtown to even the middle of nowhere.</p>
+<!-- ---------- PANEL 1: Grey Intro card + featured video ---------- -->
+<section class="panel panel-samples-intro">
+  <div class="morph-bg"></div>
+  <div class="content">
+    <h1>Sample Work</h1>
+    <p>Premium waterfront, commercial, rural or downtown — we capture it all.</p>
+    <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
+  </div>
+</section>
 
-      <div class="video-grid" style="margin-top:2rem;">
-        <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
-      </div>
-    </div>
-  </section>
+<!-- anchor where gallery inserts -->
+<div id="gallery-panels-anchor"></div>
 
-  <!-- DYNAMIC GALLERY CARDS -->
-  <div id="gallery-panels-anchor"></div>
-
-  <!-- MORE VIDEOS PANEL (GREY CARD TOO) -->
-  <section class="panel panel-more-video">
-    <div class="morph-bg"></div>
-    <div class="content">
-      <h2 style="margin-bottom:1.5rem; text-align:center;">More Sample Videos</h2>
-      <div class="video-grid">
-        <div class="video-lazy" data-video-id="INyz0gTMGc4" data-autoplay="0"></div>
-      </div>
-      <div class="video-grid">
-        <div class="video-lazy" data-video-id="_XxktVZ8k-M" data-autoplay="0"></div>
-      </div>
-    </div>
-  </section>
+<!-- ---------- FINAL PANEL: More videos ---------- -->
+<section class="panel panel-more-video">
+  <div class="morph-bg"></div>
+  <div class="content">
+    <h2 style="text-align:center;">More Video Samples</h2>
+    <div class="video-lazy" data-video-id="INyz0gTMGc4" data-autoplay="0"></div>
+    <div class="video-lazy" data-video-id="_XxktVZ8k-M" data-autoplay="0"></div>
+  </div>
+</section>
 
 </main>
 
-<!-- LIGHTBOX -->
+<!-- lightbox -->
 <div id="lightbox" class="lightbox" aria-hidden="true">
-  <button class="lightbox-close" aria-label="Close">×</button>
-  <img id="lightbox-img" alt="" />
+  <button class="lightbox-close">×</button>
+  <img id="lightbox-img" alt=""/>
   <div id="lightbox-cap" class="lightbox-cap"></div>
 </div>
 
@@ -197,128 +225,132 @@
 </footer>
 
 <script>
-  let panelObserver = null;
-
-  function setupPanelObserver() {
-    if (panelObserver) return;
-    panelObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const activePanel = entry.target;
-          document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-          activePanel.classList.add("active");
-          updateGalleryStack(activePanel);
-        }
-      });
-    }, { threshold: 0.5 });
-  }
-
-  /* --- DECK LOGIC (optional subtle depth) --- */
-  function updateGalleryStack(activePanel) {
-    const cards = Array.from(document.querySelectorAll('.panel-gallery'));
-    if (!cards.length) return;
-
-    cards.forEach(card => card.classList.remove('card-top', 'card-behind', 'card-past'));
-
-    let idx;
-    if (activePanel && activePanel.classList.contains('panel-gallery')) {
-      idx = cards.indexOf(activePanel);
-    } else {
-      const midY = window.innerHeight * 0.5;
-      let best = 0, bestDist = Infinity;
-      cards.forEach((card, i) => {
-        const rect = card.getBoundingClientRect();
-        const dist = Math.abs((rect.top + rect.height/2) - midY);
-        if (dist < bestDist) { bestDist = dist; best = i; }
-      });
-      idx = best;
-    }
-    if (idx < 0) return;
-
-    cards.forEach((card, i) => {
-      if (i === idx) card.classList.add('card-top');
-      else if (i > idx) card.classList.add('card-behind');
-      else card.classList.add('card-past');
+/* -----------------------------------------
+   PANEL ACTIVATION (for stacked focus effect)
+   -----------------------------------------*/
+let panelObserver = null;
+function setupPanelObserver(){
+  if(panelObserver) return;
+  panelObserver = new IntersectionObserver((entries)=>{
+    entries.forEach((entry)=>{
+      if(entry.isIntersecting){
+        document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+        entry.target.classList.add("active");
+      }
     });
-  }
+  }, {threshold: 0.35});
+}
 
-  /* --- LOAD GALLERY IMAGES --- */
-  async function loadGallery() {
-    const anchor = document.getElementById('gallery-panels-anchor');
-
-    try {
-      const res = await fetch('assets/samples/manifest.json');
-      const data = await res.json();
-
-      data.images.forEach(item => {
-        const panel = document.createElement('section');
-        panel.className = 'panel panel-gallery';
-
-        const content = document.createElement('div');
-        content.className = 'content';
-
-        const fig = document.createElement('figure');
-        const link = document.createElement('a');
-        link.className = 'lb';
-
-        const img = document.createElement('img');
-        img.src = 'assets/samples/' + item.src;
-        img.alt = item.caption || 'Sample image';
-
-        const cap = document.createElement('figcaption');
-        cap.textContent = item.caption || '';
-
-        link.href = img.src;
-        link.appendChild(img);
-        fig.appendChild(link);
-        fig.appendChild(cap);
-        content.appendChild(fig);
-        panel.appendChild(content);
-        anchor.appendChild(panel);
-
-        setupPanelObserver();
-        panelObserver.observe(panel);
-      });
-
-      updateGalleryStack(); // ensure correct first card in stack
-    } catch (e) {
-      anchor.innerHTML =
-        '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code>.</p></div></section>';
-    }
-  }
-
-  /* --- YOUTUBE LAZY LOAD --- */
-  function initLazyVideos() {
-    document.querySelectorAll('.video-lazy').forEach(div => {
-      const id = div.dataset.videoId;
-      const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
-
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-      iframe.allowFullscreen = true;
-      iframe.loading = "lazy";
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-
-      div.replaceWith(iframe);
+/* -----------------------------------------
+   LOAD SAMPLES MANIFEST + INSERT PANELS
+   -----------------------------------------*/
+async function loadGallery(){
+  const anchor = document.getElementById("gallery-panels-anchor");
+  const imgObserver = new IntersectionObserver((entries,obs)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const img = entry.target;
+        if(img.dataset.src && !img.src) img.src = img.dataset.src;
+        obs.unobserve(img);
+      }
     });
+  }, {rootMargin:"200px"});
+
+  try {
+    const r = await fetch("assets/samples/manifest.json");
+    const d = await r.json();
+
+    d.images.forEach(item=>{
+      const panel = document.createElement("section");
+      panel.className="panel panel-gallery";
+
+      const content=document.createElement("div");
+      content.className="content";
+
+      const fig=document.createElement("figure");
+      fig.classList.add("is-loading");
+
+      const a=document.createElement("a");
+      a.className="lb";
+      const img=document.createElement("img");
+
+      img.dataset.src="assets/samples/"+item.src;
+      img.addEventListener("load",()=>{fig.classList.remove("is-loading");img.classList.add("loaded");});
+      imgObserver.observe(img);
+
+      a.appendChild(img);
+      const cap=document.createElement("figcaption");
+      cap.textContent=item.caption||"";
+
+      fig.appendChild(a);
+      fig.appendChild(cap);
+      content.appendChild(fig);
+      panel.appendChild(content);
+      anchor.appendChild(panel);
+
+      setupPanelObserver();
+      panelObserver.observe(panel);
+    });
+
+  }catch(e){
+    console.error(e);
+  }
+}
+
+/* -----------------------------------------
+   LIGHTBOX
+   -----------------------------------------*/
+document.addEventListener("click",(e)=>{
+  const lb=document.getElementById("lightbox");
+  const lbImg=document.getElementById("lightbox-img");
+  const lbCap=document.getElementById("lightbox-cap");
+
+  if(e.target.closest("a.lb")){
+    e.preventDefault();
+    const a=e.target.closest("a.lb");
+    lbImg.src=a.querySelector("img").src;
+    lbCap.textContent=a.parentElement.querySelector("figcaption").textContent;
+    lb.classList.add("open"); document.body.style.overflow="hidden";
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    setupPanelObserver();
+  if(e.target.classList.contains("lightbox-close")||e.target.id==="lightbox"){
+    lb.classList.remove("open"); lbImg.src=""; document.body.style.overflow="";
+  }
+});
 
-    /* IMPORTANT: observe the two static panels so their morph cards can “light up” */
-    document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
+/* -----------------------------------------
+   LAZY YOUTUBE
+   -----------------------------------------*/
+function initLazyVideos(){
+  const vids=document.querySelectorAll(".video-lazy");
+  const obs=new IntersectionObserver((ents,obs2)=>{
+    ents.forEach(ent=>{
+      if(ent.isIntersecting){
+        const div=ent.target;
+        const id=div.dataset.videoId;
+        const autoplay=div.dataset.autoplay==="1"?"1":"0";
+        const iframe=document.createElement("iframe");
+        iframe.src=`https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
+        iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen=true;
+        iframe.style.width="100%"; iframe.style.height="100%";
+        div.replaceWith(iframe);
+        obs2.unobserve(div);
+      }
+    });
+  },{rootMargin:"300px"});
+  vids.forEach(v=>obs.observe(v));
+}
 
-    /* make sure the intro panel starts as active so its grey card is bright */
-    const firstPanel = document.querySelector('.panel');
-    if (firstPanel) firstPanel.classList.add('active');
-
-    loadGallery();
-    initLazyVideos();
-  });
+/* -----------------------------------------
+   INIT
+   -----------------------------------------*/
+document.addEventListener("DOMContentLoaded",()=>{
+  setupPanelObserver();
+  document.querySelectorAll(".panel").forEach(p=>panelObserver.observe(p));
+  loadGallery();
+  initLazyVideos();
+});
 </script>
-
 </body>
 </html>
