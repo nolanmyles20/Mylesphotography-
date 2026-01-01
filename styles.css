@@ -991,3 +991,40 @@ header {
   margin-top: -5rem;
 }
 */
+
+/* ==========================================================
+   INDEX PAGE — UNIFY BACKGROUNDS WITH MEDIUM GREY → BLACK
+   (matches Samples gallery style)
+   ========================================================== */
+
+/* Applies to every section with class .panel-* on index.html */
+[class^="panel-"], [class*=" panel-"] {
+  background: radial-gradient(circle at 20% -10%, #d0d0d0, #000000 65%);
+  transition: background 0.6s ease, border-radius 0.6s ease;
+}
+
+/* If any panels rely on morph-bg overlays,
+   this keeps the gradient visible behind the morph effect */
+[class^="panel-"] .morph-bg,
+[class*=" panel-"] .morph-bg {
+  background: radial-gradient(circle at 20% -10%, #d0d0d0, #000000 65%);
+}
+
+/* Optional: slightly different light angles per section
+   (remove if you want perfectly uniform backgrounds) */
+.panel-intro .morph-bg       { background: radial-gradient(circle at 70% -10%, #d0d0d0, #000000 65%); }
+.panel-services .morph-bg    { background: radial-gradient(circle at 30% 110%, #d0d0d0, #000000 65%); }
+.panel-video .morph-bg       { background: radial-gradient(circle at 60% 50%, #d0d0d0, #000000 65%); }
+.panel-reviews .morph-bg     { background: radial-gradient(circle at 15% 120%, #d0d0d0, #000000 65%); }
+.panel-pricing .morph-bg     { background: radial-gradient(circle at 50% -10%, #d0d0d0, #000000 65%); }
+
+/* (Optional) subtle vignette for depth */
+[class^="panel-"]::before,
+[class*=" panel-"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(#00000010, #00000030);
+  z-index: -1;
+}
