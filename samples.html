@@ -36,7 +36,7 @@
       border-radius: 24px;
       width: min(92%, 900px);
       margin: 0 auto;
-      padding: 1.6rem 1.5rem 0.9rem; /* tighter bottom padding */
+      padding: 1.6rem 1.5rem 0.4rem; /* << smaller bottom padding = less dead space */
     }
 
     body.page-samples .panel-samples-intro h1 {
@@ -44,18 +44,19 @@
     }
 
     /* -------- VIDEO WRAPPER (intro + bottom card) -------- */
-    .video-lazy {
-      width: 106%;               /* slightly past card edges */
+    /* Scoped to page-samples so it overrides any global .video-lazy */
+    body.page-samples .video-lazy {
+      width: 112%;              /* wider = visually bigger video */
       max-width: none;
-      margin: 1.1rem -3% 0;      /* negative side margin to stay centered */
+      margin: 1.1rem -6% 0;     /* negative side margin to keep centered */
       background: #000;
       border-radius: 18px;
-      aspect-ratio: 20 / 9;      /* a little taller than 21:9 */
+      aspect-ratio: 20 / 9;     /* a bit taller than ultra-wide */
       overflow: hidden;
       position: relative;
     }
 
-    .video-lazy iframe {
+    body.page-samples .video-lazy iframe {
       position: absolute;
       inset: 0;
       width: 120%;
@@ -239,9 +240,9 @@
         iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
         iframe.allowFullscreen = true;
         iframe.loading = 'lazy';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
-        // clear any placeholder content and insert iframe into wrapper
         div.innerHTML = '';
         div.appendChild(iframe);
       });
