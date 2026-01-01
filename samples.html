@@ -4,104 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sample Images | Myles Photography LLC</title>
+
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- PAGE-SPECIFIC lightbox + intro width only -->
+  <!-- PAGE-SPECIFIC minimal adjustments -->
   <style>
-    /* Lightbox */
-    .lightbox {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.8);
-      display: none; place-items: center;
-      z-index: 9999; padding: 20px;
-    }
-    .lightbox.open { display: grid; }
-    .lightbox img {
-      max-width: 90vw; max-height: 85vh;
-      border-radius: 12px; display: block;
-    }
-    .lightbox-cap {
-      color: #ccc; margin-top: 10px;
-      text-align: center; max-width: 90vw;
-    }
-    .lightbox-close {
-      position: absolute; top: 14px; right: 18px;
-      background: #111; color: #fff;
-      border: 1px solid #333;
-      border-radius: 10px;
-      font-size: 20px; line-height: 1;
-      padding: 8px 12px; cursor: pointer;
+    /* main scroll behavior like index */
+    main.page {
+      scroll-snap-type: y proximity;
     }
 
-    /* Spinner while loading images */
-    .gallery figure { position: relative; }
-    .gallery figure.is-loading::after {
-      content: "";
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 34px; height: 34px;
-      margin: -17px 0 0 -17px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.25);
-      border-top-color: #ffffff;
-      animation: gallerySpin .8s linear infinite;
-      pointer-events: none;
-      z-index: 2;
-    }
-    @keyframes gallerySpin { to { transform: rotate(360deg); } }
-    .gallery figure.is-loading img {
-      opacity: 0.2;
-      transition: opacity 0.25s ease;
-    }
-    .gallery figure img.loaded { opacity: 1; }
-
-    /* Lazy YouTube placeholders */
-    .video-lazy {
-      position: relative;
-      width: 100%;
-      max-width: 960px;
-      margin: 1.5rem auto;
-      background: #111;
-      border-radius: 12px;
-      overflow: hidden;
-      aspect-ratio: 16 / 9;
-    }
-    .video-lazy::after {
-      content: "";
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 40px; height: 40px;
-      margin: -20px 0 0 -20px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.25);
-      border-top-color: #ffffff;
-      animation: videoSpin .8s linear infinite;
-      pointer-events: none;
-    }
-    @keyframes videoSpin { to { transform: rotate(360deg); } }
-
-    /* Intro width */
+    /* intro card styling slightly adjusted so gallery overlaps cleaner */
     .panel-samples-intro .content {
       max-width: 88%;
       margin: 0 auto;
+      padding-bottom: 4rem;
     }
   </style>
 </head>
 
 <body class="page-samples">
+
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
         <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
         <span>Myles Photography LLC</span>
       </a>
+
       <div class="services-tag">
         <span class="drone-wrap fly-in" aria-hidden="true">
           <img src="assets/drone.png" alt="Drone icon" class="services-drone">
         </span>
         <span>Drone Services</span>
       </div>
+
       <nav class="navlinks">
         <a href="samples.html" class="btn current">Sample Images</a>
         <a href="virtual-tours.html" class="btn">Virtual Tours</a>
@@ -110,13 +48,14 @@
         <a href="payment.html" class="btn">Payment</a>
         <a href="contact.html" class="btn">Contact</a>
       </nav>
+
       <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
         <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
       </a>
     </div>
   </header>
 
-  <!-- SCROLL-SNAPPING CONTAINER -->
+  <!-- SNAPPING CONTAINER -->
   <main class="page">
 
     <!-- PANEL 1: Intro + Featured Video -->
@@ -124,7 +63,7 @@
       <div class="morph-bg"></div>
       <div class="content">
         <h1>Sample Work</h1>
-        <p>We can do anything from premium waterfront property to commercial buildings downtown to even the middle of nowhere.</p>
+        <p>Premium waterfront, downtown commercial, and rural properties — we cover it all.</p>
 
         <div class="video-grid" style="margin-top:2rem;">
           <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
@@ -132,10 +71,10 @@
       </div>
     </section>
 
-    <!-- GALLERY PANELS GET INSERTED HERE -->
+    <!-- Gallery cards load dynamically here -->
     <div id="gallery-panels-anchor"></div>
 
-    <!-- PANEL N: More Videos -->
+    <!-- PANEL 3: More Videos -->
     <section class="panel panel-more-video">
       <div class="morph-bg"></div>
       <div class="content">
@@ -162,25 +101,45 @@
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
   </footer>
 
-  <!-- SCRIPT: snapping, gallery build, lazy video, lightbox -->
+
+  <!-- ======================
+       STACKED PHOTO SCRIPT
+       ====================== -->
   <script>
     let panelObserver = null;
 
-    /* --- Assign deck classes based on which gallery panel is active --- */
     function updateGalleryStack(activePanel) {
       const cards = Array.from(document.querySelectorAll('.panel-gallery'));
-      // Clear deck classes first
-      cards.forEach(card => {
-        card.classList.remove('card-top', 'card-behind', 'card-past');
-      });
+      if (!cards.length) return;
 
-      // Only apply deck state if the active thing is a gallery card
-      if (!activePanel || !activePanel.classList || !activePanel.classList.contains('panel-gallery')) {
-        return;
+      // Reset all deck classes
+      cards.forEach(card =>
+        card.classList.remove('card-top', 'card-behind', 'card-past')
+      );
+
+      let idx;
+
+      if (activePanel && activePanel.classList.contains('panel-gallery')) {
+        idx = cards.indexOf(activePanel);
+      } else {
+        // fallback: closest to viewport middle becomes top card
+        const midY = window.innerHeight * 0.5;
+        let best = 0;
+        let bestDist = Infinity;
+
+        cards.forEach((card, i) => {
+          const rect = card.getBoundingClientRect();
+          const center = rect.top + rect.height / 2;
+          const dist = Math.abs(center - midY);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
+        });
+        idx = best;
       }
 
-      const idx = cards.indexOf(activePanel);
-      if (idx === -1) return;
+      if (idx < 0) return;
 
       cards.forEach((card, i) => {
         if (i === idx) {
@@ -193,33 +152,34 @@
       });
     }
 
-    /* --- MARK MOST VISIBLE PANEL ACTIVE --- */
+
     function setupPanelObserver() {
       if (panelObserver) return;
 
       panelObserver = new IntersectionObserver((entries) => {
-        const visible = entries.filter(e => e.isIntersecting);
-        if (!visible.length) return;
+        let mostVisible = null;
+        let maxRatio = 0;
 
-        const mostVisible = visible.reduce((max, e) =>
-          e.intersectionRatio > max.intersectionRatio ? e : max,
-          visible[0]
-        );
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio > maxRatio) {
+            mostVisible = entry;
+            maxRatio = entry.intersectionRatio;
+          }
+        });
 
-        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
-        mostVisible.target.classList.add("active");
+        if (mostVisible) {
+          document.querySelectorAll(".panel")
+            .forEach(p => p.classList.remove("active"));
 
-        // Update the deck classes for gallery cards
-        updateGalleryStack(mostVisible.target);
-      }, {
-        threshold: [0.1, 0.3, 0.6]
-      });
+          mostVisible.target.classList.add("active");
+          updateGalleryStack(mostVisible.target);
+        }
+      }, { threshold: 0.25 });
     }
 
-    /* --- BUILD GALLERY PANELS --- */
+
     async function loadGallery() {
       const anchor = document.getElementById('gallery-panels-anchor');
-
       const imgObserver = 'IntersectionObserver' in window
         ? new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
@@ -229,14 +189,12 @@
               if (src && !img.src) img.src = src;
               obs.unobserve(img);
             });
-          }, { rootMargin: '200px 0px' })
+          }, { rootMargin: '300px 0px' })
         : null;
 
       try {
-        const res = await fetch('assets/samples/manifest.json');
-        if (!res.ok) throw new Error('manifest not found');
-        const data = await res.json();
-        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
+        const manifest = await fetch('assets/samples/manifest.json');
+        const data = await manifest.json();
 
         data.images.forEach(item => {
           const panel = document.createElement('section');
@@ -245,30 +203,23 @@
           const content = document.createElement('div');
           content.className = 'content';
 
-          const galleryWrap = document.createElement('div');
-          galleryWrap.className = 'gallery';
+          const wrap = document.createElement('div');
+          wrap.className = 'gallery';
 
           const fig = document.createElement('figure');
-          fig.classList.add('is-loading');
 
           const link = document.createElement('a');
           const img = document.createElement('img');
           const cap = document.createElement('figcaption');
 
-          const fullSrc = 'assets/samples/' + item.src;
+          const src = 'assets/samples/' + item.src;
 
-          link.href = fullSrc;
+          link.href = src;
           link.className = 'lb';
-
-          img.dataset.src = fullSrc;
+          img.dataset.src = src;
           img.alt = item.caption || 'Sample image';
 
           img.addEventListener('load', () => {
-            fig.classList.remove('is-loading');
-            img.classList.add('loaded');
-          });
-          img.addEventListener('error', () => {
-            fig.classList.remove('is-loading');
             img.classList.add('loaded');
           });
 
@@ -277,19 +228,25 @@
           link.appendChild(img);
           fig.appendChild(link);
           fig.appendChild(cap);
-          galleryWrap.appendChild(fig);
-          content.appendChild(galleryWrap);
+          wrap.appendChild(fig);
+          content.appendChild(wrap);
           panel.appendChild(content);
           anchor.appendChild(panel);
 
           if (imgObserver) imgObserver.observe(img);
-          else img.src = fullSrc;
-
-          setupPanelObserver();
-          panelObserver.observe(panel);
+          else img.src = src;
         });
 
-        /* --- LIGHTBOX --- */
+        setupPanelObserver();
+        document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
+
+        const firstPanel = document.querySelector('.panel');
+        if (firstPanel) firstPanel.classList.add('active');
+
+        // ensure first gallery card becomes deck top
+        updateGalleryStack(firstPanel);
+
+        /* LIGHTBOX */
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         const lbCap = document.getElementById('lightbox-cap');
@@ -300,8 +257,7 @@
           if (!a) return;
           e.preventDefault();
           lbImg.src = a.href;
-          lbCap.textContent =
-            a.parentElement.querySelector('figcaption')?.textContent || '';
+          lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
           lb.classList.add('open');
           lb.setAttribute('aria-hidden', 'false');
           document.body.style.overflow = 'hidden';
@@ -309,7 +265,6 @@
 
         closeBtn.addEventListener('click', () => {
           lb.classList.remove('open');
-          lb.setAttribute('aria-hidden', 'true');
           lbImg.src = '';
           document.body.style.overflow = '';
         });
@@ -319,29 +274,23 @@
         });
 
       } catch (e) {
-        console.error(e);
-        anchor.innerHTML =
-          '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
-        setupPanelObserver();
-        document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
+        console.warn('Gallery load failed:', e);
       }
     }
 
-    /* --- LAZY YOUTUBE VIDEOS --- */
+
     function initLazyVideos() {
-      const videos = document.querySelectorAll('.video-lazy');
-      if (!videos.length) return;
+      const vids = document.querySelectorAll('.video-lazy');
+      if (!vids.length) return;
 
       function loadIframe(div) {
         const id = div.dataset.videoId;
         if (!id) return;
-        const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
 
+        const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
         const iframe = document.createElement('iframe');
-        iframe.src =
-          `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-        iframe.allow =
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
         iframe.allowFullscreen = true;
         iframe.loading = "lazy";
         iframe.style.width = "100%";
@@ -358,19 +307,15 @@
           });
         }, { rootMargin: '300px 0px' });
 
-        videos.forEach(div => observer.observe(div));
+        vids.forEach(v => observer.observe(v));
       } else {
-        videos.forEach(loadIframe);
+        vids.forEach(loadIframe);
       }
     }
 
-    /* --- INIT --- */
+    /* INIT */
     document.addEventListener("DOMContentLoaded", () => {
       setupPanelObserver();
-      document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
-      const firstPanel = document.querySelector('.panel');
-      if (firstPanel) firstPanel.classList.add('active');
-
       loadGallery();
       initLazyVideos();
     });
