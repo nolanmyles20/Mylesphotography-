@@ -1068,3 +1068,17 @@ body:not(.page-samples) .panel.active {
 .page {
   scroll-padding-bottom: 1px;
 }
+/* === Last panel (Reviews) still snaps, but allows some extra scroll === */
+
+/* keep strong snapping on index */
+body:not(.page-samples) .page {
+  scroll-snap-type: y mandatory;
+  scroll-padding-bottom: 6rem; /* room at bottom so you can scroll a bit */
+}
+
+/* make the last panel slightly shorter than full viewport */
+body:not(.page-samples) .page > .panel:last-of-type {
+  min-height: 85vh;              /* < 100vh so there's slack */
+  padding-bottom: 4rem;          /* extra breathing room inside */
+  scroll-snap-align: start !important; /* still a real snap target */
+}
