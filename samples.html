@@ -43,16 +43,25 @@
       margin-top: 0;
     }
 
-    /* Video placeholder (we still lazy-replace with iframe) */
+    /* ---------- CROPPED VIDEO WRAPPER (removes black bars) ---------- */
     .video-lazy {
       width: 100%;
-      max-width: min(80vw, 640px);   /* <— NEW: card-like width */
-      margin: 1.2rem auto 0;         /* centered inside the grey card */
-      background: #111;
+      max-width: 100%;
+      margin: 1.2rem auto 0;
+      background: #000;
       border-radius: 18px;
-      aspect-ratio: 24 / 9;
-      overflow: hidden;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      aspect-ratio: 21 / 9;      /* cinematic window */
+      overflow: hidden;          /* clip the iframe inside */
+      position: relative;
+    }
+
+    .video-lazy iframe {
+      position: absolute;
+      inset: 0;
+      width: 120%;               /* zoom in to push letterbox out */
+      height: 120%;
+      margin: -10% 0 0 -10%;     /* keep it centered after zoom */
+      border: 0;
     }
 
     /* -------- STACKED DECK GALLERY (Swiper) -------- */
@@ -125,7 +134,7 @@
 </head>
 
 <body class="page-samples">
-  <!-- ✅ Restored global header that matches other pages -->
+  <!-- Global header that matches other pages -->
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
@@ -213,23 +222,25 @@
       });
     }
 
-    // Swap video placeholders for real iframes
+    // Insert iframes *inside* the .video-lazy wrapper so it can crop them
     function initLazyVideos() {
       const vids = document.querySelectorAll('.video-lazy');
+
       vids.forEach(div => {
         const id = div.dataset.videoId;
         if (!id) return;
+
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
 
         const iframe = document.createElement('iframe');
         iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
         iframe.allowFullscreen = true;
         iframe.loading = 'lazy';
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
-        div.replaceWith(iframe);
+        // Clear any placeholder spinner (if you add one later) and insert iframe
+        div.innerHTML = '';
+        div.appendChild(iframe);
       });
     }
 
