@@ -10,7 +10,7 @@
 
   <!-- PAGE-SPECIFIC STYLES -->
   <style>
-    /* Use the same vertical snapping feel as index */
+    /* Same snap feel as index */
     main.page {
       scroll-snap-type: y proximity;
     }
@@ -21,7 +21,9 @@
       padding-bottom: 4rem;
     }
 
-    /* Lightbox + gallery loader styles (same behavior you had before) */
+    /* -----------------------
+       Lightbox + gallery
+       ----------------------- */
     .lightbox {
       position: fixed;
       inset: 0;
@@ -58,7 +60,7 @@
       cursor: pointer;
     }
 
-    /* Spinner on each image while loading */
+    /* Spinner */
     .gallery figure {
       position: relative;
     }
@@ -77,9 +79,7 @@
       pointer-events: none;
       z-index: 2;
     }
-    @keyframes gallerySpin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes gallerySpin { to { transform: rotate(360deg); } }
     .gallery figure.is-loading img {
       opacity: 0.2;
       transition: opacity 0.25s ease;
@@ -113,8 +113,78 @@
       animation: videoSpin .8s linear infinite;
       pointer-events: none;
     }
-    @keyframes videoSpin {
-      to { transform: rotate(360deg); }
+    @keyframes videoSpin { to { transform: rotate(360deg); } }
+
+    /* -----------------------
+       STACKED PHOTO DECK
+       ----------------------- */
+
+    /* Base for each gallery panel/card */
+    body.page-samples .panel-gallery {
+      position: relative;
+      margin: 0 auto;
+      max-width: 100%;
+      min-height: 70vh;
+      padding: 1.5rem 1rem 3rem;
+      scroll-snap-align: start;
+      transition:
+        transform 260ms ease-out,
+        opacity 260ms ease-out,
+        filter 260ms ease-out;
+      z-index: 1;
+    }
+
+    /* Overlap so next photo peeks up from under the current one */
+    body.page-samples .panel-gallery + .panel-gallery {
+      margin-top: -5rem; /* increase magnitude for more overlap */
+    }
+
+    /* Card / image styling */
+    body.page-samples .gallery {
+      display: block;
+    }
+    body.page-samples .gallery figure {
+      background: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      margin: 0 auto;
+      max-width: 94vw;
+      text-align: center;
+    }
+    body.page-samples .gallery img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 18px;
+    }
+    body.page-samples .gallery figcaption {
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* Top card (the one nearest the center of the screen) */
+    body.page-samples .panel-gallery.card-top {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      z-index: 40;
+      filter: none;
+    }
+
+    /* Cards still ahead in the stack */
+    body.page-samples .panel-gallery.card-behind {
+      transform: translateY(22px) scale(0.97);
+      opacity: 0.88;
+      z-index: 30;
+      filter: brightness(0.97);
+    }
+
+    /* Cards you’ve already peeled past */
+    body.page-samples .panel-gallery.card-past {
+      transform: translateY(-24px) scale(0.94);
+      opacity: 0.35;
+      z-index: 20;
+      filter: brightness(0.82);
     }
   </style>
 </head>
@@ -126,14 +196,12 @@
         <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
         <span>Myles Photography LLC</span>
       </a>
-
       <div class="services-tag">
         <span class="drone-wrap fly-in" aria-hidden="true">
-          <img src="assets/drone.png" alt="Drone icon" class="services-drone" />
+          <img src="assets/drone.png" alt="Drone icon" class="services-drone">
         </span>
         <span>Drone Services</span>
       </div>
-
       <nav class="navlinks">
         <a href="samples.html" class="btn current">Sample Images</a>
         <a href="virtual-tours.html" class="btn">Virtual Tours</a>
@@ -142,9 +210,8 @@
         <a href="payment.html" class="btn">Payment</a>
         <a href="contact.html" class="btn">Contact</a>
       </nav>
-
       <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
-        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge" />
+        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
       </a>
     </div>
   </header>
@@ -165,7 +232,7 @@
       </div>
     </section>
 
-    <!-- Gallery cards will be inserted here -->
+    <!-- GALLERY PANELS INSERTED HERE -->
     <div id="gallery-panels-anchor"></div>
 
     <!-- PANEL 3: More Videos -->
@@ -202,7 +269,6 @@
     async function loadGallery() {
       const anchor = document.getElementById('gallery-panels-anchor');
 
-      // Lazy-load images
       const imgObserver = 'IntersectionObserver' in window
         ? new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
@@ -270,7 +336,7 @@
           else img.src = fullSrc;
         });
 
-        initDeckScroll();   // set up stacked-card behavior after gallery is built
+        initDeckScroll();
         initLightbox(anchor);
 
       } catch (e) {
@@ -309,7 +375,7 @@
       });
     }
 
-    /* STACKED PHOTO DECK */
+    /* STACKED PHOTO DECK: choose card nearest middle of screen */
     function initDeckScroll() {
       const cards = Array.from(document.querySelectorAll('.panel-gallery'));
       if (!cards.length) return;
@@ -318,8 +384,6 @@
 
       function applyDeckClasses() {
         const midY = window.innerHeight * 0.5;
-
-        // find card whose center is closest to midY
         let bestIdx = 0;
         let bestDist = Infinity;
 
@@ -362,6 +426,7 @@
       applyDeckClasses(); // initial state
     }
 
+    /* Lazy YouTube videos */
     function initLazyVideos() {
       const videos = document.querySelectorAll('.video-lazy');
       if (!videos.length) return;
