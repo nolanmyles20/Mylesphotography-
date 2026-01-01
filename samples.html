@@ -8,24 +8,118 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- PAGE-SPECIFIC minimal adjustments -->
+  <!-- PAGE-SPECIFIC STYLES -->
   <style>
-    /* main scroll behavior like index */
+    /* Use the same vertical snapping feel as index */
     main.page {
       scroll-snap-type: y proximity;
     }
 
-    /* intro card styling slightly adjusted so gallery overlaps cleaner */
     .panel-samples-intro .content {
       max-width: 88%;
       margin: 0 auto;
       padding-bottom: 4rem;
     }
+
+    /* Lightbox + gallery loader styles (same behavior you had before) */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.8);
+      display: none;
+      place-items: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 12px;
+      display: block;
+    }
+    .lightbox-cap {
+      color: #ccc;
+      margin-top: 10px;
+      text-align: center;
+      max-width: 90vw;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: #111;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 10px;
+      font-size: 20px;
+      line-height: 1;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    /* Spinner on each image while loading */
+    .gallery figure {
+      position: relative;
+    }
+    .gallery figure.is-loading::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      margin: -17px 0 0 -17px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25);
+      border-top-color: #ffffff;
+      animation: gallerySpin .8s linear infinite;
+      pointer-events: none;
+      z-index: 2;
+    }
+    @keyframes gallerySpin {
+      to { transform: rotate(360deg); }
+    }
+    .gallery figure.is-loading img {
+      opacity: 0.2;
+      transition: opacity 0.25s ease;
+    }
+    .gallery figure img.loaded {
+      opacity: 1;
+    }
+
+    /* Lazy YouTube placeholders */
+    .video-lazy {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      margin: 1.5rem auto;
+      background: #111;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+    }
+    .video-lazy::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      margin: -20px 0 0 -20px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.25);
+      border-top-color: #ffffff;
+      animation: videoSpin .8s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes videoSpin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 
 <body class="page-samples">
-
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
@@ -35,7 +129,7 @@
 
       <div class="services-tag">
         <span class="drone-wrap fly-in" aria-hidden="true">
-          <img src="assets/drone.png" alt="Drone icon" class="services-drone">
+          <img src="assets/drone.png" alt="Drone icon" class="services-drone" />
         </span>
         <span>Drone Services</span>
       </div>
@@ -50,7 +144,7 @@
       </nav>
 
       <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
-        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
+        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge" />
       </a>
     </div>
   </header>
@@ -71,7 +165,7 @@
       </div>
     </section>
 
-    <!-- Gallery cards load dynamically here -->
+    <!-- Gallery cards will be inserted here -->
     <div id="gallery-panels-anchor"></div>
 
     <!-- PANEL 3: More Videos -->
@@ -101,85 +195,14 @@
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
   </footer>
 
-
   <!-- ======================
-       STACKED PHOTO SCRIPT
+       SCRIPTS
        ====================== -->
   <script>
-    let panelObserver = null;
-
-    function updateGalleryStack(activePanel) {
-      const cards = Array.from(document.querySelectorAll('.panel-gallery'));
-      if (!cards.length) return;
-
-      // Reset all deck classes
-      cards.forEach(card =>
-        card.classList.remove('card-top', 'card-behind', 'card-past')
-      );
-
-      let idx;
-
-      if (activePanel && activePanel.classList.contains('panel-gallery')) {
-        idx = cards.indexOf(activePanel);
-      } else {
-        // fallback: closest to viewport middle becomes top card
-        const midY = window.innerHeight * 0.5;
-        let best = 0;
-        let bestDist = Infinity;
-
-        cards.forEach((card, i) => {
-          const rect = card.getBoundingClientRect();
-          const center = rect.top + rect.height / 2;
-          const dist = Math.abs(center - midY);
-          if (dist < bestDist) {
-            bestDist = dist;
-            best = i;
-          }
-        });
-        idx = best;
-      }
-
-      if (idx < 0) return;
-
-      cards.forEach((card, i) => {
-        if (i === idx) {
-          card.classList.add('card-top');
-        } else if (i > idx) {
-          card.classList.add('card-behind');
-        } else {
-          card.classList.add('card-past');
-        }
-      });
-    }
-
-
-    function setupPanelObserver() {
-      if (panelObserver) return;
-
-      panelObserver = new IntersectionObserver((entries) => {
-        let mostVisible = null;
-        let maxRatio = 0;
-
-        entries.forEach((entry) => {
-          if (entry.intersectionRatio > maxRatio) {
-            mostVisible = entry;
-            maxRatio = entry.intersectionRatio;
-          }
-        });
-
-        if (mostVisible) {
-          document.querySelectorAll(".panel")
-            .forEach(p => p.classList.remove("active"));
-
-          mostVisible.target.classList.add("active");
-          updateGalleryStack(mostVisible.target);
-        }
-      }, { threshold: 0.25 });
-    }
-
-
     async function loadGallery() {
       const anchor = document.getElementById('gallery-panels-anchor');
+
+      // Lazy-load images
       const imgObserver = 'IntersectionObserver' in window
         ? new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
@@ -193,8 +216,10 @@
         : null;
 
       try {
-        const manifest = await fetch('assets/samples/manifest.json');
-        const data = await manifest.json();
+        const res = await fetch('assets/samples/manifest.json');
+        if (!res.ok) throw new Error('manifest not found');
+        const data = await res.json();
+        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
 
         data.images.forEach(item => {
           const panel = document.createElement('section');
@@ -203,23 +228,31 @@
           const content = document.createElement('div');
           content.className = 'content';
 
-          const wrap = document.createElement('div');
-          wrap.className = 'gallery';
+          const galleryWrap = document.createElement('div');
+          galleryWrap.className = 'gallery';
 
           const fig = document.createElement('figure');
+          fig.classList.add('is-loading');
 
           const link = document.createElement('a');
           const img = document.createElement('img');
           const cap = document.createElement('figcaption');
 
-          const src = 'assets/samples/' + item.src;
+          const fullSrc = 'assets/samples/' + item.src;
 
-          link.href = src;
+          link.href = fullSrc;
           link.className = 'lb';
-          img.dataset.src = src;
+
+          img.dataset.src = fullSrc;
           img.alt = item.caption || 'Sample image';
 
           img.addEventListener('load', () => {
+            fig.classList.remove('is-loading');
+            img.classList.add('loaded');
+          });
+
+          img.addEventListener('error', () => {
+            fig.classList.remove('is-loading');
             img.classList.add('loaded');
           });
 
@@ -228,73 +261,126 @@
           link.appendChild(img);
           fig.appendChild(link);
           fig.appendChild(cap);
-          wrap.appendChild(fig);
-          content.appendChild(wrap);
+          galleryWrap.appendChild(fig);
+          content.appendChild(galleryWrap);
           panel.appendChild(content);
           anchor.appendChild(panel);
 
           if (imgObserver) imgObserver.observe(img);
-          else img.src = src;
+          else img.src = fullSrc;
         });
 
-        setupPanelObserver();
-        document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
-
-        const firstPanel = document.querySelector('.panel');
-        if (firstPanel) firstPanel.classList.add('active');
-
-        // ensure first gallery card becomes deck top
-        updateGalleryStack(firstPanel);
-
-        /* LIGHTBOX */
-        const lb = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightbox-img');
-        const lbCap = document.getElementById('lightbox-cap');
-        const closeBtn = document.querySelector('.lightbox-close');
-
-        anchor.addEventListener('click', (e) => {
-          const a = e.target.closest('a.lb');
-          if (!a) return;
-          e.preventDefault();
-          lbImg.src = a.href;
-          lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
-          lb.classList.add('open');
-          lb.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden';
-        });
-
-        closeBtn.addEventListener('click', () => {
-          lb.classList.remove('open');
-          lbImg.src = '';
-          document.body.style.overflow = '';
-        });
-
-        lb.addEventListener('click', (e) => {
-          if (e.target === lb) closeBtn.click();
-        });
+        initDeckScroll();   // set up stacked-card behavior after gallery is built
+        initLightbox(anchor);
 
       } catch (e) {
-        console.warn('Gallery load failed:', e);
+        console.error(e);
+        anchor.innerHTML =
+          '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
       }
     }
 
+    function initLightbox(anchor) {
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightbox-img');
+      const lbCap = document.getElementById('lightbox-cap');
+      const closeBtn = document.querySelector('.lightbox-close');
+
+      anchor.addEventListener('click', (e) => {
+        const a = e.target.closest('a.lb');
+        if (!a) return;
+        e.preventDefault();
+        lbImg.src = a.href;
+        lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      });
+
+      closeBtn.addEventListener('click', () => {
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden', 'true');
+        lbImg.src = '';
+        document.body.style.overflow = '';
+      });
+
+      lb.addEventListener('click', (e) => {
+        if (e.target === lb) closeBtn.click();
+      });
+    }
+
+    /* STACKED PHOTO DECK */
+    function initDeckScroll() {
+      const cards = Array.from(document.querySelectorAll('.panel-gallery'));
+      if (!cards.length) return;
+
+      let ticking = false;
+
+      function applyDeckClasses() {
+        const midY = window.innerHeight * 0.5;
+
+        // find card whose center is closest to midY
+        let bestIdx = 0;
+        let bestDist = Infinity;
+
+        cards.forEach((card, i) => {
+          const rect = card.getBoundingClientRect();
+          const center = rect.top + rect.height / 2;
+          const dist = Math.abs(center - midY);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+          }
+        });
+
+        cards.forEach(card => {
+          card.classList.remove('card-top', 'card-behind', 'card-past');
+        });
+
+        cards.forEach((card, i) => {
+          if (i === bestIdx) {
+            card.classList.add('card-top');
+          } else if (i > bestIdx) {
+            card.classList.add('card-behind');
+          } else {
+            card.classList.add('card-past');
+          }
+        });
+      }
+
+      function onScroll() {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(() => {
+            applyDeckClasses();
+            ticking = false;
+          });
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      applyDeckClasses(); // initial state
+    }
 
     function initLazyVideos() {
-      const vids = document.querySelectorAll('.video-lazy');
-      if (!vids.length) return;
+      const videos = document.querySelectorAll('.video-lazy');
+      if (!videos.length) return;
 
       function loadIframe(div) {
         const id = div.dataset.videoId;
         if (!id) return;
-
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
+
         const iframe = document.createElement('iframe');
         iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.frameBorder = "0";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
         iframe.allowFullscreen = true;
         iframe.loading = "lazy";
         iframe.style.width = "100%";
         iframe.style.height = "100%";
+
         div.replaceWith(iframe);
       }
 
@@ -307,15 +393,13 @@
           });
         }, { rootMargin: '300px 0px' });
 
-        vids.forEach(v => observer.observe(v));
+        videos.forEach(div => observer.observe(div));
       } else {
-        vids.forEach(loadIframe);
+        videos.forEach(loadIframe);
       }
     }
 
-    /* INIT */
-    document.addEventListener("DOMContentLoaded", () => {
-      setupPanelObserver();
+    document.addEventListener('DOMContentLoaded', () => {
       loadGallery();
       initLazyVideos();
     });
