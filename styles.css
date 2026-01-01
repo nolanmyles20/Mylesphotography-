@@ -859,7 +859,7 @@ body {
 .panel-hero.active .morph-bg {
   inset: 4%;
   border-radius: 3rem;
-  background: radial-gradient(circle at 20% -10%, #33ff99, #05070b 55%);
+  background: radial-gradient(circle at 20% -10%, #d0d0d0, #000000 65%);
 }
 
 .panel-intro.active .morph-bg {
@@ -877,7 +877,7 @@ body {
 .panel-video.active .morph-bg {
   inset: 12%;
   border-radius: 2rem;
-  background: radial-gradient(circle at 20% -10%, #e6e6e6, #b3b3b3 60%);
+  background: radial-gradient(circle at 20% -10%, #d0d0d0, #000000 65%);
 }
 
 .panel-reviews.active .morph-bg {
