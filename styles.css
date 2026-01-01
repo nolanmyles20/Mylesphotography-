@@ -940,3 +940,54 @@ header {
 .panel-gallery + .panel-gallery {
   margin-top: -2rem;
 }
+/* ==========================================================
+   SAMPLES PAGE — STACKED GALLERY STYLE + MEDIUM GREY GRADIENT
+   ========================================================== */
+
+/* Softer scroll snap only on samples page (handled in samples.html)
+   — this block intentionally left out here to avoid affecting index */
+
+/* Remove colored morph card behind gallery images */
+.panel-gallery .morph-bg {
+  display: none !important;
+}
+
+/* Medium grey -> black gradient like intro panels */
+.panel-gallery {
+  background: radial-gradient(circle at 20% -10%, #d0d0d0, #000000 65%);
+  
+  /* stacked feed spacing */
+  min-height: 72vh;   /* shorter to show next image */
+  padding: 1.75rem 1rem;
+  
+  /* smooth transition when active */
+  transition: background 0.6s ease, border-radius 0.6s ease;
+}
+
+/* Overlap panels so the next image clearly peeks */
+.panel-gallery + .panel-gallery {
+  margin-top: -4rem;   /* increase magnitude for tighter stacking */
+}
+
+/* Ensure captions / images scale nicely on mobile */
+.panel-gallery img {
+  width: 100%;
+  border-radius: 18px;
+}
+
+/* Optional: caption spacing */
+.panel-gallery figcaption {
+  margin-top: 0.6rem;
+  color: #ddd;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* (Optional) if you want a bit more peek, uncomment this:
+.panel-gallery {
+  min-height: 68vh;
+}
+.panel-gallery + .panel-gallery {
+  margin-top: -5rem;
+}
+*/
