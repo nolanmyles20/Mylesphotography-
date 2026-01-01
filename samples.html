@@ -30,15 +30,15 @@
       justify-content: center;
       max-width: 100% !important;
 
-      /* let content decide height so iOS doesn’t zoom */
-      padding: 3rem 1.25rem 4.5rem !important;
+      /* keep things compact so the whole card fits on screen */
+      padding: 2rem 1.25rem 3.25rem !important;
       margin: 0 auto !important;
       z-index: 1;
     }
 
     /* OVERLAP: next card peeks under the current one */
     body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -6rem !important;  /* adjust for more/less overlap */
+      margin-top: -4.5rem !important; /* tweak for more/less overlap */
     }
 
     /************************************
@@ -57,7 +57,7 @@
     body.page-samples .gallery img {
       width: 100%;
       height: auto;
-      max-height: 70vh;       /* keep image inside the viewport */
+      max-height: 55vh;        /* <— smaller so full card fits with nav + caption */
       object-fit: cover;
       display: block;
       border-radius: 22px;
@@ -153,9 +153,8 @@
 
 <main class="page">
 
-  <!-- INTRO PANEL (WITH GREY GRADIENT CARD) -->
+  <!-- INTRO PANEL (GREY GRADIENT CARD VIA morph-bg) -->
   <section class="panel panel-samples-intro">
-    <!-- this uses your existing .morph-bg / card gradient from styles.css -->
     <div class="morph-bg"></div>
     <div class="content">
       <h1>Sample Work</h1>
@@ -170,7 +169,7 @@
   <!-- DYNAMIC GALLERY CARDS -->
   <div id="gallery-panels-anchor"></div>
 
-  <!-- MORE VIDEOS PANEL (also on grey card) -->
+  <!-- MORE VIDEOS PANEL (GREY CARD TOO) -->
   <section class="panel panel-more-video">
     <div class="morph-bg"></div>
     <div class="content">
@@ -214,7 +213,7 @@
     }, { threshold: 0.5 });
   }
 
-  /* --- DECK LOGIC --- */
+  /* --- DECK LOGIC (optional subtle depth) --- */
   function updateGalleryStack(activePanel) {
     const cards = Array.from(document.querySelectorAll('.panel-gallery'));
     if (!cards.length) return;
@@ -281,33 +280,7 @@
         panelObserver.observe(panel);
       });
 
-      updateGalleryStack(); // ensure correct first card
-
-      /* LIGHTBOX CLICK */
-      const lb = document.getElementById('lightbox');
-      const lbImg = document.getElementById('lightbox-img');
-      const lbCap = document.getElementById('lightbox-cap');
-
-      anchor.addEventListener('click', (e) => {
-        const a = e.target.closest('a.lb');
-        if (!a) return;
-        e.preventDefault();
-        lbImg.src = a.href;
-        lbCap.textContent = a.parentElement.querySelector('figcaption')?.textContent || '';
-        lb.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      });
-
-      document.querySelector('.lightbox-close').onclick = () => {
-        lb.classList.remove('open');
-        lbImg.src = '';
-        document.body.style.overflow = '';
-      };
-
-      lb.addEventListener('click', e => {
-        if (e.target === lb) document.querySelector('.lightbox-close').click();
-      });
-
+      updateGalleryStack(); // ensure correct first card in stack
     } catch (e) {
       anchor.innerHTML =
         '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code>.</p></div></section>';
@@ -334,6 +307,14 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     setupPanelObserver();
+
+    /* IMPORTANT: observe the two static panels so their morph cards can “light up” */
+    document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
+
+    /* make sure the intro panel starts as active so its grey card is bright */
+    const firstPanel = document.querySelector('.panel');
+    if (firstPanel) firstPanel.classList.add('active');
+
     loadGallery();
     initLazyVideos();
   });
