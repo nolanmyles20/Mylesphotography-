@@ -7,7 +7,13 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Lightbox + gallery loading + lazy video styles -->
+  <!-- PAGE-SPECIFIC SNAP BEHAVIOR -->
+  <style>
+    /* Make scrolling less strict on this page so next panel peeks */
+    main.page { scroll-snap-type: y proximity; }
+  </style>
+
+  <!-- GALLERY/VIDEO LOADING + LIGHTBOX -->
   <style>
     /* Lightbox */
     .lightbox {
@@ -31,16 +37,12 @@
     }
 
     /* Spinner on each image while loading */
-    .gallery figure {
-      position: relative;
-    }
+    .gallery figure { position: relative; }
     .gallery figure.is-loading::after {
       content: "";
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 34px;
-      height: 34px;
+      top: 50%; left: 50%;
+      width: 34px; height: 34px;
       margin: -17px 0 0 -17px;
       border-radius: 50%;
       border: 3px solid rgba(255,255,255,0.25);
@@ -49,18 +51,14 @@
       pointer-events: none;
       z-index: 2;
     }
-    @keyframes gallerySpin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes gallerySpin { to { transform: rotate(360deg); } }
     .gallery figure.is-loading img {
       opacity: 0.2;
       transition: opacity 0.25s ease;
     }
-    .gallery figure img.loaded {
-      opacity: 1;
-    }
+    .gallery figure img.loaded { opacity: 1; }
 
-    /* Lazy YouTube placeholders (auto-load on scroll) */
+    /* Lazy YouTube placeholders */
     .video-lazy {
       position: relative;
       width: 100%;
@@ -74,10 +72,8 @@
     .video-lazy::after {
       content: "";
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 40px;
-      height: 40px;
+      top: 50%; left: 50%;
+      width: 40px; height: 40px;
       margin: -20px 0 0 -20px;
       border-radius: 50%;
       border: 3px solid rgba(255,255,255,0.25);
@@ -85,68 +81,16 @@
       animation: videoSpin .8s linear infinite;
       pointer-events: none;
     }
-    @keyframes videoSpin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes videoSpin { to { transform: rotate(360deg); } }
 
-    /* Panel-specific morph styles for this page */
-
-    /* Fix: make intro content match card width & center it */
+    /* Page-specific sizing overrides */
     .panel-samples-intro .content {
       max-width: 88%;
       margin: 0 auto;
     }
-
-    .panel-samples-intro.active .morph-bg {
-      inset: 6%;
-      border-radius: 3rem;
-      background: radial-gradient(circle at 20% -10%, #33ff99, #05070b 55%);
-    }
-
-    .panel-gallery.active .morph-bg {
-      inset: 8% 8%;
-      border-radius: 2rem 4rem 2rem 4rem;
-      background: radial-gradient(circle at 80% 100%, #33b5ff, #05070b 60%);
-    }
-
-    .panel-more-video.active .morph-bg {
-      inset: 10%;
-      border-radius: 4rem 2rem 4rem 2rem;
-      background: radial-gradient(circle at 0% 50%, #ff7a33, #05070b 55%);
-    }
-
-    /* Make each gallery figure fill its panel nicely */
-    .panel-gallery .content {
-      max-width: 88%;
-      margin: 0 auto;
-    }
-    .panel-gallery .gallery {
-      margin-top: 1rem;
-    }
-    .panel-gallery figure {
-      margin: 0;
-    }
-    .panel-gallery img {
-      width: 100%;
-      height: auto;
-      border-radius: 18px;
-      display: block;
-    }
-    .panel-gallery figcaption {
-      margin-top: 0.75rem;
-      font-size: 0.9rem;
-      color: #ddd;
-    }
-
-    @media (max-width: 768px) {
-      .panel-samples-intro.active .morph-bg,
-      .panel-gallery.active .morph-bg,
-      .panel-more-video.active .morph-bg {
-        inset: 10%;
-      }
-    }
   </style>
 </head>
+
 <body>
   <header>
     <div class="container nav">
@@ -174,10 +118,10 @@
     </div>
   </header>
 
-  <!-- Scroll-snapping container -->
+  <!-- SNAPPING CONTAINER -->
   <main class="page">
 
-    <!-- Panel 1: Intro + featured video -->
+    <!-- PANEL 1 ─ Intro + Featured Video -->
     <section class="panel panel-samples-intro">
       <div class="morph-bg"></div>
       <div class="content">
@@ -190,10 +134,10 @@
       </div>
     </section>
 
-    <!-- Gallery panels will be injected here -->
+    <!-- GALLERY IMAGES WILL BE INSERTED HERE AS PANEL PER IMAGE -->
     <div id="gallery-panels-anchor"></div>
 
-    <!-- Panel 3: More sample videos -->
+    <!-- PANEL 3 ─ More videos -->
     <section class="panel panel-more-video">
       <div class="morph-bg"></div>
       <div class="content">
@@ -209,7 +153,7 @@
 
   </main>
 
-  <!-- Lightbox overlay -->
+  <!-- LIGHTBOX -->
   <div id="lightbox" class="lightbox" aria-hidden="true">
     <button class="lightbox-close" aria-label="Close">×</button>
     <img id="lightbox-img" alt="" />
@@ -220,26 +164,22 @@
     <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
   </footer>
 
+  <!-- BUILD GALLERY + PANELIZE IMAGES -->
   <script>
     let panelObserver = null;
 
     function setupPanelObserver() {
       if (panelObserver) return;
-
-      panelObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
-              entry.target.classList.add("active");
-            }
-          });
-        },
-        { threshold: 0.55 }
-      );
+      panelObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+            entry.target.classList.add("active");
+          }
+        });
+      }, { threshold: 0.55 });
     }
 
-    // Build gallery from manifest with lazy-loading & per-image spinner
     async function loadGallery() {
       const anchor = document.getElementById('gallery-panels-anchor');
 
@@ -249,9 +189,7 @@
               if (!entry.isIntersecting) return;
               const img = entry.target;
               const src = img.dataset.src;
-              if (src && !img.src) {
-                img.src = src;
-              }
+              if (src && !img.src) img.src = src;
               obs.unobserve(img);
             });
           }, { rootMargin: '200px 0px' })
@@ -261,17 +199,12 @@
         const res = await fetch('assets/samples/manifest.json');
         if (!res.ok) throw new Error('manifest not found');
         const data = await res.json();
-        if (!data.images || !Array.isArray(data.images)) throw new Error('invalid manifest');
 
         data.images.forEach(item => {
-          // Each image gets its own snapping, morphing panel
           const panel = document.createElement('section');
           panel.className = 'panel panel-gallery';
 
-          const morph = document.createElement('div');
-          morph.className = 'morph-bg';
-          panel.appendChild(morph);
-
+          // *** NO morph-bg for gallery images — spacing only handled via CSS in styles.css ***
           const content = document.createElement('div');
           content.className = 'content';
 
@@ -297,7 +230,6 @@
             fig.classList.remove('is-loading');
             img.classList.add('loaded');
           });
-
           img.addEventListener('error', () => {
             fig.classList.remove('is-loading');
             img.classList.add('loaded');
@@ -313,18 +245,14 @@
           panel.appendChild(content);
           anchor.appendChild(panel);
 
-          if (imgObserver) {
-            imgObserver.observe(img);
-          } else {
-            img.src = fullSrc;
-          }
+          if (imgObserver) imgObserver.observe(img);
+          else img.src = fullSrc;
 
-          // Make sure new panel participates in morphing scroll
           setupPanelObserver();
           panelObserver.observe(panel);
         });
 
-        // Lightbox behavior (delegate on the anchor so it works for all panels)
+        // LIGHTBOX
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
         const lbCap = document.getElementById('lightbox-cap');
@@ -353,34 +281,28 @@
         });
 
       } catch (e) {
-        console.error(e);
         anchor.innerHTML =
-          '<section class="panel panel-gallery"><div class="morph-bg"></div><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
+          '<section class="panel panel-gallery"><div class="content"><p style="color:#bbb">No manifest found. Create <code>assets/samples/manifest.json</code> to list your images.</p></div></section>';
         setupPanelObserver();
         document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
       }
     }
 
-    // Lazy-load YouTube videos when near viewport (no click required)
+    // Lazy-load videos
     function initLazyVideos() {
       const videos = document.querySelectorAll('.video-lazy');
       if (!videos.length) return;
 
       function loadIframe(div) {
         const id = div.dataset.videoId;
-        if (!id) return;
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
-
         const iframe = document.createElement('iframe');
         iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
-        iframe.frameBorder = "0";
-        iframe.allow =
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
         iframe.allowFullscreen = true;
         iframe.loading = "lazy";
         iframe.style.width = "100%";
         iframe.style.height = "100%";
-
         div.replaceWith(iframe);
       }
 
@@ -394,15 +316,11 @@
         }, { rootMargin: '300px 0px' });
 
         videos.forEach(div => observer.observe(div));
-      } else {
-        videos.forEach(loadIframe);
-      }
+      } else videos.forEach(loadIframe);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       setupPanelObserver();
-
-      // Observe the static panels (intro + more videos) immediately
       document.querySelectorAll('.panel').forEach(p => panelObserver.observe(p));
       const firstPanel = document.querySelector('.panel');
       if (firstPanel) firstPanel.classList.add('active');
