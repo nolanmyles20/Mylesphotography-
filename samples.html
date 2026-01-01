@@ -15,6 +15,12 @@
       scroll-snap-type: y proximity;
     }
 
+    /* Kill the global panel fade/offset on this page */
+    body.page-samples .panel {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
     .panel-samples-intro .content {
       max-width: 88%;
       margin: 0 auto;
@@ -119,17 +125,21 @@
        STACKED PHOTO DECK
        ----------------------- */
 
-    /* Each gallery panel behaves like a full-screen slide */
+    /* Each gallery panel behaves like a large card */
     body.page-samples .panel-gallery {
       position: relative;
       display: flex !important;
       align-items: center;
       justify-content: center;
       max-width: 100% !important;
-      min-height: 100vh !important;      /* full viewport */
+
+      /* ~3/4 of viewport so next one can peek */
+      min-height: 75vh !important;
+
       padding: 0 1rem 8vh !important;
       margin: 0 auto !important;
       scroll-snap-align: center;
+
       transition:
         transform 260ms ease-out,
         opacity 260ms ease-out,
@@ -139,7 +149,7 @@
 
     /* Big negative margin so cards overlap like a deck */
     body.page-samples .panel-gallery + .panel-gallery {
-      margin-top: -40vh !important;  /* increase for more overlap */
+      margin-top: -32vh !important; /* tweak this for more/less overlap */
     }
 
     /* Card / image styling */
@@ -177,16 +187,16 @@
 
     /* Cards still ahead in the deck (beneath current) */
     body.page-samples .panel-gallery.card-behind {
-      transform: translateY(50px) scale(0.92);
-      opacity: 0.75;
+      transform: translateY(45px) scale(0.93);
+      opacity: 0.8;
       z-index: 30;
-      filter: brightness(0.85);
+      filter: brightness(0.9);
     }
 
     /* Cards you already scrolled past (above current) */
     body.page-samples .panel-gallery.card-past {
-      transform: translateY(-50px) scale(0.9);
-      opacity: 0.35;
+      transform: translateY(-45px) scale(0.9);
+      opacity: 0.4;
       z-index: 20;
       filter: brightness(0.75);
     }
@@ -454,7 +464,7 @@
       }
 
       if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries, obs) => {
+       const observer = new IntersectionObserver((entries, obs) => {
           entries.forEach(entry => {
             if (!entry.isIntersecting) return;
             loadIframe(entry.target);
