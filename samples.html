@@ -42,19 +42,19 @@
       margin-top: 0;
     }
 
-    /* ---------- INTRO VIDEO SIZING + DEAD SPACE FIX ---------- */
+    /* ---------- INTRO VIDEO SIZING + DEAD SPACE TRIM ---------- */
 
     body.page-samples .panel-samples-intro .morph-bg {
-      padding-bottom: 0.3rem !important; /* trimmed bottom space */
+      padding-bottom: 0.3rem !important; /* trims grey below video */
     }
 
     .video-lazy {
       width: 100%;
-      margin: 1.2rem auto 0;
+      margin: 1.1rem auto 0;
       max-width: 100%;
       background: #111;
       border-radius: 18px;
-      aspect-ratio: 3 / 1;      /* 3:1 cinematic */
+      aspect-ratio: 4 / 1;      /* shorter, cinematic band */
       overflow: hidden;
     }
 
@@ -128,7 +128,7 @@
 </head>
 
 <body class="page-samples">
-  <!-- HEADER ALWAYS MATCHES ALL PAGES -->
+  <!-- HEADER -->
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
