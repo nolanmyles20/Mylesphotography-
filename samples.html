@@ -5,23 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sample Images | Myles Photography LLC</title>
 
-  <!-- GLOBAL STYLES -->
+  <!-- Your global site styles -->
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
   <!-- Swiper CSS for stacked deck -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-  <!-- PAGE LEVEL -->
   <style>
-    /* Same page scrolling as index */
+    /* Use same scrolling behavior as index */
     main.page {
       scroll-snap-type: y mandatory;
       overflow-y: auto;
       overscroll-behavior-y: contain;
     }
 
-    /* Make sure panels display fully */
+    /* Make sure panels on this page aren’t dimmed by index “active” logic */
     body.page-samples .panel,
     body.page-samples .panel .content {
       opacity: 1 !important;
@@ -29,41 +28,48 @@
       filter: none !important;
     }
 
-    /* Grey morph card layout for intro + outro */
-    body.page-samples .morph-bg {
+    /* Grey gradient card look for intro & outro */
+    body.page-samples .panel-samples-intro .morph-bg,
+    body.page-samples .panel-more-video .morph-bg {
       background: linear-gradient(135deg, #8b8b8b, #333333);
       border-radius: 24px;
       width: min(92%, 900px);
       margin: 0 auto;
-      padding: 1.8rem 1.5rem 2.1rem;
+      padding: 1.4rem 1.35rem 1.6rem; /* slightly tighter to reduce “dead” grey */
+      box-sizing: border-box;
     }
 
-    body.page-samples h1 {
-      margin-top: 0;
-    }
+    body.page-samples .panel-samples-intro h1 { margin-top: 0; }
+    body.page-samples .panel-more-video h2 { margin-top: 0; }
 
-    /* ---------- INTRO VIDEO SIZING + DEAD SPACE TRIM ---------- */
-
-    body.page-samples .panel-samples-intro .morph-bg {
-      padding-bottom: 0.3rem !important; /* trims grey below video */
-    }
-
-    .video-lazy {
+    /* ---------- VIDEO FRAME (keeps sizing AFTER iframe replacement) ---------- */
+    body.page-samples .video-lazy,
+    body.page-samples .video-frame {
       width: 100%;
-      margin: 1.1rem auto 0;
-      max-width: 100%;
+      margin: 1rem auto 0;
+      max-width: min(92vw, 820px);     /* bigger video */
       background: #111;
       border-radius: 18px;
-      aspect-ratio: 4 / 1;      /* shorter, cinematic band */
+      aspect-ratio: 16 / 9;            /* keep YouTube correct */
       overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 18px rgba(0,0,0,.35);
     }
 
-    /* -------- STACKED GALLERY — Swiper -------- */
+    body.page-samples .video-frame iframe,
+    body.page-samples .video-lazy iframe {
+      width: 100% !important;
+      height: 100% !important;
+      border: 0 !important;
+      display: block;
+    }
+
+    /* -------- STACKED DECK GALLERY (Swiper) -------- */
 
     .samples-swiper {
       width: 100%;
-      padding: 3rem 0 4rem;
-      height: 440px;
+      padding: 2.2rem 0 3.2rem;
+      height: 460px; /* visible card zone */
       touch-action: pan-y pan-x;
     }
 
@@ -84,6 +90,7 @@
       align-items: center;
       flex-direction: column;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
     }
 
     .samples-swiper .swiper-slide-active {
@@ -97,29 +104,44 @@
       opacity: 0.65;
     }
 
-    .samples-swiper img {
+    /* --- Force ALL photos into the SAME “card window” size --- */
+    .samples-swiper figure {
       width: 100%;
-      height: auto;
+      margin: 0;
+    }
+
+    .samples-swiper .media-box {
+      width: 100%;
+      aspect-ratio: 16 / 10;     /* consistent gallery look */
+      overflow: hidden;
       border-radius: 20px;
+      background: #000;
+    }
+
+    .samples-swiper .media-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;         /* makes portrait photos match size (no oddball) */
       display: block;
     }
 
     .samples-swiper figcaption {
       font-size: 1.15rem;
-      margin-top: 0.55rem;
+      margin: 0.65rem 0 0.85rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       color: #ffffff;
       opacity: 0;
       transition: opacity 0.35s ease;
       text-align: center;
+      padding: 0 10px;
     }
 
     .samples-swiper .swiper-slide-active figcaption {
       opacity: 1;
     }
 
-    /* Panels snap */
+    /* Make panels snap nicely on this page */
     body.page-samples .panel {
       scroll-snap-align: center;
       padding: 1.8rem 0 2.6rem;
@@ -128,7 +150,7 @@
 </head>
 
 <body class="page-samples">
-  <!-- HEADER -->
+  <!-- ✅ Global header matching other pages -->
   <header>
     <div class="container nav">
       <a class="brand" href="index.html">
@@ -159,23 +181,25 @@
   </header>
 
   <main class="page">
-    <!-- INTRO CARD -->
+    <!-- Intro grey gradient card -->
     <section class="panel panel-samples-intro">
       <div class="morph-bg">
         <h1>Sample Work</h1>
         <p>Premium waterfront, downtown commercial, and remote properties — we capture it all in high resolution.</p>
+
+        <!-- stays as placeholder; JS turns it into iframe INSIDE a .video-frame -->
         <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
       </div>
     </section>
 
-    <!-- STACKED IMAGE GALLERY -->
+    <!-- Stacked deck gallery -->
     <section class="panel">
       <div class="samples-swiper swiper">
         <div class="swiper-wrapper" id="gallery-wrapper"></div>
       </div>
     </section>
 
-    <!-- OUTRO CARD -->
+    <!-- Outro grey card with extra videos -->
     <section class="panel panel-more-video">
       <div class="morph-bg">
         <h2>More Video Samples</h2>
@@ -186,16 +210,18 @@
   </main>
 
   <footer>
-    <p>© 2025 Myles Photography LLC • <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a></p>
+    <p>© 2025 Myles Photography LLC •
+      <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
+    </p>
   </footer>
 
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <script>
-    /* Load images from manifest */
+    // Load images from manifest into stacked deck
     async function loadGallery() {
-      const res = await fetch('assets/samples/manifest.json');
+      const res = await fetch('assets/samples/manifest.json', { cache: "no-store" });
       const data = await res.json();
       const wrap = document.getElementById('gallery-wrapper');
 
@@ -206,7 +232,9 @@
         slide.className = 'swiper-slide';
         slide.innerHTML = `
           <figure>
-            <img src="assets/samples/${item.src}" alt="${item.caption || 'Sample image'}">
+            <div class="media-box">
+              <img src="assets/samples/${item.src}" alt="${(item.caption || 'Sample image').replace(/"/g,'&quot;')}">
+            </div>
             <figcaption>${item.caption || ''}</figcaption>
           </figure>
         `;
@@ -214,36 +242,39 @@
       });
     }
 
-    /* Replace video-lazy with real YouTube iframe */
+    // Swap video placeholders for real iframes, but KEEP the same sized frame
     function initLazyVideos() {
-      document.querySelectorAll('.video-lazy').forEach(div => {
+      const vids = document.querySelectorAll('.video-lazy');
+      vids.forEach(div => {
         const id = div.dataset.videoId;
         if (!id) return;
         const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
 
         const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
+        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1&playsinline=1&rel=0`;
         iframe.allowFullscreen = true;
         iframe.loading = 'lazy';
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
-        div.replaceWith(iframe);
+        const frame = document.createElement('div');
+        frame.className = 'video-frame';
+        frame.appendChild(iframe);
+
+        div.replaceWith(frame);
       });
     }
 
     async function init() {
       await loadGallery();
 
+      // Swiper stacked deck config
       new Swiper('.samples-swiper', {
-        effect: 'slide',
         centeredSlides: true,
         slidesPerView: 'auto',
-        spaceBetween: -140,
+        spaceBetween: -140,      // overlap for deck feel
         freeMode: true,
         freeModeSticky: true,
-        mousewheel: true,
+        mousewheel: { forceToAxis: true },
         grabCursor: true
       });
 
@@ -252,6 +283,5 @@
 
     document.addEventListener('DOMContentLoaded', init);
   </script>
-
 </body>
 </html>
