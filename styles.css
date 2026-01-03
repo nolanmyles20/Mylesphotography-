@@ -1349,3 +1349,32 @@ body.page-samples .panel:not(.panel-samples-intro):not(.panel-more-video) {
   margin-left: auto;
   margin-right: auto;
 }
+/* ===== Fix the “dead space” by stopping the grey card from being full height ===== */
+
+body.page-samples .panel-samples-intro,
+body.page-samples .panel-more-video {
+  /* keep snap behavior, but don’t force huge empty layout */
+  min-height: unset !important;
+  height: auto !important;
+  padding: 2.2rem 0 !important;
+}
+
+/* the grey card itself */
+body.page-samples .panel-samples-intro .morph-bg,
+body.page-samples .panel-more-video .morph-bg {
+  height: auto !important;
+  min-height: 0 !important;
+  padding-bottom: 1.5rem !important;
+}
+
+/* if your global CSS is forcing all .panel children to be 100vh or similar */
+body.page-samples .panel {
+  min-height: unset !important;
+  height: auto !important;
+}
+
+/* optional: keeps your videos from adding extra unexpected height */
+body.page-samples .video-frame,
+body.page-samples .video-lazy {
+  margin-bottom: 0.2rem !important;
+}
