@@ -5,72 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sample Images | Myles Photography LLC</title>
 
-  <!-- Your global site styles -->
+  <!-- Global site styles -->
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Swiper CSS for stacked deck -->
+  <!-- Swiper -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
   <style>
-    /* Use same scrolling behavior as index */
+    /* ===== PAGE OVERRIDES (SAFE) ===== */
+
+    html, body.page-samples {
+      overflow-x: hidden;
+    }
+
     main.page {
       scroll-snap-type: y mandatory;
       overflow-y: auto;
-      overscroll-behavior-y: contain;
     }
 
-    /* Make sure panels on this page aren’t dimmed by index “active” logic */
-    body.page-samples .panel,
-    body.page-samples .panel .content {
-      opacity: 1 !important;
-      transform: none !important;
-      filter: none !important;
+    /* Kill global 100vh panel behavior ONLY on this page */
+    body.page-samples .panel {
+      min-height: unset !important;
+      height: auto !important;
+      padding: 1.6rem 0 2rem;
+      scroll-snap-align: start;
     }
 
-    /* Grey gradient card look for intro & outro */
-    body.page-samples .panel-samples-intro .morph-bg,
-    body.page-samples .panel-more-video .morph-bg {
-      background: linear-gradient(135deg, #8b8b8b, #333333);
-      border-radius: 24px;
-      width: min(92%, 900px);
+    /* Grey cards */
+    body.page-samples .morph-bg {
+      width: min(94vw, 900px);
       margin: 0 auto;
-      padding: 1.4rem 1.35rem 1.6rem; /* slightly tighter to reduce “dead” grey */
+      padding: 1.6rem 1.4rem 1.8rem;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #8b8b8b, #333333);
       box-sizing: border-box;
     }
 
-    body.page-samples .panel-samples-intro h1 { margin-top: 0; }
-    body.page-samples .panel-more-video h2 { margin-top: 0; }
-
-    /* ---------- VIDEO FRAME (keeps sizing AFTER iframe replacement) ---------- */
-    body.page-samples .video-lazy,
-    body.page-samples .video-frame {
+    /* Video frame (correct size, no dead space) */
+    .video-lazy,
+    .video-frame {
       width: 100%;
-      margin: 1rem auto 0;
-      max-width: min(92vw, 820px);     /* bigger video */
-      background: #111;
+      max-width: 820px;
+      aspect-ratio: 16 / 9;
+      margin: 1.2rem auto 0;
+      background: #000;
       border-radius: 18px;
-      aspect-ratio: 16 / 9;            /* keep YouTube correct */
       overflow: hidden;
-      position: relative;
-      box-shadow: 0 8px 18px rgba(0,0,0,.35);
     }
 
-    body.page-samples .video-frame iframe,
-    body.page-samples .video-lazy iframe {
-      width: 100% !important;
-      height: 100% !important;
-      border: 0 !important;
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
       display: block;
     }
 
-    /* -------- STACKED DECK GALLERY (Swiper) -------- */
+    /* ===== STACKED SWIPER GALLERY ===== */
 
     .samples-swiper {
       width: 100%;
-      padding: 2.2rem 0 3.2rem;
-      height: 460px; /* visible card zone */
-      touch-action: pan-y pan-x;
+      height: 440px;
+      padding: 2.6rem 0 3.4rem;
     }
 
     .samples-swiper .swiper-wrapper {
@@ -81,16 +77,15 @@
       width: 82vw;
       max-width: 460px;
       background: #111;
-      border-radius: 20px;
+      border-radius: 22px;
       opacity: 0.35;
       transform: scale(0.92);
       transition: transform 0.4s ease, opacity 0.4s ease;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.55);
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-      overflow: hidden;
     }
 
     .samples-swiper .swiper-slide-active {
@@ -99,189 +94,157 @@
       z-index: 30;
     }
 
-    .samples-swiper .swiper-slide-next,
-    .samples-swiper .swiper-slide-prev {
-      opacity: 0.65;
-    }
-
-    /* --- Force ALL photos into the SAME “card window” size --- */
-    .samples-swiper figure {
+    .samples-swiper img {
       width: 100%;
-      margin: 0;
-    }
-
-    .samples-swiper .media-box {
-      width: 100%;
-      aspect-ratio: 16 / 10;     /* consistent gallery look */
-      overflow: hidden;
-      border-radius: 20px;
-      background: #000;
-    }
-
-    .samples-swiper .media-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;         /* makes portrait photos match size (no oddball) */
+      height: auto;
+      border-radius: 22px;
       display: block;
     }
 
     .samples-swiper figcaption {
-      font-size: 1.15rem;
-      margin: 0.65rem 0 0.85rem;
+      margin-top: 0.6rem;
+      font-size: 1.05rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: #ffffff;
+      color: #fff;
       opacity: 0;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.3s ease;
       text-align: center;
-      padding: 0 10px;
     }
 
     .samples-swiper .swiper-slide-active figcaption {
       opacity: 1;
     }
-
-    /* Make panels snap nicely on this page */
-    body.page-samples .panel {
-      scroll-snap-align: center;
-      padding: 1.8rem 0 2.6rem;
-    }
   </style>
 </head>
 
 <body class="page-samples">
-  <!-- ✅ Global header matching other pages -->
-  <header>
-    <div class="container nav">
-      <a class="brand" href="index.html">
-        <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
-        <span>Myles Photography LLC</span>
-      </a>
 
-      <div class="services-tag">
-        <span class="drone-wrap fly-in" aria-hidden="true">
-          <img src="assets/drone.png" alt="Drone icon" class="services-drone">
-        </span>
-        <span>Drone Services</span>
-      </div>
+<!-- ===== HEADER (UNCHANGED) ===== -->
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="Myles Photography LLC logo" class="logo" />
+      <span>Myles Photography LLC</span>
+    </a>
 
-      <nav class="navlinks">
-        <a href="samples.html" class="btn current">Sample Images</a>
-        <a href="virtual-tours.html" class="btn">Virtual Tours</a>
-        <a href="about.html" class="btn">About Us</a>
-        <a href="locations.html" class="btn">Locations</a>
-        <a href="payment.html" class="btn">Payment</a>
-        <a href="contact.html" class="btn">Contact</a>
-      </nav>
-
-      <a class="faa-badge" href="about.html#faa-cert" aria-label="FAA Certified Drone Pilot">
-        <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot badge">
-      </a>
+    <div class="services-tag">
+      <span class="drone-wrap fly-in">
+        <img src="assets/drone.png" class="services-drone" alt="">
+      </span>
+      <span>Drone Services</span>
     </div>
-  </header>
 
-  <main class="page">
-    <!-- Intro grey gradient card -->
-    <section class="panel panel-samples-intro">
-      <div class="morph-bg">
-        <h1>Sample Work</h1>
-        <p>Premium waterfront, downtown commercial, and remote properties — we capture it all in high resolution.</p>
+    <nav class="navlinks">
+      <a href="samples.html" class="btn current">Sample Images</a>
+      <a href="virtual-tours.html" class="btn">Virtual Tours</a>
+      <a href="about.html" class="btn">About Us</a>
+      <a href="locations.html" class="btn">Locations</a>
+      <a href="payment.html" class="btn">Payment</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
 
-        <!-- stays as placeholder; JS turns it into iframe INSIDE a .video-frame -->
-        <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
-      </div>
-    </section>
+    <a class="faa-badge" href="about.html#faa-cert">
+      <img src="assets/faa-badge.png" alt="FAA Certified Drone Pilot">
+    </a>
+  </div>
+</header>
 
-    <!-- Stacked deck gallery -->
-    <section class="panel">
-      <div class="samples-swiper swiper">
-        <div class="swiper-wrapper" id="gallery-wrapper"></div>
-      </div>
-    </section>
+<main class="page">
 
-    <!-- Outro grey card with extra videos -->
-    <section class="panel panel-more-video">
-      <div class="morph-bg">
-        <h2>More Video Samples</h2>
-        <div class="video-lazy" data-video-id="INyz0gTMGc4" data-autoplay="0"></div>
-        <div class="video-lazy" data-video-id="_XxktVZ8k-M" data-autoplay="0"></div>
-      </div>
-    </section>
-  </main>
+  <!-- ===== INTRO CARD ===== -->
+  <section class="panel panel-samples-intro">
+    <div class="morph-bg">
+      <h1>Sample Work</h1>
+      <p>
+        Premium waterfront, downtown commercial, and remote properties —
+        we capture it all in high resolution.
+      </p>
 
-  <footer>
-    <p>© 2025 Myles Photography LLC •
-      <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
-    </p>
-  </footer>
+      <div class="video-lazy" data-video-id="iVyg4wXB2MM" data-autoplay="1"></div>
+    </div>
+  </section>
 
-  <!-- Swiper JS -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- ===== STACKED IMAGE GALLERY ===== -->
+  <section class="panel">
+    <div class="samples-swiper swiper">
+      <div class="swiper-wrapper" id="gallery-wrapper"></div>
+    </div>
+  </section>
 
-  <script>
-    // Load images from manifest into stacked deck
-    async function loadGallery() {
-      const res = await fetch('assets/samples/manifest.json', { cache: "no-store" });
-      const data = await res.json();
-      const wrap = document.getElementById('gallery-wrapper');
+  <!-- ===== MORE VIDEOS ===== -->
+  <section class="panel panel-more-video">
+    <div class="morph-bg">
+      <h2>More Video Samples</h2>
 
-      if (!data.images || !Array.isArray(data.images)) return;
+      <div class="video-lazy" data-video-id="INyz0gTMGc4"></div>
+      <div class="video-lazy" data-video-id="_XxktVZ8k-M"></div>
+    </div>
+  </section>
 
-      data.images.forEach(item => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `
-          <figure>
-            <div class="media-box">
-              <img src="assets/samples/${item.src}" alt="${(item.caption || 'Sample image').replace(/"/g,'&quot;')}">
-            </div>
-            <figcaption>${item.caption || ''}</figcaption>
-          </figure>
-        `;
-        wrap.appendChild(slide);
-      });
-    }
+</main>
 
-    // Swap video placeholders for real iframes, but KEEP the same sized frame
-    function initLazyVideos() {
-      const vids = document.querySelectorAll('.video-lazy');
-      vids.forEach(div => {
-        const id = div.dataset.videoId;
-        if (!id) return;
-        const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
+<footer>
+  <p>
+    © 2025 Myles Photography LLC •
+    <a href="mailto:nolanmyles@icloud.com">nolanmyles@icloud.com</a>
+  </p>
+</footer>
 
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1&playsinline=1&rel=0`;
-        iframe.allowFullscreen = true;
-        iframe.loading = 'lazy';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+<!-- ===== SCRIPTS ===== -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-        const frame = document.createElement('div');
-        frame.className = 'video-frame';
-        frame.appendChild(iframe);
+<script>
+async function loadGallery() {
+  const res = await fetch('assets/samples/manifest.json');
+  const data = await res.json();
+  const wrap = document.getElementById('gallery-wrapper');
 
-        div.replaceWith(frame);
-      });
-    }
+  data.images.forEach(item => {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.innerHTML = `
+      <figure>
+        <img src="assets/samples/${item.src}" alt="${item.caption || ''}">
+        <figcaption>${item.caption || ''}</figcaption>
+      </figure>
+    `;
+    wrap.appendChild(slide);
+  });
+}
 
-    async function init() {
-      await loadGallery();
+function initVideos() {
+  document.querySelectorAll('.video-lazy').forEach(div => {
+    const id = div.dataset.videoId;
+    const autoplay = div.dataset.autoplay === '1' ? '1' : '0';
 
-      // Swiper stacked deck config
-      new Swiper('.samples-swiper', {
-        centeredSlides: true,
-        slidesPerView: 'auto',
-        spaceBetween: -140,      // overlap for deck feel
-        freeMode: true,
-        freeModeSticky: true,
-        mousewheel: { forceToAxis: true },
-        grabCursor: true
-      });
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${id}?autoplay=${autoplay}&mute=1`;
+    iframe.allow =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.loading = 'lazy';
 
-      initLazyVideos();
-    }
+    div.replaceWith(iframe);
+  });
+}
 
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadGallery();
+
+  new Swiper('.samples-swiper', {
+    slidesPerView: 'auto',
+    centeredSlides: true,
+    spaceBetween: -140,
+    grabCursor: true,
+    freeMode: true,
+    freeModeSticky: true,
+    mousewheel: true
+  });
+
+  initVideos();
+});
+</script>
+
 </body>
 </html>
