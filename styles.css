@@ -1315,3 +1315,37 @@ body.page-samples .panel-gallery + .panel-gallery {
 body.page-samples .panel-gallery:last-of-type {
   margin-bottom: 3.5rem;
 }
+/* =====================================================
+   BLEND DEADSPACE INTO BLACK (no layout fighting)
+   ===================================================== */
+
+/* Make panels act like visual frames */
+body.page-samples .panel {
+  display: flex;
+  align-items: center;          /* vertical centering */
+  justify-content: center;
+  background: linear-gradient(
+    to bottom,
+    #000 0%,
+    #111 25%,
+    #000 100%
+  );
+}
+
+/* Ensure gradient cards stay visually centered */
+body.page-samples .panel-samples-intro .morph-bg,
+body.page-samples .panel-more-video .morph-bg {
+  margin: auto;
+}
+
+/* Gallery panel should not stretch oddly */
+body.page-samples .panel:not(.panel-samples-intro):not(.panel-more-video) {
+  background: #000;
+  align-items: flex-start;      /* gallery stays natural */
+}
+
+/* Prevent horizontal cutoff illusion */
+.samples-swiper {
+  margin-left: auto;
+  margin-right: auto;
+}
