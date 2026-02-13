@@ -21,10 +21,10 @@
       --shadow: 0 10px 30px rgba(0,0,0,.45);
       --radius: 18px;
 
-      /* Bracket layout tuning */
-      --matchH: 116px;
-      --matchGap: 14px;
-      --conn: rgba(255,255,255,.10);
+      /* Bracket geometry */
+      --matchH: 116px;     /* match card height */
+      --matchGap: 14px;    /* small gap between round 1 matches */
+      --conn: rgba(255,255,255,.12);
     }
 
     *{box-sizing:border-box}
@@ -167,13 +167,10 @@
       border-bottom:1px solid rgba(255,255,255,.08);
       background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
     }
-    .score-section .shd .ttl{
-      font-weight:900;letter-spacing:.3px;
-    }
-    .score-section .shd .meta{
-      font-size:12px;color:var(--muted);
-    }
+    .score-section .shd .ttl{font-weight:900;letter-spacing:.3px;}
+    .score-section .shd .meta{font-size:12px;color:var(--muted);}
     .score-section .sbd{padding:12px}
+
     .score-list{
       display:grid;
       grid-template-columns: 1fr;
@@ -227,109 +224,91 @@
       display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;
       background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
     }
-    .bracket .top .meta{
-      display:flex;flex-direction:column;gap:4px;
-    }
+    .bracket .top .meta{display:flex;flex-direction:column;gap:4px;}
     .bracket .top .meta .name{font-weight:800;letter-spacing:.3px}
     .bracket .top .meta .small{font-size:12px;color:var(--muted)}
     .bracket .top .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
-    /* New bracket tree: centered columns + simple connector lines */
-    .tree{
+    /* ✅ FIXED BRACKET LAYOUT */
+    .treeHead{
       display:grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap:14px;
-      padding:12px;
-      align-items:stretch;
+      padding: 0 18px 10px;
     }
-    .col{
-      position:relative;
-      display:flex;
-      flex-direction:column;
-    }
-    .col h3{
-      margin:0 0 8px;
+    .treeHead h3{
+      margin:0;
       font-size:12px;
       color:var(--muted);
       letter-spacing:.35px;
       text-transform:uppercase;
     }
-    .col .stack{
+
+    /* 7-row bracket:
+       row1  = R1 match 1
+       row2  = small gap
+       row3  = R1 match 2
+       row4  = BIG gap (equal to final height)
+       row5  = R1 match 3
+       row6  = small gap
+       row7  = R1 match 4
+    */
+    .tree{
       position:relative;
-      display:flex;
-      flex-direction:column;
-      gap:var(--matchGap);
-      justify-content:center;
-      flex:1 1 auto;
-      min-height: calc((var(--matchH) * 4) + (var(--matchGap) * 3));
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows:
+        var(--matchH)
+        var(--matchGap)
+        var(--matchH)
+        var(--matchH) /* BIG GAP == final height */
+        var(--matchH)
+        var(--matchGap)
+        var(--matchH);
+      gap:14px;
+      padding:12px 18px 14px;
+      overflow:hidden;             /* ✅ prevents “floating outside” */
+      border-radius: 18px;
     }
-    /* center columns like a real bracket */
-    .col.r2 .stack{ padding-top: calc((var(--matchH) + var(--matchGap)) / 2); }
-    .col.r3 .stack{ padding-top: calc((var(--matchH) + var(--matchGap)) * 1.5); }
+
+    .slotWrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100%;
+    }
 
     .match{
+      width:100%;
       height: var(--matchH);
       border:1px solid rgba(255,255,255,.08);
       border-radius:16px;
       background: rgba(255,255,255,.02);
       padding:10px;
       position:relative;
-      overflow:visible;
+      overflow:hidden;
     }
 
-    /* connectors (simple, clean) */
-    .col.r1 .match::after{
+    /* clean connector “stubs” - contained inside tree */
+    .tree::before{
       content:"";
       position:absolute;
-      right:-14px;
-      top:50%;
-      width:14px;height:1px;
-      background: var(--conn);
-    }
-    .col.r2 .match::before{
-      content:"";
-      position:absolute;
-      left:-14px;
-      top:50%;
-      width:14px;height:1px;
-      background: var(--conn);
-    }
-    .col.r2 .match::after{
-      content:"";
-      position:absolute;
-      right:-14px;
-      top:50%;
-      width:14px;height:1px;
-      background: var(--conn);
-    }
-    .col.r3 .match::before{
-      content:"";
-      position:absolute;
-      left:-14px;
-      top:50%;
-      width:14px;height:1px;
-      background: var(--conn);
-    }
+      inset:0;
+      pointer-events:none;
 
-    /* vertical join lines between two r1 matches into one r2 match */
-    .col.r1 .match:nth-child(odd)::before{
-      content:"";
-      position:absolute;
-      right:-14px;
-      top:50%;
-      width:1px;
-      height: calc(var(--matchH) + var(--matchGap));
-      background: var(--conn);
-      transform: translateY(0);
-    }
-    .col.r1 .match:nth-child(even)::before{ content:none; }
+      /* Horizontal stubs from R1 -> R2 (4) and R2 -> Final (2) */
+      background:
+        linear-gradient(var(--conn), var(--conn)) calc(33.333% + 2px) calc((var(--matchH) * 0.5) + 12px) / 18px 1px no-repeat,
+        linear-gradient(var(--conn), var(--conn)) calc(33.333% + 2px) calc((var(--matchH) + var(--matchGap) + var(--matchH) * 0.5) + 12px) / 18px 1px no-repeat,
 
-    /* vertical join lines between two r2 matches into the final */
-    .col.r2 .match:nth-child(1)::after{
-      /* keep horizontal; add vertical down to next join point */
+        linear-gradient(var(--conn), var(--conn)) calc(33.333% + 2px) calc((var(--matchH) + var(--matchGap) + var(--matchH) + var(--matchH) + var(--matchH) * 0.5) + 12px) / 18px 1px no-repeat,
+        linear-gradient(var(--conn), var(--conn)) calc(33.333% + 2px) calc((var(--matchH) + var(--matchGap) + var(--matchH) + var(--matchH) + var(--matchH) + var(--matchGap) + var(--matchH) * 0.5) + 12px) / 18px 1px no-repeat,
+
+        linear-gradient(var(--conn), var(--conn)) calc(66.666% + 2px) calc((var(--matchH) + var(--matchGap) + var(--matchH)) * 0.5 + 12px) / 18px 1px no-repeat,
+        linear-gradient(var(--conn), var(--conn)) calc(66.666% + 2px) calc((var(--matchH) + var(--matchGap) + var(--matchH) + var(--matchH) + var(--matchH) + var(--matchGap) + var(--matchH)) * 0.5 + 12px) / 18px 1px no-repeat;
+
+      opacity:.9;
     }
-    .col.r2 .match:nth-child(1) .vj,
-    .col.r2 .match:nth-child(2) .vj{ display:none; } /* placeholder */
 
     .slot{
       display:flex;
@@ -344,25 +323,16 @@
       min-height:38px;
     }
     .slot:last-child{margin-bottom:0}
-    .slot .left{
-      display:flex;flex-direction:column;gap:3px;min-width:0;
-    }
-    .slot .nm{
-      font-weight:800;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .slot .sc{
-      font-size:12px;color:var(--muted);
-    }
+    .slot .left{display:flex;flex-direction:column;gap:3px;min-width:0;}
+    .slot .nm{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .slot .sc{font-size:12px;color:var(--muted);}
     .slot .right{
-      font-size:12px;
-      color:var(--muted);
-      display:flex;gap:8px;align-items:center;
-      white-space:nowrap;
+      font-size:12px;color:var(--muted);
+      display:flex;gap:8px;align-items:center;white-space:nowrap;
     }
-
     .nm.winner{color:var(--success)}
     .nm.loser{color:var(--danger)}
+
     .badge{
       width:18px;height:18px;border-radius:6px;
       display:inline-flex;align-items:center;justify-content:center;
@@ -380,7 +350,6 @@
       gap:10px;
       background: rgba(0,0,0,.10);
     }
-
     .winners{display:grid;gap:8px;}
     .winnerline{
       display:flex;justify-content:space-between;align-items:center;gap:10px;
@@ -406,7 +375,7 @@
     <header>
       <div class="title">
         <h1>Bowling Betting Brackets</h1>
-        <div class="sub">8 players → 4 → 2 • per-match auto-advance • mixed round completion supported</div>
+        <div class="sub">8 players → 4 → 2 • per-match auto-advance • lanes can finish at different times</div>
       </div>
       <div class="row">
         <span class="chip" id="chipOpen"><span class="dot"></span> <b id="openSpots">0</b> open spots</span>
@@ -429,7 +398,7 @@
             <input type="number" id="bowlerHcp" placeholder="Handicap" title="Used only in Handicap brackets (score + handicap)" />
             <button class="btn good" id="btnAddBowler">Add Bowler</button>
             <div class="spacer"></div>
-            <span class="hint">Blank scores are ignored when applying. Use <b>Clear</b> to intentionally remove a score.</span>
+            <span class="hint">Blank score fields are ignored when applying. Use <b>Clear</b> to remove a score intentionally.</span>
           </div>
           <div class="hr"></div>
           <div class="kpi">
@@ -450,11 +419,10 @@
           </div>
           <div class="bd">
             <div class="hint">
-              Enter scores as lanes finish. Brackets auto-advance <b>per matchup</b> once both opponents have scores.
-              Score entry is split by which game each bowler currently needs.
+              Enter scores as lanes finish. A matchup advances as soon as <b>both opponents</b> have scores.
+              Score entry is grouped by which game each bowler currently needs.
             </div>
             <div class="hr"></div>
-
             <div class="score-sections" id="scoreSections"></div>
           </div>
         </div>
@@ -487,7 +455,7 @@
         <div class="hd">
           <h2>Brackets</h2>
           <div class="row">
-            <span class="hint">Rounds are centered like a classic bracket. Winners/losers color as scores come in.</span>
+            <span class="hint">Round 2 and Final are centered correctly (true bracket spacing). Winners/losers color as scores come in.</span>
           </div>
         </div>
         <div class="bd">
@@ -549,8 +517,7 @@
 
   function addBracket(){
     const id = state.brackets.length + 1;
-    const br = makeBracket(id);
-    state.brackets.push(br);
+    state.brackets.push(makeBracket(id));
     renderAll();
   }
 
@@ -595,10 +562,7 @@
     if (base === undefined || base === null || base === "") return null;
     const val = Number(base);
     if (Number.isNaN(val)) return null;
-    if (br.type === "handicap"){
-      return val + Number(bowler.hcp || 0);
-    }
-    return val;
+    return br.type === "handicap" ? (val + Number(bowler.hcp || 0)) : val;
   }
 
   function decideMatchWinner(br, match, round){
@@ -644,8 +608,6 @@
     }
   }
 
-  // Determine which game a bowler currently needs (can differ by bracket)
-  // We show them under the EARLIEST game they still need anywhere.
   function neededRoundForBowler(name){
     let needed = null;
 
@@ -654,34 +616,29 @@
 
       advanceBracketIfReady(br);
 
-      // If already eliminated in this bracket, ignore it for "needed"
-      const eliminatedInR1 = br.r1.some(m => m.loser === name);
-      const eliminatedInR2 = br.r2.some(m => m.loser === name);
-      const eliminatedInR3 = br.r3.some(m => m.loser === name);
-      if (eliminatedInR1 || eliminatedInR2 || eliminatedInR3) continue;
+      const eliminated =
+        br.r1.some(m => m.loser === name) ||
+        br.r2.some(m => m.loser === name) ||
+        br.r3.some(m => m.loser === name);
 
-      // Round 1: if they are in an r1 match that isn't decided yet, they need round 1 score
+      if (eliminated) continue;
+
       for (const m of br.r1){
         if ((m.a===name || m.b===name) && !m.winner){
           needed = needed === null ? 1 : Math.min(needed, 1);
         }
       }
-
-      // Round 2: if they are in r2 as participant and match not decided
       for (const m of br.r2){
         if ((m.a===name || m.b===name) && m.a && m.b && !m.winner){
           needed = needed === null ? 2 : Math.min(needed, 2);
         }
       }
-
-      // Round 3: finalist match not decided
       for (const m of br.r3){
         if ((m.a===name || m.b===name) && m.a && m.b && !m.winner){
           needed = needed === null ? 3 : Math.min(needed, 3);
         }
       }
     }
-
     return needed; // 1|2|3|null
   }
 
@@ -701,26 +658,18 @@
       const p1 = Number(br.payout1 || 0);
       const p2 = Number(br.payout2 || 0);
 
-      if (br.champion){
-        totals.set(br.champion, (totals.get(br.champion)||0) + p1);
-      }
-      if (br.runnerUp){
-        totals.set(br.runnerUp, (totals.get(br.runnerUp)||0) + p2);
-      }
+      if (br.champion) totals.set(br.champion, (totals.get(br.champion)||0) + p1);
+      if (br.runnerUp) totals.set(br.runnerUp, (totals.get(br.runnerUp)||0) + p2);
     }
     return totals;
   }
 
-  // ---------------------------
-  // Rendering
-  // ---------------------------
   function renderScoreSections(){
     const root = $("scoreSections");
     root.innerHTML = "";
 
-    // Build lists by needed round
     const byRound = {1:[],2:[],3:[]};
-    for (const [name, bowler] of state.bowlers.entries()){
+    for (const [name] of state.bowlers.entries()){
       const r = neededRoundForBowler(name);
       if (r === 1 || r === 2 || r === 3) byRound[r].push(name);
     }
@@ -728,11 +677,7 @@
     byRound[2].sort((a,b)=>a.localeCompare(b));
     byRound[3].sort((a,b)=>a.localeCompare(b));
 
-    const titles = {
-      1: "Game 1 (Round 1)",
-      2: "Game 2 (Round 2)",
-      3: "Game 3 (Final)"
-    };
+    const titles = { 1:"Game 1 (Round 1)", 2:"Game 2 (Round 2)", 3:"Game 3 (Final)" };
 
     [1,2,3].forEach((round)=>{
       const names = byRound[round];
@@ -774,7 +719,6 @@
       });
     });
 
-    // Clear handlers
     root.querySelectorAll("[data-clear]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const name = btn.getAttribute("data-clear");
@@ -787,131 +731,11 @@
     });
   }
 
-  function renderBrackets(){
-    const root = $("brackets");
-    root.innerHTML = "";
-
-    for (const br of state.brackets){
-      advanceBracketIfReady(br);
-
-      const card = document.createElement("div");
-      card.className = "bracket";
-      card.innerHTML = `
-        <div class="top">
-          <div class="meta">
-            <div class="name">Bracket #${br.id}</div>
-            <div class="small">
-              Type: <b>${br.type === "handicap" ? "Handicap" : "Scratch"}</b> •
-              Slots: <b>${br.slots.filter(Boolean).length}/8</b>
-            </div>
-          </div>
-          <div class="tools">
-            <select data-type="${br.id}">
-              <option value="scratch" ${br.type==="scratch"?"selected":""}>Scratch</option>
-              <option value="handicap" ${br.type==="handicap"?"selected":""}>Handicap</option>
-            </select>
-            <input type="number" class="w-sm" data-p1="${br.id}" placeholder="1st payout" value="${escapeAttr(br.payout1||"")}" />
-            <input type="number" class="w-sm" data-p2="${br.id}" placeholder="2nd payout" value="${escapeAttr(br.payout2||"")}" />
-            <button class="btn danger" data-del="${br.id}">Delete</button>
-          </div>
-        </div>
-
-        <div class="tree">
-          <div class="col r1">
-            <h3>Round 1</h3>
-            <div class="stack">
-              ${renderMatchHTML(br, br.r1, 1)}
-            </div>
-          </div>
-          <div class="col r2">
-            <h3>Round 2</h3>
-            <div class="stack">
-              ${renderMatchHTML(br, br.r2, 2)}
-            </div>
-          </div>
-          <div class="col r3">
-            <h3>Final</h3>
-            <div class="stack">
-              ${renderMatchHTML(br, br.r3, 3)}
-            </div>
-          </div>
-        </div>
-
-        <div class="foot">
-          ${renderFinalResults(br)}
-        </div>
-      `;
-
-      root.appendChild(card);
-    }
-
-    // Bind bracket controls
-    root.querySelectorAll("[data-type]").forEach(sel=>{
-      sel.addEventListener("change", ()=>{
-        const id = Number(sel.getAttribute("data-type"));
-        const br = state.brackets.find(b=>b.id===id);
-        if (!br) return;
-        br.type = sel.value;
-        renderAll();
-      });
-    });
-
-    root.querySelectorAll("[data-p1]").forEach(inp=>{
-      inp.addEventListener("input", ()=>{
-        const id = Number(inp.getAttribute("data-p1"));
-        const br = state.brackets.find(b=>b.id===id);
-        if (!br) return;
-        br.payout1 = Number(inp.value||0);
-        renderAll(false);
-      });
-    });
-    root.querySelectorAll("[data-p2]").forEach(inp=>{
-      inp.addEventListener("input", ()=>{
-        const id = Number(inp.getAttribute("data-p2"));
-        const br = state.brackets.find(b=>b.id===id);
-        if (!br) return;
-        br.payout2 = Number(inp.value||0);
-        renderAll(false);
-      });
-    });
-
-    root.querySelectorAll("[data-del]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const id = Number(btn.getAttribute("data-del"));
-        state.brackets = state.brackets.filter(b=>b.id!==id);
-        state.brackets.forEach((b,i)=>b.id=i+1);
-        renderAll();
-      });
-    });
-  }
-
-  function renderMatchHTML(br, matches, round){
-    return matches.map(()=>{
-      return `
-        <div class="match">
-          ${renderSlotHTML(br, arguments[0], arguments[1], round)}
-        </div>
-      `;
-    }).join("");
-  }
-
-  // (small trick: we call renderSlotHTML twice by passing the match object)
-  function renderMatchHTML(br, matches, round){
-    return matches.map((m)=>{
-      return `
-        <div class="match">
-          ${renderSlotHTML(br, m.a, m, round)}
-          ${renderSlotHTML(br, m.b, m, round)}
-        </div>
-      `;
-    }).join("");
-  }
-
   function renderSlotHTML(br, name, match, round){
-    const sc = scoreForMatch(br, name, round);
     const raw = name ? (state.bowlers.get(name)?.scores?.[round] ?? "") : "";
+    const adj = scoreForMatch(br, name, round);
     const showAdj = (br.type==="handicap" && name && raw!=="")
-      ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${sc ?? "—"}</b>`
+      ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${adj ?? "—"}</b>`
       : "";
     const winner = match.winner;
     const loser = match.loser;
@@ -930,6 +754,15 @@
           ${name && winner && name===winner ? `<span class="pill">WIN</span>` : ``}
           ${name && loser && name===loser ? `<span class="pill">OUT</span>` : ``}
         </div>
+      </div>
+    `;
+  }
+
+  function renderMatchCard(br, m, round){
+    return `
+      <div class="match">
+        ${renderSlotHTML(br, m.a, m, round)}
+        ${renderSlotHTML(br, m.b, m, round)}
       </div>
     `;
   }
@@ -965,6 +798,102 @@
         <div class="amt">${money(p2)}</div>
       </div>
     `;
+  }
+
+  function renderBrackets(){
+    const root = $("brackets");
+    root.innerHTML = "";
+
+    for (const br of state.brackets){
+      advanceBracketIfReady(br);
+
+      const card = document.createElement("div");
+      card.className = "bracket";
+      card.innerHTML = `
+        <div class="top">
+          <div class="meta">
+            <div class="name">Bracket #${br.id}</div>
+            <div class="small">
+              Type: <b>${br.type === "handicap" ? "Handicap" : "Scratch"}</b> •
+              Slots: <b>${br.slots.filter(Boolean).length}/8</b>
+            </div>
+          </div>
+          <div class="tools">
+            <select data-type="${br.id}">
+              <option value="scratch" ${br.type==="scratch"?"selected":""}>Scratch</option>
+              <option value="handicap" ${br.type==="handicap"?"selected":""}>Handicap</option>
+            </select>
+            <input type="number" class="w-sm" data-p1="${br.id}" placeholder="1st payout" value="${escapeAttr(br.payout1||"")}" />
+            <input type="number" class="w-sm" data-p2="${br.id}" placeholder="2nd payout" value="${escapeAttr(br.payout2||"")}" />
+            <button class="btn danger" data-del="${br.id}">Delete</button>
+          </div>
+        </div>
+
+        <div class="treeHead">
+          <h3>Round 1</h3>
+          <h3>Round 2</h3>
+          <h3>Final</h3>
+        </div>
+
+        <div class="tree">
+          <!-- Round 1: rows 1,3,5,7 -->
+          <div class="slotWrap" style="grid-column:1; grid-row:1;">${renderMatchCard(br, br.r1[0], 1)}</div>
+          <div class="slotWrap" style="grid-column:1; grid-row:3;">${renderMatchCard(br, br.r1[1], 1)}</div>
+          <div class="slotWrap" style="grid-column:1; grid-row:5;">${renderMatchCard(br, br.r1[2], 1)}</div>
+          <div class="slotWrap" style="grid-column:1; grid-row:7;">${renderMatchCard(br, br.r1[3], 1)}</div>
+
+          <!-- Round 2: centered between R1 pairs (span rows 1-3 and 5-7) -->
+          <div class="slotWrap" style="grid-column:2; grid-row:1 / span 3;">${renderMatchCard(br, br.r2[0], 2)}</div>
+          <div class="slotWrap" style="grid-column:2; grid-row:5 / span 3;">${renderMatchCard(br, br.r2[1], 2)}</div>
+
+          <!-- Final: centered between Round 2 matches (span all 7 rows) -->
+          <div class="slotWrap" style="grid-column:3; grid-row:1 / span 7;">${renderMatchCard(br, br.r3[0], 3)}</div>
+        </div>
+
+        <div class="foot">
+          ${renderFinalResults(br)}
+        </div>
+      `;
+      root.appendChild(card);
+    }
+
+    root.querySelectorAll("[data-type]").forEach(sel=>{
+      sel.addEventListener("change", ()=>{
+        const id = Number(sel.getAttribute("data-type"));
+        const br = state.brackets.find(b=>b.id===id);
+        if (!br) return;
+        br.type = sel.value;
+        renderAll();
+      });
+    });
+
+    root.querySelectorAll("[data-p1]").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id = Number(inp.getAttribute("data-p1"));
+        const br = state.brackets.find(b=>b.id===id);
+        if (!br) return;
+        br.payout1 = Number(inp.value||0);
+        renderAll();
+      });
+    });
+    root.querySelectorAll("[data-p2]").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id = Number(inp.getAttribute("data-p2"));
+        const br = state.brackets.find(b=>b.id===id);
+        if (!br) return;
+        br.payout2 = Number(inp.value||0);
+        renderAll();
+      });
+    });
+
+    root.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = Number(btn.getAttribute("data-del"));
+        state.brackets = state.brackets.filter(b=>b.id!==id);
+        state.brackets.forEach((b,i)=>b.id=i+1);
+        renderAll();
+      });
+    });
   }
 
   function renderTotals(){
@@ -1024,18 +953,6 @@
     $("chipOpen").classList.toggle("on", open > 0);
   }
 
-  function renderAll(){
-    // advance everything first so score sections are accurate
-    state.brackets.forEach(br => advanceBracketIfReady(br));
-    renderKPIs();
-    renderScoreSections();
-    renderBrackets();
-    renderTotals();
-  }
-
-  // ---------------------------
-  // Score Apply behavior (blank = skip, not clear)
-  // ---------------------------
   function applyScoresFromInputs(){
     document.querySelectorAll(".scoreInput").forEach(inp=>{
       const name = inp.getAttribute("data-name");
@@ -1045,20 +962,25 @@
 
       const v = inp.value;
       if (v === "" || v === null || v === undefined){
-        // IMPORTANT CHANGE: blank = skip (do not modify stored score)
+        // blank = skip (do not modify stored score)
         return;
       }
       const n = Number(v);
       if (!Number.isNaN(n)) b.scores[round] = n;
     });
 
-    // per-match auto-advance happens here
     state.brackets.forEach(br => advanceBracketIfReady(br));
   }
 
-  // ---------------------------
+  function renderAll(){
+    state.brackets.forEach(br => advanceBracketIfReady(br));
+    renderKPIs();
+    renderScoreSections();
+    renderBrackets();
+    renderTotals();
+  }
+
   // Events
-  // ---------------------------
   $("btnAddBracket").addEventListener("click", addBracket);
 
   $("btnAddBowler").addEventListener("click", ()=>{
@@ -1081,7 +1003,6 @@
     renderAll();
   });
 
-  // Nice QoL: pressing Enter in a score field applies immediately
   document.addEventListener("keydown", (e)=>{
     const t = e.target;
     if (e.key === "Enter" && t && t.classList && t.classList.contains("scoreInput")){
@@ -1099,9 +1020,6 @@
     renderAll();
   });
 
-  // ---------------------------
-  // Escaping
-  // ---------------------------
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
@@ -1109,6 +1027,7 @@
     return escapeHtml(s).replace(/"/g,'&quot;');
   }
 
+  // init
   renderAll();
 })();
 </script>
