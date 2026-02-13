@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bowling Betting Brackets</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1620;
+      --panel2:#0c121a;
+      --border:rgba(255,255,255,.08);
+      --text:#d8e1ee;
+      --muted:#8ea0b5;
+      --accent:#6aa7ff;
+      --accent2:#7cf3c3;
+      --danger:#ff5a6a;
+      --success:#31d07f;
+      --warn:#ffc84a;
+      --silver:#b8c6d9;
+      --shadow: 0 10px 30px rgba(0,0,0,.45);
+      --radius: 18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(106,167,255,.18), transparent 55%),
+                  radial-gradient(1200px 600px at 90% 0%, rgba(124,243,195,.12), transparent 55%),
+                  linear-gradient(180deg, #070a0f, var(--bg));
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .wrap{max-width:1200px;margin:0 auto;padding:18px 14px 60px}
+
+    header{
+      display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .title{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .title h1{
+      margin:0;font-size:22px;letter-spacing:.3px;font-weight:800;
+    }
+    .title .sub{
+      color:var(--muted);font-size:13px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel .hd{
+      padding:14px 14px 12px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+      border-bottom:1px solid var(--border);
+    }
+    .panel .hd h2{
+      margin:0;font-size:14px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);
+    }
+    .panel .bd{padding:14px}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .row > *{flex:0 0 auto}
+    .spacer{flex:1 1 auto}
+
+    input, select{
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      outline:none;
+      transition:.15s ease;
+    }
+    input::placeholder{color:rgba(216,225,238,.35)}
+    input:focus, select:focus{
+      border-color: rgba(106,167,255,.5);
+      box-shadow: 0 0 0 3px rgba(106,167,255,.15);
+    }
+    input[type="number"]{width:120px}
+    .w-sm{width:160px}
+    .w-md{width:240px}
+    .w-lg{width:360px;max-width:100%}
+
+    .btn{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 13px;
+      border-radius: 999px;
+      cursor:pointer;
+      transition:.15s ease;
+      display:inline-flex;gap:8px;align-items:center;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.18)}
+    .btn:active{transform: translateY(0px)}
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(106,167,255,.22), rgba(106,167,255,.10));
+      border-color: rgba(106,167,255,.40);
+    }
+    .btn.good{
+      background: linear-gradient(180deg, rgba(124,243,195,.18), rgba(124,243,195,.08));
+      border-color: rgba(124,243,195,.40);
+    }
+    .btn.danger{
+      background: linear-gradient(180deg, rgba(255,90,106,.18), rgba(255,90,106,.08));
+      border-color: rgba(255,90,106,.40);
+    }
+
+    .chip{
+      font-size:12px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      background: rgba(255,255,255,.03);
+      display:inline-flex;gap:8px;align-items:center;
+    }
+    .chip b{color:var(--text)}
+    .chip .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
+    .chip.on .dot{background: var(--accent2)}
+    .chip.r1 .dot{background: var(--accent)}
+    .chip.r2 .dot{background: var(--accent2)}
+    .chip.r3 .dot{background: var(--warn)}
+
+    .two-col{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .two-col{grid-template-columns:1fr}
+    }
+
+    .score-list{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    .score-item{
+      display:grid;
+      grid-template-columns: 1.1fr .7fr .7fr auto;
+      gap:10px;
+      align-items:center;
+      padding:10px 10px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.10);
+      border-radius: 16px;
+    }
+    @media (max-width: 780px){
+      .score-item{grid-template-columns:1fr 1fr; grid-auto-rows:auto}
+      .score-item .tag{grid-column:1/-1}
+    }
+
+    .tag{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      border-radius:999px;
+      padding:6px 10px;
+      justify-self:start;
+    }
+
+    .muted{color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+
+    .brackets{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .brackets{grid-template-columns:1fr}
+    }
+
+    .bracket{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+      border-radius: 18px;
+      overflow:hidden;
+    }
+    .bracket .top{
+      padding:12px 12px 10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+    }
+    .bracket .top .meta{
+      display:flex;flex-direction:column;gap:4px;
+    }
+    .bracket .top .meta .name{font-weight:800;letter-spacing:.3px}
+    .bracket .top .meta .small{font-size:12px;color:var(--muted)}
+    .bracket .top .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+    .tree{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      padding:12px;
+    }
+    .col h3{
+      margin:0 0 8px;
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:.35px;
+      text-transform:uppercase;
+    }
+
+    .match{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      background: rgba(255,255,255,.02);
+      padding:10px;
+      margin-bottom:10px;
+    }
+    .slot{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:8px 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.06);
+      margin-bottom:8px;
+      gap:8px;
+      min-height:38px;
+    }
+    .slot:last-child{margin-bottom:0}
+    .slot .left{
+      display:flex;flex-direction:column;gap:3px;min-width:0;
+    }
+    .slot .nm{
+      font-weight:800;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .slot .sc{
+      font-size:12px;color:var(--muted);
+    }
+    .slot .right{
+      font-size:12px;
+      color:var(--muted);
+      display:flex;gap:8px;align-items:center;
+      white-space:nowrap;
+    }
+
+    .nm.winner{color:var(--success)}
+    .nm.loser{color:var(--danger)}
+    .badge{
+      width:18px;height:18px;border-radius:6px;
+      display:inline-flex;align-items:center;justify-content:center;
+      font-size:11px;font-weight:900;line-height:1;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04);
+    }
+    .badge.gold{background: rgba(255,200,74,.14); border-color: rgba(255,200,74,.45); color: #ffd57a;}
+    .badge.silver{background: rgba(184,198,217,.12); border-color: rgba(184,198,217,.42); color: #dbe6f6;}
+
+    .foot{
+      border-top:1px solid rgba(255,255,255,.08);
+      padding:12px;
+      display:grid;
+      gap:10px;
+      background: rgba(0,0,0,.10);
+    }
+
+    .winners{
+      display:grid;gap:8px;
+    }
+    .winnerline{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.12);
+      padding:10px 12px;
+      border-radius: 16px;
+    }
+    .winnerline .who{display:flex;gap:10px;align-items:center;min-width:0}
+    .winnerline .who .nm{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .winnerline .amt{font-weight:900}
+    .pill{
+      padding:4px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      font-size:12px;color:var(--muted)
+    }
+
+    .hint{font-size:12px;color:var(--muted);line-height:1.45}
+    .hr{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
+
+    .kpi{
+      display:flex;gap:10px;flex-wrap:wrap;
+      align-items:center;
+    }
+    .kpi .box{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+      padding:10px 12px;border-radius:16px;
+      display:flex;gap:8px;align-items:baseline;
+    }
+    .kpi .box .lbl{font-size:12px;color:var(--muted)}
+    .kpi .box .val{font-weight:900;font-size:16px}
+
+    .smalllink{
+      color: rgba(106,167,255,.85);
+      cursor:pointer;
+      text-decoration:none;
+      font-size:12px;
+    }
+    .smalllink:hover{color: rgba(106,167,255,1)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Bowling Betting Brackets</h1>
+        <div class="sub">8 players → 4 → 2 • auto-advance • payouts • dark/tech UI</div>
+      </div>
+      <div class="row">
+        <span class="chip r1" id="chipRound"><span class="dot"></span> <b id="roundLabel">Round 1</b> <span class="muted">(Game 1)</span></span>
+        <span class="chip" id="chipOpen"><span class="dot"></span> <b id="openSpots">0</b> open spots</span>
+        <button class="btn danger" id="btnReset">Reset</button>
+      </div>
+    </header>
+
+    <div class="grid">
+
+      <div class="panel">
+        <div class="hd">
+          <h2>Setup</h2>
+          <div class="row">
+            <button class="btn primary" id="btnAddBracket">+ Add Bracket</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="row">
+            <input class="w-md" id="bowlerName" placeholder="Bowler name (auto-placed randomly into an open bracket)" />
+            <input type="number" id="bowlerHcp" placeholder="Handicap" title="Used only in Handicap brackets (score + handicap)" />
+            <button class="btn good" id="btnAddBowler">Add Bowler</button>
+            <div class="spacer"></div>
+            <span class="hint">Handicap logic: in <b>Handicap</b> brackets, the match uses <span class="mono">entered score + handicap</span>. In <b>Scratch</b> brackets, it uses the entered score only.</span>
+          </div>
+          <div class="hr"></div>
+          <div class="kpi">
+            <div class="box"><span class="lbl">Brackets</span> <span class="val" id="kpiBrackets">0</span></div>
+            <div class="box"><span class="lbl">Bowlers</span> <span class="val" id="kpiBowlers">0</span></div>
+            <div class="box"><span class="lbl">Completed Brackets</span> <span class="val" id="kpiDone">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="hd">
+            <h2>Score Entry</h2>
+            <div class="row">
+              <button class="btn primary" id="btnApplyScores">Apply Scores</button>
+              <button class="btn" id="btnNextRound">Advance Round</button>
+            </div>
+          </div>
+          <div class="bd">
+            <div class="hint" id="scoreHint">
+              Enter scores for the current round. When both sides of a match have scores, the bracket auto-picks the winner and advances them.
+              After Round 1 completes for a bracket, only remaining bowlers show in Round 2 entry; same for Round 3.
+            </div>
+            <div class="hr"></div>
+            <div class="score-list" id="scoreList"></div>
+            <div class="hr"></div>
+            <div class="row">
+              <span class="hint"><b>Tip:</b> “Advance Round” just changes the score-entry list globally. Brackets still only advance when match scores are in.</span>
+              <div class="spacer"></div>
+              <a class="smalllink" id="btnFillDemo">Fill demo brackets + bowlers</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="hd">
+            <h2>Total Payouts</h2>
+            <div class="row">
+              <input class="w-sm" id="filterName" placeholder="Filter by name…" />
+              <select id="sortMode" class="w-sm">
+                <option value="high">Winnings: High → Low</option>
+                <option value="low">Winnings: Low → High</option>
+                <option value="az">Name: A → Z</option>
+                <option value="za">Name: Z → A</option>
+              </select>
+            </div>
+          </div>
+          <div class="bd">
+            <div class="winners" id="payoutList"></div>
+            <div class="hr"></div>
+            <div class="kpi">
+              <div class="box"><span class="lbl">Total Paid</span> <span class="val" id="kpiTotalPaid">$0</span></div>
+              <div class="box"><span class="lbl">Winners</span> <span class="val" id="kpiWinners">0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd">
+          <h2>Brackets</h2>
+          <div class="row">
+            <span class="hint">Each bracket is 8 players. Add more brackets as needed. Bowlers are randomly placed into any open spot.</span>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="brackets" id="brackets"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+(() => {
+  // ---------------------------
+  // Data model
+  // ---------------------------
+  const state = {
+    round: 1, // 1,2,3 (for score entry list only)
+    bowlers: new Map(), // name -> {name, hcp:number, scores:{1?:n,2?:n,3?:n}}
+    brackets: [], // bracket objects
+  };
+
+  const BRACKET_SIZE = 8;
+
+  function makeBracket(id){
+    return {
+      id,
+      type: "scratch", // "scratch" | "handicap"
+      payout1: 0,
+      payout2: 0,
+      // slots are initial 8. We'll store bowler names or null.
+      slots: Array(BRACKET_SIZE).fill(null),
+      // matches: r1: 4 matches, r2: 2, r3: 1
+      // store as arrays of {a,b,winner,loser} referencing names
+      r1: Array.from({length:4}, () => ({a:null,b:null,winner:null,loser:null})),
+      r2: Array.from({length:2}, () => ({a:null,b:null,winner:null,loser:null})),
+      r3: Array.from({length:1}, () => ({a:null,b:null,winner:null,loser:null})),
+      champion: null,
+      runnerUp: null
+    };
+  }
+
+  function rebuildMatchesFromSlots(br){
+    // r1 pairing: (0,1) (2,3) (4,5) (6,7)
+    const pairs = [[0,1],[2,3],[4,5],[6,7]];
+    br.r1.forEach((m,i)=>{
+      const [p,q] = pairs[i];
+      m.a = br.slots[p] || null;
+      m.b = br.slots[q] || null;
+      // when reseating, clear prior outcomes
+      m.winner = null; m.loser = null;
+    });
+    br.r2.forEach(m=>{ m.a=null; m.b=null; m.winner=null; m.loser=null; });
+    br.r3.forEach(m=>{ m.a=null; m.b=null; m.winner=null; m.loser=null; });
+    br.champion = null;
+    br.runnerUp = null;
+  }
+
+  // ---------------------------
+  // Helpers
+  // ---------------------------
+  const $ = (id) => document.getElementById(id);
+  const money = (n) => {
+    const v = Number(n||0);
+    return "$" + v.toLocaleString(undefined,{maximumFractionDigits:2});
+  };
+
+  function toast(msg){
+    // simple, lightweight: use alert-like hint in console + chip pulse
+    console.log("[Brackets]", msg);
+  }
+
+  function openSpotsCount(){
+    let open = 0;
+    for (const b of state.brackets){
+      for (const s of b.slots) if (!s) open++;
+    }
+    return open;
+  }
+
+  function addBracket(){
+    const id = state.brackets.length + 1;
+    const br = makeBracket(id);
+    state.brackets.push(br);
+    renderAll();
+  }
+
+  function ensureBowler(name, hcp){
+    const key = name.trim();
+    if (!key) return null;
+    if (!state.bowlers.has(key)){
+      state.bowlers.set(key, { name:key, hcp: Number(hcp||0), scores:{} });
+    } else {
+      // update handicap if provided
+      const b = state.bowlers.get(key);
+      if (hcp !== "" && hcp !== null && hcp !== undefined && !Number.isNaN(Number(hcp))){
+        b.hcp = Number(hcp);
+      }
+    }
+    return state.bowlers.get(key);
+  }
+
+  function randomOpenSlot(){
+    // pick a random open slot across all brackets
+    const options = [];
+    state.brackets.forEach((br, bi)=>{
+      br.slots.forEach((s, si)=>{
+        if (!s) options.push({br, bi, si});
+      });
+    });
+    if (!options.length) return null;
+    return options[Math.floor(Math.random()*options.length)];
+  }
+
+  function placeBowlerRandomly(name){
+    const spot = randomOpenSlot();
+    if (!spot) return false;
+    spot.br.slots[spot.si] = name;
+    rebuildMatchesFromSlots(spot.br);
+    return true;
+  }
+
+  function scoreForMatch(br, bowlerName, round){
+    if (!bowlerName) return null;
+    const bowler = state.bowlers.get(bowlerName);
+    if (!bowler) return null;
+    const base = bowler.scores[round];
+    if (base === undefined || base === null || base === "") return null;
+    const val = Number(base);
+    if (Number.isNaN(val)) return null;
+    if (br.type === "handicap"){
+      return val + Number(bowler.hcp || 0);
+    }
+    return val;
+  }
+
+  function decideMatchWinner(br, match, round){
+    // needs both players and both scores
+    if (!match.a || !match.b) return;
+    const sa = scoreForMatch(br, match.a, round);
+    const sb = scoreForMatch(br, match.b, round);
+    if (sa === null || sb === null) return;
+
+    if (sa === sb){
+      // tie-break: keep winner null until user changes; but we can pick at random to keep flow
+      const pickA = Math.random() < 0.5;
+      match.winner = pickA ? match.a : match.b;
+      match.loser  = pickA ? match.b : match.a;
+    } else if (sa > sb){
+      match.winner = match.a; match.loser = match.b;
+    } else {
+      match.winner = match.b; match.loser = match.a;
+    }
+  }
+
+  function advanceBracketIfReady(br){
+    // Round 1 -> fill round 2 participants based on r1 winners
+    br.r1.forEach(m => decideMatchWinner(br, m, 1));
+    // set r2 participants if both winners exist for each pair
+    br.r2.forEach((m,i)=>{
+      const w1 = br.r1[i*2]?.winner || null;
+      const w2 = br.r1[i*2+1]?.winner || null;
+      m.a = w1; m.b = w2;
+      decideMatchWinner(br, m, 2);
+    });
+
+    // Round 3
+    const fA = br.r2[0]?.winner || null;
+    const fB = br.r2[1]?.winner || null;
+    br.r3[0].a = fA;
+    br.r3[0].b = fB;
+    decideMatchWinner(br, br.r3[0], 3);
+
+    // finalize payouts
+    const final = br.r3[0];
+    if (final.winner && final.loser){
+      br.champion = final.winner;
+      br.runnerUp = final.loser;
+    } else {
+      br.champion = null;
+      br.runnerUp = null;
+    }
+  }
+
+  function activeBowlersForRound(round){
+    // only show bowlers still "alive" in at least one bracket for that round
+    const alive = new Set();
+
+    for (const br of state.brackets){
+      advanceBracketIfReady(br);
+
+      if (round === 1){
+        br.slots.forEach(n => n && alive.add(n));
+      } else if (round === 2){
+        // alive = r1 winners (once decided) else still r1 participants not yet eliminated
+        br.r1.forEach(m=>{
+          if (!m.a || !m.b) return;
+          if (m.winner){
+            alive.add(m.winner);
+          } else {
+            alive.add(m.a); alive.add(m.b);
+          }
+        });
+      } else if (round === 3){
+        // alive = finalists (r2 winners if decided) else still potentially alive r2 participants
+        br.r2.forEach(m=>{
+          if (!m.a || !m.b) return;
+          if (m.winner){
+            alive.add(m.winner);
+          } else {
+            alive.add(m.a); alive.add(m.b);
+          }
+        });
+      }
+    }
+
+    return Array.from(alive).sort((a,b)=>a.localeCompare(b));
+  }
+
+  function winningsByBowler(){
+    // sum across all completed brackets
+    const totals = new Map();
+    for (const br of state.brackets){
+      advanceBracketIfReady(br);
+      const p1 = Number(br.payout1 || 0);
+      const p2 = Number(br.payout2 || 0);
+
+      if (br.champion){
+        totals.set(br.champion, (totals.get(br.champion)||0) + p1);
+      }
+      if (br.runnerUp){
+        totals.set(br.runnerUp, (totals.get(br.runnerUp)||0) + p2);
+      }
+    }
+    return totals;
+  }
+
+  // ---------------------------
+  // Rendering
+  // ---------------------------
+  function renderScoreEntry(){
+    const list = $("scoreList");
+    list.innerHTML = "";
+
+    const names = activeBowlersForRound(state.round);
+    if (!names.length){
+      list.innerHTML = `<div class="hint">No active bowlers for this round yet. Add a bracket and bowlers first.</div>`;
+      return;
+    }
+
+    for (const name of names){
+      const bowler = state.bowlers.get(name);
+      const val = bowler?.scores?.[state.round] ?? "";
+
+      // show what brackets they are in + type(s)
+      const uses = [];
+      for (const br of state.brackets){
+        const inSlots = br.slots.includes(name);
+        if (!inSlots) continue;
+
+        // determine if still alive in this bracket for this round
+        let alive = false;
+        advanceBracketIfReady(br);
+
+        if (state.round === 1){
+          alive = true;
+        } else if (state.round === 2){
+          // alive if in any r1 match not eliminated
+          for (const m of br.r1){
+            if (m.a === name || m.b === name){
+              alive = (!m.loser || m.loser !== name);
+              if (!m.winner) alive = true;
+            }
+          }
+        } else if (state.round === 3){
+          // alive if in any r2 match not eliminated
+          for (const m of br.r2){
+            if (m.a === name || m.b === name){
+              alive = (!m.loser || m.loser !== name);
+              if (!m.winner) alive = true;
+            }
+          }
+        }
+
+        if (alive) uses.push(`#${br.id} ${br.type === "handicap" ? "HCP" : "SCR"}`);
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = "score-item";
+      wrap.innerHTML = `
+        <div>
+          <div style="font-weight:900">${escapeHtml(name)}</div>
+          <div class="muted" style="font-size:12px">HCP: <span class="mono">${Number(bowler?.hcp||0)}</span></div>
+        </div>
+        <input type="number" class="scoreInput" data-name="${escapeAttr(name)}" placeholder="Score" value="${escapeAttr(val)}" />
+        <div class="tag">${uses.length ? uses.join(" • ") : "—"}</div>
+        <button class="btn" data-clear="${escapeAttr(name)}">Clear</button>
+      `;
+      list.appendChild(wrap);
+    }
+
+    // Clear handlers
+    list.querySelectorAll("[data-clear]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const name = btn.getAttribute("data-clear");
+        const b = state.bowlers.get(name);
+        if (!b) return;
+        delete b.scores[state.round];
+        renderAll();
+      });
+    });
+  }
+
+  function renderBrackets(){
+    const root = $("brackets");
+    root.innerHTML = "";
+
+    for (const br of state.brackets){
+      advanceBracketIfReady(br);
+
+      const card = document.createElement("div");
+      card.className = "bracket";
+      card.innerHTML = `
+        <div class="top">
+          <div class="meta">
+            <div class="name">Bracket #${br.id}</div>
+            <div class="small">
+              Type: <b>${br.type === "handicap" ? "Handicap" : "Scratch"}</b> •
+              Slots: <b>${br.slots.filter(Boolean).length}/8</b>
+            </div>
+          </div>
+          <div class="tools">
+            <select data-type="${br.id}">
+              <option value="scratch" ${br.type==="scratch"?"selected":""}>Scratch</option>
+              <option value="handicap" ${br.type==="handicap"?"selected":""}>Handicap</option>
+            </select>
+            <input type="number" class="w-sm" data-p1="${br.id}" placeholder="1st payout" value="${escapeAttr(br.payout1||"")}" />
+            <input type="number" class="w-sm" data-p2="${br.id}" placeholder="2nd payout" value="${escapeAttr(br.payout2||"")}" />
+            <button class="btn danger" data-del="${br.id}">Delete</button>
+          </div>
+        </div>
+
+        <div class="tree">
+          <div class="col">
+            <h3>Round 1</h3>
+            ${renderMatchHTML(br, br.r1, 1)}
+          </div>
+          <div class="col">
+            <h3>Round 2</h3>
+            ${renderMatchHTML(br, br.r2, 2)}
+          </div>
+          <div class="col">
+            <h3>Final</h3>
+            ${renderMatchHTML(br, br.r3, 3)}
+          </div>
+        </div>
+
+        <div class="foot">
+          ${renderFinalResults(br)}
+        </div>
+      `;
+
+      root.appendChild(card);
+    }
+
+    // Bind bracket controls
+    root.querySelectorAll("[data-type]").forEach(sel=>{
+      sel.addEventListener("change", ()=>{
+        const id = Number(sel.getAttribute("data-type"));
+        const br = state.brackets.find(b=>b.id===id);
+        if (!br) return;
+        br.type = sel.value;
+        renderAll();
+      });
+    });
+
+    root.querySelectorAll("[data-p1]").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id = Number(inp.getAttribute("data-p1"));
+        const br = state.brackets.find(b=>b.id===id);
+        if (!br) return;
+        br.payout1 = Number(inp.value||0);
+        renderAll(false); // cheap rerender
+      });
+    });
+    root.querySelectorAll("[data-p2]").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id = Number(inp.getAttribute("data-p2"));
+        const br = state.brackets.find(b=>b.id===id);
+        if (!br) return;
+        br.payout2 = Number(inp.value||0);
+        renderAll(false);
+      });
+    });
+
+    root.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = Number(btn.getAttribute("data-del"));
+        state.brackets = state.brackets.filter(b=>b.id!==id);
+        // re-number IDs for cleanliness
+        state.brackets.forEach((b,i)=>b.id=i+1);
+        renderAll();
+      });
+    });
+  }
+
+  function renderMatchHTML(br, matches, round){
+    return matches.map((m, idx)=>{
+      return `
+        <div class="match">
+          ${renderSlotHTML(br, m.a, m, round)}
+          ${renderSlotHTML(br, m.b, m, round)}
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderSlotHTML(br, name, match, round){
+    const sc = scoreForMatch(br, name, round);
+    const raw = name ? (state.bowlers.get(name)?.scores?.[round] ?? "") : "";
+    const showAdj = (br.type==="handicap" && name && raw!=="") ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${sc ?? "—"}</b>` : "";
+    const winner = match.winner;
+    const loser = match.loser;
+
+    let cls = "";
+    if (name && winner && name === winner) cls = "winner";
+    if (name && loser && name === loser) cls = "loser";
+
+    return `
+      <div class="slot">
+        <div class="left">
+          <div class="nm ${cls}">${name ? escapeHtml(name) : `<span class="muted">— empty —</span>`}</div>
+          <div class="sc">${name ? `Score: <span class="mono">${raw === "" ? "—" : raw}</span>${showAdj}` : `<span class="muted">Add bowlers to fill slots</span>`}</div>
+        </div>
+        <div class="right">
+          ${name && winner && name===winner ? `<span class="pill">WIN</span>` : ``}
+          ${name && loser && name===loser ? `<span class="pill">OUT</span>` : ``}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderFinalResults(br){
+    const p1 = Number(br.payout1||0);
+    const p2 = Number(br.payout2||0);
+
+    if (!br.champion || !br.runnerUp){
+      return `<div class="hint">Final results will appear here after Round 3 scores are entered (and payouts set).</div>`;
+    }
+
+    return `
+      <div class="winnerline">
+        <div class="who">
+          <span class="badge gold">1</span>
+          <div style="min-width:0">
+            <div class="nm" style="color:var(--success)">${escapeHtml(br.champion)}</div>
+            <div class="muted" style="font-size:12px">1st place</div>
+          </div>
+        </div>
+        <div class="amt">${money(p1)}</div>
+      </div>
+
+      <div class="winnerline">
+        <div class="who">
+          <span class="badge silver">2</span>
+          <div style="min-width:0">
+            <div class="nm" style="color:var(--silver)">${escapeHtml(br.runnerUp)}</div>
+            <div class="muted" style="font-size:12px">2nd place</div>
+          </div>
+        </div>
+        <div class="amt">${money(p2)}</div>
+      </div>
+    `;
+  }
+
+  function renderTotals(){
+    const totals = winningsByBowler();
+    const filter = ($("filterName").value || "").trim().toLowerCase();
+    const mode = $("sortMode").value;
+
+    let items = Array.from(totals.entries()).map(([name, amt]) => ({name, amt}));
+
+    if (filter){
+      items = items.filter(x => x.name.toLowerCase().includes(filter));
+    }
+
+    items.sort((a,b)=>{
+      if (mode==="high") return b.amt - a.amt;
+      if (mode==="low") return a.amt - b.amt;
+      if (mode==="az") return a.name.localeCompare(b.name);
+      if (mode==="za") return b.name.localeCompare(a.name);
+      return 0;
+    });
+
+    const root = $("payoutList");
+    root.innerHTML = "";
+
+    if (!items.length){
+      root.innerHTML = `<div class="hint">No payouts yet. Finish a bracket (Round 3) and set payouts.</div>`;
+    } else {
+      for (const it of items){
+        const row = document.createElement("div");
+        row.className = "winnerline";
+        row.innerHTML = `
+          <div class="who">
+            <span class="pill">WIN</span>
+            <div class="nm">${escapeHtml(it.name)}</div>
+          </div>
+          <div class="amt">${money(it.amt)}</div>
+        `;
+        root.appendChild(row);
+      }
+    }
+
+    const totalPaid = items.reduce((s,x)=>s+x.amt,0);
+    $("kpiTotalPaid").textContent = money(totalPaid);
+    $("kpiWinners").textContent = String(items.length);
+  }
+
+  function renderKPIs(){
+    $("kpiBrackets").textContent = String(state.brackets.length);
+    $("kpiBowlers").textContent = String(state.bowlers.size);
+
+    let done = 0;
+    state.brackets.forEach(br=>{
+      advanceBracketIfReady(br);
+      if (br.champion && br.runnerUp) done++;
+    });
+    $("kpiDone").textContent = String(done);
+
+    const open = openSpotsCount();
+    $("openSpots").textContent = String(open);
+    $("chipOpen").classList.toggle("on", open > 0);
+
+    const r = state.round;
+    $("roundLabel").textContent = `Round ${r}`;
+    const chip = $("chipRound");
+    chip.classList.remove("r1","r2","r3");
+    chip.classList.add(r===1?"r1":r===2?"r2":"r3");
+  }
+
+  function renderAll(heavy=true){
+    // heavy=false = skip some expensive rerender (still safe either way)
+    renderKPIs();
+    renderScoreEntry();
+    renderBrackets();
+    renderTotals();
+  }
+
+  // ---------------------------
+  // Events
+  // ---------------------------
+  $("btnAddBracket").addEventListener("click", ()=>{
+    addBracket();
+  });
+
+  $("btnAddBowler").addEventListener("click", ()=>{
+    const name = $("bowlerName").value.trim();
+    const hcp = $("bowlerHcp").value;
+    if (!name){ toast("Enter a bowler name."); return; }
+    if (!state.brackets.length){
+      toast("Add a bracket first.");
+      return;
+    }
+
+    ensureBowler(name, hcp);
+
+    const ok = placeBowlerRandomly(name);
+    if (!ok){
+      toast("No open spots. Add another bracket.");
+      return;
+    }
+
+    $("bowlerName").value = "";
+    renderAll();
+  });
+
+  $("btnApplyScores").addEventListener("click", ()=>{
+    document.querySelectorAll(".scoreInput").forEach(inp=>{
+      const name = inp.getAttribute("data-name");
+      const b = state.bowlers.get(name);
+      if (!b) return;
+      const v = inp.value;
+      if (v === "" || v === null || v === undefined){
+        delete b.scores[state.round];
+      } else {
+        const n = Number(v);
+        if (!Number.isNaN(n)) b.scores[state.round] = n;
+      }
+    });
+
+    // after updating, recompute all brackets
+    state.brackets.forEach(br => advanceBracketIfReady(br));
+    renderAll();
+  });
+
+  $("btnNextRound").addEventListener("click", ()=>{
+    state.round = Math.min(3, state.round + 1);
+    renderAll();
+  });
+
+  $("filterName").addEventListener("input", renderTotals);
+  $("sortMode").addEventListener("change", renderTotals);
+
+  $("btnReset").addEventListener("click", ()=>{
+    // hard reset
+    state.round = 1;
+    state.bowlers.clear();
+    state.brackets = [];
+    renderAll();
+  });
+
+  $("btnFillDemo").addEventListener("click", ()=>{
+    if (!state.brackets.length){ addBracket(); addBracket(); }
+    const demo = [
+      ["Nolan", 12], ["Chris", 8], ["Sam", 18], ["Alex", 5],
+      ["Jordan", 10], ["Taylor", 15], ["Morgan", 6], ["Casey", 9],
+      ["Riley", 14], ["Pat", 7], ["Drew", 11], ["Jamie", 13],
+      ["Avery", 4], ["Cameron", 16], ["Quinn", 2], ["Parker", 20]
+    ];
+    demo.forEach(([n,h])=>{
+      ensureBowler(n,h);
+      placeBowlerRandomly(n);
+    });
+    // set a bracket type variety
+    if (state.brackets[0]) state.brackets[0].type = "scratch";
+    if (state.brackets[1]) state.brackets[1].type = "handicap";
+    // example payouts
+    state.brackets.forEach((b,i)=>{ b.payout1 = 50; b.payout2 = 25; });
+    renderAll();
+  });
+
+  // ---------------------------
+  // Basic XSS-safe helpers
+  // ---------------------------
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function escapeAttr(s){
+    return escapeHtml(s).replace(/"/g,'&quot;');
+  }
+
+  // Init
+  renderAll();
+})();
+</script>
+</body>
+</html>
