@@ -20,6 +20,11 @@
       --silver:#b8c6d9;
       --shadow: 0 10px 30px rgba(0,0,0,.45);
       --radius: 18px;
+
+      /* Bracket layout tuning */
+      --matchH: 116px;
+      --matchGap: 14px;
+      --conn: rgba(255,255,255,.10);
     }
 
     *{box-sizing:border-box}
@@ -39,21 +44,11 @@
       display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
       margin-bottom:14px;
     }
-    .title{
-      display:flex;flex-direction:column;gap:6px;
-    }
-    .title h1{
-      margin:0;font-size:22px;letter-spacing:.3px;font-weight:800;
-    }
-    .title .sub{
-      color:var(--muted);font-size:13px;
-    }
+    .title{display:flex;flex-direction:column;gap:6px;}
+    .title h1{margin:0;font-size:22px;letter-spacing:.3px;font-weight:800;}
+    .title .sub{color:var(--muted);font-size:13px;}
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:14px;
-    }
+    .grid{display:grid;grid-template-columns: 1fr;gap:14px;}
 
     .panel{
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
@@ -74,7 +69,6 @@
     .panel .bd{padding:14px}
 
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .row > *{flex:0 0 auto}
     .spacer{flex:1 1 auto}
 
     input, select{
@@ -133,9 +127,6 @@
     .chip b{color:var(--text)}
     .chip .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
     .chip.on .dot{background: var(--accent2)}
-    .chip.r1 .dot{background: var(--accent)}
-    .chip.r2 .dot{background: var(--accent2)}
-    .chip.r3 .dot{background: var(--warn)}
 
     .two-col{
       display:grid;
@@ -146,6 +137,43 @@
       .two-col{grid-template-columns:1fr}
     }
 
+    .hint{font-size:12px;color:var(--muted);line-height:1.45}
+    .hr{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
+
+    .kpi{
+      display:flex;gap:10px;flex-wrap:wrap;
+      align-items:center;
+    }
+    .kpi .box{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+      padding:10px 12px;border-radius:16px;
+      display:flex;gap:8px;align-items:baseline;
+    }
+    .kpi .box .lbl{font-size:12px;color:var(--muted)}
+    .kpi .box .val{font-weight:900;font-size:16px}
+
+    /* Score entry sections */
+    .score-sections{display:grid;gap:12px}
+    .score-section{
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.10);
+      border-radius: 18px;
+      overflow:hidden;
+    }
+    .score-section .shd{
+      padding:10px 12px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+    }
+    .score-section .shd .ttl{
+      font-weight:900;letter-spacing:.3px;
+    }
+    .score-section .shd .meta{
+      font-size:12px;color:var(--muted);
+    }
+    .score-section .sbd{padding:12px}
     .score-list{
       display:grid;
       grid-template-columns: 1fr;
@@ -165,7 +193,6 @@
       .score-item{grid-template-columns:1fr 1fr; grid-auto-rows:auto}
       .score-item .tag{grid-column:1/-1}
     }
-
     .tag{
       font-size:12px;
       color:var(--muted);
@@ -207,11 +234,18 @@
     .bracket .top .meta .small{font-size:12px;color:var(--muted)}
     .bracket .top .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
+    /* New bracket tree: centered columns + simple connector lines */
     .tree{
       display:grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap:10px;
+      gap:14px;
       padding:12px;
+      align-items:stretch;
+    }
+    .col{
+      position:relative;
+      display:flex;
+      flex-direction:column;
     }
     .col h3{
       margin:0 0 8px;
@@ -220,14 +254,83 @@
       letter-spacing:.35px;
       text-transform:uppercase;
     }
+    .col .stack{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:var(--matchGap);
+      justify-content:center;
+      flex:1 1 auto;
+      min-height: calc((var(--matchH) * 4) + (var(--matchGap) * 3));
+    }
+    /* center columns like a real bracket */
+    .col.r2 .stack{ padding-top: calc((var(--matchH) + var(--matchGap)) / 2); }
+    .col.r3 .stack{ padding-top: calc((var(--matchH) + var(--matchGap)) * 1.5); }
 
     .match{
+      height: var(--matchH);
       border:1px solid rgba(255,255,255,.08);
       border-radius:16px;
       background: rgba(255,255,255,.02);
       padding:10px;
-      margin-bottom:10px;
+      position:relative;
+      overflow:visible;
     }
+
+    /* connectors (simple, clean) */
+    .col.r1 .match::after{
+      content:"";
+      position:absolute;
+      right:-14px;
+      top:50%;
+      width:14px;height:1px;
+      background: var(--conn);
+    }
+    .col.r2 .match::before{
+      content:"";
+      position:absolute;
+      left:-14px;
+      top:50%;
+      width:14px;height:1px;
+      background: var(--conn);
+    }
+    .col.r2 .match::after{
+      content:"";
+      position:absolute;
+      right:-14px;
+      top:50%;
+      width:14px;height:1px;
+      background: var(--conn);
+    }
+    .col.r3 .match::before{
+      content:"";
+      position:absolute;
+      left:-14px;
+      top:50%;
+      width:14px;height:1px;
+      background: var(--conn);
+    }
+
+    /* vertical join lines between two r1 matches into one r2 match */
+    .col.r1 .match:nth-child(odd)::before{
+      content:"";
+      position:absolute;
+      right:-14px;
+      top:50%;
+      width:1px;
+      height: calc(var(--matchH) + var(--matchGap));
+      background: var(--conn);
+      transform: translateY(0);
+    }
+    .col.r1 .match:nth-child(even)::before{ content:none; }
+
+    /* vertical join lines between two r2 matches into the final */
+    .col.r2 .match:nth-child(1)::after{
+      /* keep horizontal; add vertical down to next join point */
+    }
+    .col.r2 .match:nth-child(1) .vj,
+    .col.r2 .match:nth-child(2) .vj{ display:none; } /* placeholder */
+
     .slot{
       display:flex;
       justify-content:space-between;
@@ -278,9 +381,7 @@
       background: rgba(0,0,0,.10);
     }
 
-    .winners{
-      display:grid;gap:8px;
-    }
+    .winners{display:grid;gap:8px;}
     .winnerline{
       display:flex;justify-content:space-between;align-items:center;gap:10px;
       border:1px solid rgba(255,255,255,.08);
@@ -297,30 +398,6 @@
       background: rgba(255,255,255,.03);
       font-size:12px;color:var(--muted)
     }
-
-    .hint{font-size:12px;color:var(--muted);line-height:1.45}
-    .hr{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
-
-    .kpi{
-      display:flex;gap:10px;flex-wrap:wrap;
-      align-items:center;
-    }
-    .kpi .box{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.12);
-      padding:10px 12px;border-radius:16px;
-      display:flex;gap:8px;align-items:baseline;
-    }
-    .kpi .box .lbl{font-size:12px;color:var(--muted)}
-    .kpi .box .val{font-weight:900;font-size:16px}
-
-    .smalllink{
-      color: rgba(106,167,255,.85);
-      cursor:pointer;
-      text-decoration:none;
-      font-size:12px;
-    }
-    .smalllink:hover{color: rgba(106,167,255,1)}
   </style>
 </head>
 
@@ -329,10 +406,9 @@
     <header>
       <div class="title">
         <h1>Bowling Betting Brackets</h1>
-        <div class="sub">8 players → 4 → 2 • auto-advance • payouts • dark/tech UI</div>
+        <div class="sub">8 players → 4 → 2 • per-match auto-advance • mixed round completion supported</div>
       </div>
       <div class="row">
-        <span class="chip r1" id="chipRound"><span class="dot"></span> <b id="roundLabel">Round 1</b> <span class="muted">(Game 1)</span></span>
         <span class="chip" id="chipOpen"><span class="dot"></span> <b id="openSpots">0</b> open spots</span>
         <button class="btn danger" id="btnReset">Reset</button>
       </div>
@@ -349,11 +425,11 @@
         </div>
         <div class="bd">
           <div class="row">
-            <input class="w-md" id="bowlerName" placeholder="Bowler name (auto-placed randomly into an open bracket)" />
+            <input class="w-md" id="bowlerName" placeholder="Bowler name (randomly placed into an open bracket)" />
             <input type="number" id="bowlerHcp" placeholder="Handicap" title="Used only in Handicap brackets (score + handicap)" />
             <button class="btn good" id="btnAddBowler">Add Bowler</button>
             <div class="spacer"></div>
-            <span class="hint">Handicap logic: in <b>Handicap</b> brackets, the match uses <span class="mono">entered score + handicap</span>. In <b>Scratch</b> brackets, it uses the entered score only.</span>
+            <span class="hint">Blank scores are ignored when applying. Use <b>Clear</b> to intentionally remove a score.</span>
           </div>
           <div class="hr"></div>
           <div class="kpi">
@@ -370,22 +446,16 @@
             <h2>Score Entry</h2>
             <div class="row">
               <button class="btn primary" id="btnApplyScores">Apply Scores</button>
-              <button class="btn" id="btnNextRound">Advance Round</button>
             </div>
           </div>
           <div class="bd">
-            <div class="hint" id="scoreHint">
-              Enter scores for the current round. When both sides of a match have scores, the bracket auto-picks the winner and advances them.
-              After Round 1 completes for a bracket, only remaining bowlers show in Round 2 entry; same for Round 3.
+            <div class="hint">
+              Enter scores as lanes finish. Brackets auto-advance <b>per matchup</b> once both opponents have scores.
+              Score entry is split by which game each bowler currently needs.
             </div>
             <div class="hr"></div>
-            <div class="score-list" id="scoreList"></div>
-            <div class="hr"></div>
-            <div class="row">
-              <span class="hint"><b>Tip:</b> “Advance Round” just changes the score-entry list globally. Brackets still only advance when match scores are in.</span>
-              <div class="spacer"></div>
-              <a class="smalllink" id="btnFillDemo">Fill demo brackets + bowlers</a>
-            </div>
+
+            <div class="score-sections" id="scoreSections"></div>
           </div>
         </div>
 
@@ -417,7 +487,7 @@
         <div class="hd">
           <h2>Brackets</h2>
           <div class="row">
-            <span class="hint">Each bracket is 8 players. Add more brackets as needed. Bowlers are randomly placed into any open spot.</span>
+            <span class="hint">Rounds are centered like a classic bracket. Winners/losers color as scores come in.</span>
           </div>
         </div>
         <div class="bd">
@@ -430,13 +500,9 @@
 
 <script>
 (() => {
-  // ---------------------------
-  // Data model
-  // ---------------------------
   const state = {
-    round: 1, // 1,2,3 (for score entry list only)
     bowlers: new Map(), // name -> {name, hcp:number, scores:{1?:n,2?:n,3?:n}}
-    brackets: [], // bracket objects
+    brackets: [],
   };
 
   const BRACKET_SIZE = 8;
@@ -447,10 +513,7 @@
       type: "scratch", // "scratch" | "handicap"
       payout1: 0,
       payout2: 0,
-      // slots are initial 8. We'll store bowler names or null.
       slots: Array(BRACKET_SIZE).fill(null),
-      // matches: r1: 4 matches, r2: 2, r3: 1
-      // store as arrays of {a,b,winner,loser} referencing names
       r1: Array.from({length:4}, () => ({a:null,b:null,winner:null,loser:null})),
       r2: Array.from({length:2}, () => ({a:null,b:null,winner:null,loser:null})),
       r3: Array.from({length:1}, () => ({a:null,b:null,winner:null,loser:null})),
@@ -460,13 +523,11 @@
   }
 
   function rebuildMatchesFromSlots(br){
-    // r1 pairing: (0,1) (2,3) (4,5) (6,7)
     const pairs = [[0,1],[2,3],[4,5],[6,7]];
     br.r1.forEach((m,i)=>{
       const [p,q] = pairs[i];
       m.a = br.slots[p] || null;
       m.b = br.slots[q] || null;
-      // when reseating, clear prior outcomes
       m.winner = null; m.loser = null;
     });
     br.r2.forEach(m=>{ m.a=null; m.b=null; m.winner=null; m.loser=null; });
@@ -475,19 +536,8 @@
     br.runnerUp = null;
   }
 
-  // ---------------------------
-  // Helpers
-  // ---------------------------
   const $ = (id) => document.getElementById(id);
-  const money = (n) => {
-    const v = Number(n||0);
-    return "$" + v.toLocaleString(undefined,{maximumFractionDigits:2});
-  };
-
-  function toast(msg){
-    // simple, lightweight: use alert-like hint in console + chip pulse
-    console.log("[Brackets]", msg);
-  }
+  const money = (n) => "$" + Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2});
 
   function openSpotsCount(){
     let open = 0;
@@ -510,7 +560,6 @@
     if (!state.bowlers.has(key)){
       state.bowlers.set(key, { name:key, hcp: Number(hcp||0), scores:{} });
     } else {
-      // update handicap if provided
       const b = state.bowlers.get(key);
       if (hcp !== "" && hcp !== null && hcp !== undefined && !Number.isNaN(Number(hcp))){
         b.hcp = Number(hcp);
@@ -520,11 +569,10 @@
   }
 
   function randomOpenSlot(){
-    // pick a random open slot across all brackets
     const options = [];
-    state.brackets.forEach((br, bi)=>{
+    state.brackets.forEach((br)=>{
       br.slots.forEach((s, si)=>{
-        if (!s) options.push({br, bi, si});
+        if (!s) options.push({br, si});
       });
     });
     if (!options.length) return null;
@@ -554,14 +602,12 @@
   }
 
   function decideMatchWinner(br, match, round){
-    // needs both players and both scores
     if (!match.a || !match.b) return;
     const sa = scoreForMatch(br, match.a, round);
     const sb = scoreForMatch(br, match.b, round);
     if (sa === null || sb === null) return;
 
     if (sa === sb){
-      // tie-break: keep winner null until user changes; but we can pick at random to keep flow
       const pickA = Math.random() < 0.5;
       match.winner = pickA ? match.a : match.b;
       match.loser  = pickA ? match.b : match.a;
@@ -573,9 +619,8 @@
   }
 
   function advanceBracketIfReady(br){
-    // Round 1 -> fill round 2 participants based on r1 winners
     br.r1.forEach(m => decideMatchWinner(br, m, 1));
-    // set r2 participants if both winners exist for each pair
+
     br.r2.forEach((m,i)=>{
       const w1 = br.r1[i*2]?.winner || null;
       const w2 = br.r1[i*2+1]?.winner || null;
@@ -583,14 +628,12 @@
       decideMatchWinner(br, m, 2);
     });
 
-    // Round 3
     const fA = br.r2[0]?.winner || null;
     const fB = br.r2[1]?.winner || null;
     br.r3[0].a = fA;
     br.r3[0].b = fB;
     decideMatchWinner(br, br.r3[0], 3);
 
-    // finalize payouts
     const final = br.r3[0];
     if (final.winner && final.loser){
       br.champion = final.winner;
@@ -601,43 +644,57 @@
     }
   }
 
-  function activeBowlersForRound(round){
-    // only show bowlers still "alive" in at least one bracket for that round
-    const alive = new Set();
+  // Determine which game a bowler currently needs (can differ by bracket)
+  // We show them under the EARLIEST game they still need anywhere.
+  function neededRoundForBowler(name){
+    let needed = null;
 
     for (const br of state.brackets){
+      if (!br.slots.includes(name)) continue;
+
       advanceBracketIfReady(br);
 
-      if (round === 1){
-        br.slots.forEach(n => n && alive.add(n));
-      } else if (round === 2){
-        // alive = r1 winners (once decided) else still r1 participants not yet eliminated
-        br.r1.forEach(m=>{
-          if (!m.a || !m.b) return;
-          if (m.winner){
-            alive.add(m.winner);
-          } else {
-            alive.add(m.a); alive.add(m.b);
-          }
-        });
-      } else if (round === 3){
-        // alive = finalists (r2 winners if decided) else still potentially alive r2 participants
-        br.r2.forEach(m=>{
-          if (!m.a || !m.b) return;
-          if (m.winner){
-            alive.add(m.winner);
-          } else {
-            alive.add(m.a); alive.add(m.b);
-          }
-        });
+      // If already eliminated in this bracket, ignore it for "needed"
+      const eliminatedInR1 = br.r1.some(m => m.loser === name);
+      const eliminatedInR2 = br.r2.some(m => m.loser === name);
+      const eliminatedInR3 = br.r3.some(m => m.loser === name);
+      if (eliminatedInR1 || eliminatedInR2 || eliminatedInR3) continue;
+
+      // Round 1: if they are in an r1 match that isn't decided yet, they need round 1 score
+      for (const m of br.r1){
+        if ((m.a===name || m.b===name) && !m.winner){
+          needed = needed === null ? 1 : Math.min(needed, 1);
+        }
+      }
+
+      // Round 2: if they are in r2 as participant and match not decided
+      for (const m of br.r2){
+        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner){
+          needed = needed === null ? 2 : Math.min(needed, 2);
+        }
+      }
+
+      // Round 3: finalist match not decided
+      for (const m of br.r3){
+        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner){
+          needed = needed === null ? 3 : Math.min(needed, 3);
+        }
       }
     }
 
-    return Array.from(alive).sort((a,b)=>a.localeCompare(b));
+    return needed; // 1|2|3|null
+  }
+
+  function scoreUsesForName(name){
+    const uses = [];
+    for (const br of state.brackets){
+      if (!br.slots.includes(name)) continue;
+      uses.push(`#${br.id} ${br.type === "handicap" ? "HCP" : "SCR"}`);
+    }
+    return uses;
   }
 
   function winningsByBowler(){
-    // sum across all completed brackets
     const totals = new Map();
     for (const br of state.brackets){
       advanceBracketIfReady(br);
@@ -657,74 +714,74 @@
   // ---------------------------
   // Rendering
   // ---------------------------
-  function renderScoreEntry(){
-    const list = $("scoreList");
-    list.innerHTML = "";
+  function renderScoreSections(){
+    const root = $("scoreSections");
+    root.innerHTML = "";
 
-    const names = activeBowlersForRound(state.round);
-    if (!names.length){
-      list.innerHTML = `<div class="hint">No active bowlers for this round yet. Add a bracket and bowlers first.</div>`;
-      return;
+    // Build lists by needed round
+    const byRound = {1:[],2:[],3:[]};
+    for (const [name, bowler] of state.bowlers.entries()){
+      const r = neededRoundForBowler(name);
+      if (r === 1 || r === 2 || r === 3) byRound[r].push(name);
     }
+    byRound[1].sort((a,b)=>a.localeCompare(b));
+    byRound[2].sort((a,b)=>a.localeCompare(b));
+    byRound[3].sort((a,b)=>a.localeCompare(b));
 
-    for (const name of names){
-      const bowler = state.bowlers.get(name);
-      const val = bowler?.scores?.[state.round] ?? "";
+    const titles = {
+      1: "Game 1 (Round 1)",
+      2: "Game 2 (Round 2)",
+      3: "Game 3 (Final)"
+    };
 
-      // show what brackets they are in + type(s)
-      const uses = [];
-      for (const br of state.brackets){
-        const inSlots = br.slots.includes(name);
-        if (!inSlots) continue;
-
-        // determine if still alive in this bracket for this round
-        let alive = false;
-        advanceBracketIfReady(br);
-
-        if (state.round === 1){
-          alive = true;
-        } else if (state.round === 2){
-          // alive if in any r1 match not eliminated
-          for (const m of br.r1){
-            if (m.a === name || m.b === name){
-              alive = (!m.loser || m.loser !== name);
-              if (!m.winner) alive = true;
-            }
-          }
-        } else if (state.round === 3){
-          // alive if in any r2 match not eliminated
-          for (const m of br.r2){
-            if (m.a === name || m.b === name){
-              alive = (!m.loser || m.loser !== name);
-              if (!m.winner) alive = true;
-            }
-          }
-        }
-
-        if (alive) uses.push(`#${br.id} ${br.type === "handicap" ? "HCP" : "SCR"}`);
-      }
-
-      const wrap = document.createElement("div");
-      wrap.className = "score-item";
-      wrap.innerHTML = `
-        <div>
-          <div style="font-weight:900">${escapeHtml(name)}</div>
-          <div class="muted" style="font-size:12px">HCP: <span class="mono">${Number(bowler?.hcp||0)}</span></div>
+    [1,2,3].forEach((round)=>{
+      const names = byRound[round];
+      const sec = document.createElement("div");
+      sec.className = "score-section";
+      sec.innerHTML = `
+        <div class="shd">
+          <div class="ttl">${titles[round]}</div>
+          <div class="meta">${names.length} bowler${names.length===1?"":"s"} need this score</div>
         </div>
-        <input type="number" class="scoreInput" data-name="${escapeAttr(name)}" placeholder="Score" value="${escapeAttr(val)}" />
-        <div class="tag">${uses.length ? uses.join(" • ") : "—"}</div>
-        <button class="btn" data-clear="${escapeAttr(name)}">Clear</button>
+        <div class="sbd">
+          <div class="score-list" id="scoreList_${round}">
+            ${names.length ? "" : `<div class="hint">No active bowlers needing Game ${round} right now.</div>`}
+          </div>
+        </div>
       `;
-      list.appendChild(wrap);
-    }
+      root.appendChild(sec);
+
+      const list = sec.querySelector(`#scoreList_${round}`);
+      if (!names.length) return;
+
+      names.forEach((name)=>{
+        const bowler = state.bowlers.get(name);
+        const val = bowler?.scores?.[round] ?? "";
+        const uses = scoreUsesForName(name);
+
+        const item = document.createElement("div");
+        item.className = "score-item";
+        item.innerHTML = `
+          <div>
+            <div style="font-weight:900">${escapeHtml(name)}</div>
+            <div class="muted" style="font-size:12px">HCP: <span class="mono">${Number(bowler?.hcp||0)}</span></div>
+          </div>
+          <input type="number" class="scoreInput" data-round="${round}" data-name="${escapeAttr(name)}" placeholder="Score" value="${escapeAttr(val)}" />
+          <div class="tag">${uses.length ? uses.join(" • ") : "—"}</div>
+          <button class="btn" data-clear="${escapeAttr(name)}" data-clear-round="${round}">Clear</button>
+        `;
+        list.appendChild(item);
+      });
+    });
 
     // Clear handlers
-    list.querySelectorAll("[data-clear]").forEach(btn=>{
+    root.querySelectorAll("[data-clear]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const name = btn.getAttribute("data-clear");
+        const round = Number(btn.getAttribute("data-clear-round"));
         const b = state.bowlers.get(name);
         if (!b) return;
-        delete b.scores[state.round];
+        delete b.scores[round];
         renderAll();
       });
     });
@@ -760,17 +817,23 @@
         </div>
 
         <div class="tree">
-          <div class="col">
+          <div class="col r1">
             <h3>Round 1</h3>
-            ${renderMatchHTML(br, br.r1, 1)}
+            <div class="stack">
+              ${renderMatchHTML(br, br.r1, 1)}
+            </div>
           </div>
-          <div class="col">
+          <div class="col r2">
             <h3>Round 2</h3>
-            ${renderMatchHTML(br, br.r2, 2)}
+            <div class="stack">
+              ${renderMatchHTML(br, br.r2, 2)}
+            </div>
           </div>
-          <div class="col">
+          <div class="col r3">
             <h3>Final</h3>
-            ${renderMatchHTML(br, br.r3, 3)}
+            <div class="stack">
+              ${renderMatchHTML(br, br.r3, 3)}
+            </div>
           </div>
         </div>
 
@@ -799,7 +862,7 @@
         const br = state.brackets.find(b=>b.id===id);
         if (!br) return;
         br.payout1 = Number(inp.value||0);
-        renderAll(false); // cheap rerender
+        renderAll(false);
       });
     });
     root.querySelectorAll("[data-p2]").forEach(inp=>{
@@ -816,7 +879,6 @@
       btn.addEventListener("click", ()=>{
         const id = Number(btn.getAttribute("data-del"));
         state.brackets = state.brackets.filter(b=>b.id!==id);
-        // re-number IDs for cleanliness
         state.brackets.forEach((b,i)=>b.id=i+1);
         renderAll();
       });
@@ -824,7 +886,18 @@
   }
 
   function renderMatchHTML(br, matches, round){
-    return matches.map((m, idx)=>{
+    return matches.map(()=>{
+      return `
+        <div class="match">
+          ${renderSlotHTML(br, arguments[0], arguments[1], round)}
+        </div>
+      `;
+    }).join("");
+  }
+
+  // (small trick: we call renderSlotHTML twice by passing the match object)
+  function renderMatchHTML(br, matches, round){
+    return matches.map((m)=>{
       return `
         <div class="match">
           ${renderSlotHTML(br, m.a, m, round)}
@@ -837,7 +910,9 @@
   function renderSlotHTML(br, name, match, round){
     const sc = scoreForMatch(br, name, round);
     const raw = name ? (state.bowlers.get(name)?.scores?.[round] ?? "") : "";
-    const showAdj = (br.type==="handicap" && name && raw!=="") ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${sc ?? "—"}</b>` : "";
+    const showAdj = (br.type==="handicap" && name && raw!=="")
+      ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${sc ?? "—"}</b>`
+      : "";
     const winner = match.winner;
     const loser = match.loser;
 
@@ -864,7 +939,7 @@
     const p2 = Number(br.payout2||0);
 
     if (!br.champion || !br.runnerUp){
-      return `<div class="hint">Final results will appear here after Round 3 scores are entered (and payouts set).</div>`;
+      return `<div class="hint">Final results will appear here after the final matchup has both scores (and payouts are set).</div>`;
     }
 
     return `
@@ -898,10 +973,7 @@
     const mode = $("sortMode").value;
 
     let items = Array.from(totals.entries()).map(([name, amt]) => ({name, amt}));
-
-    if (filter){
-      items = items.filter(x => x.name.toLowerCase().includes(filter));
-    }
+    if (filter) items = items.filter(x => x.name.toLowerCase().includes(filter));
 
     items.sort((a,b)=>{
       if (mode==="high") return b.amt - a.amt;
@@ -915,7 +987,7 @@
     root.innerHTML = "";
 
     if (!items.length){
-      root.innerHTML = `<div class="hint">No payouts yet. Finish a bracket (Round 3) and set payouts.</div>`;
+      root.innerHTML = `<div class="hint">No payouts yet. Finish a bracket final and set payouts.</div>`;
     } else {
       for (const it of items){
         const row = document.createElement("div");
@@ -950,107 +1022,85 @@
     const open = openSpotsCount();
     $("openSpots").textContent = String(open);
     $("chipOpen").classList.toggle("on", open > 0);
-
-    const r = state.round;
-    $("roundLabel").textContent = `Round ${r}`;
-    const chip = $("chipRound");
-    chip.classList.remove("r1","r2","r3");
-    chip.classList.add(r===1?"r1":r===2?"r2":"r3");
   }
 
-  function renderAll(heavy=true){
-    // heavy=false = skip some expensive rerender (still safe either way)
+  function renderAll(){
+    // advance everything first so score sections are accurate
+    state.brackets.forEach(br => advanceBracketIfReady(br));
     renderKPIs();
-    renderScoreEntry();
+    renderScoreSections();
     renderBrackets();
     renderTotals();
   }
 
   // ---------------------------
+  // Score Apply behavior (blank = skip, not clear)
+  // ---------------------------
+  function applyScoresFromInputs(){
+    document.querySelectorAll(".scoreInput").forEach(inp=>{
+      const name = inp.getAttribute("data-name");
+      const round = Number(inp.getAttribute("data-round"));
+      const b = state.bowlers.get(name);
+      if (!b) return;
+
+      const v = inp.value;
+      if (v === "" || v === null || v === undefined){
+        // IMPORTANT CHANGE: blank = skip (do not modify stored score)
+        return;
+      }
+      const n = Number(v);
+      if (!Number.isNaN(n)) b.scores[round] = n;
+    });
+
+    // per-match auto-advance happens here
+    state.brackets.forEach(br => advanceBracketIfReady(br));
+  }
+
+  // ---------------------------
   // Events
   // ---------------------------
-  $("btnAddBracket").addEventListener("click", ()=>{
-    addBracket();
-  });
+  $("btnAddBracket").addEventListener("click", addBracket);
 
   $("btnAddBowler").addEventListener("click", ()=>{
     const name = $("bowlerName").value.trim();
     const hcp = $("bowlerHcp").value;
-    if (!name){ toast("Enter a bowler name."); return; }
-    if (!state.brackets.length){
-      toast("Add a bracket first.");
-      return;
-    }
+    if (!name) return;
+    if (!state.brackets.length) return;
 
     ensureBowler(name, hcp);
 
     const ok = placeBowlerRandomly(name);
-    if (!ok){
-      toast("No open spots. Add another bracket.");
-      return;
-    }
+    if (!ok) return;
 
     $("bowlerName").value = "";
     renderAll();
   });
 
   $("btnApplyScores").addEventListener("click", ()=>{
-    document.querySelectorAll(".scoreInput").forEach(inp=>{
-      const name = inp.getAttribute("data-name");
-      const b = state.bowlers.get(name);
-      if (!b) return;
-      const v = inp.value;
-      if (v === "" || v === null || v === undefined){
-        delete b.scores[state.round];
-      } else {
-        const n = Number(v);
-        if (!Number.isNaN(n)) b.scores[state.round] = n;
-      }
-    });
-
-    // after updating, recompute all brackets
-    state.brackets.forEach(br => advanceBracketIfReady(br));
+    applyScoresFromInputs();
     renderAll();
   });
 
-  $("btnNextRound").addEventListener("click", ()=>{
-    state.round = Math.min(3, state.round + 1);
-    renderAll();
+  // Nice QoL: pressing Enter in a score field applies immediately
+  document.addEventListener("keydown", (e)=>{
+    const t = e.target;
+    if (e.key === "Enter" && t && t.classList && t.classList.contains("scoreInput")){
+      applyScoresFromInputs();
+      renderAll();
+    }
   });
 
   $("filterName").addEventListener("input", renderTotals);
   $("sortMode").addEventListener("change", renderTotals);
 
   $("btnReset").addEventListener("click", ()=>{
-    // hard reset
-    state.round = 1;
     state.bowlers.clear();
     state.brackets = [];
     renderAll();
   });
 
-  $("btnFillDemo").addEventListener("click", ()=>{
-    if (!state.brackets.length){ addBracket(); addBracket(); }
-    const demo = [
-      ["Nolan", 12], ["Chris", 8], ["Sam", 18], ["Alex", 5],
-      ["Jordan", 10], ["Taylor", 15], ["Morgan", 6], ["Casey", 9],
-      ["Riley", 14], ["Pat", 7], ["Drew", 11], ["Jamie", 13],
-      ["Avery", 4], ["Cameron", 16], ["Quinn", 2], ["Parker", 20]
-    ];
-    demo.forEach(([n,h])=>{
-      ensureBowler(n,h);
-      placeBowlerRandomly(n);
-    });
-    // set a bracket type variety
-    if (state.brackets[0]) state.brackets[0].type = "scratch";
-    if (state.brackets[1]) state.brackets[1].type = "handicap";
-    // example payouts
-    state.brackets.forEach((b,i)=>{ b.payout1 = 50; b.payout2 = 25; });
-    renderAll();
-  });
-
   // ---------------------------
-  // Basic XSS-safe helpers
+  // Escaping
   // ---------------------------
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1059,7 +1109,6 @@
     return escapeHtml(s).replace(/"/g,'&quot;');
   }
 
-  // Init
   renderAll();
 })();
 </script>
