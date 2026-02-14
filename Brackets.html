@@ -22,8 +22,8 @@
       --radius: 18px;
 
       /* Bracket geometry (portrait defaults) */
-      --matchH: 116px;     /* match card height */
-      --matchGap: 14px;    /* gap between round 1 matches */
+      --matchH: 128px;     /* ✅ increased so both slots fully fit */
+      --matchGap: 14px;
       --conn: rgba(255,255,255,.12);
 
       /* Column sizing */
@@ -233,7 +233,7 @@
     .bracket .top .meta .small{font-size:12px;color:var(--muted)}
     .bracket .top .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
-    /* ===== BRACKET LAYOUT (fits portrait, bigger in landscape) ===== */
+    /* ===== BRACKET LAYOUT ===== */
     .treeHead{
       display:grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -248,9 +248,8 @@
       text-transform:uppercase;
     }
 
-    /* Portrait: no horizontal scroll; everything shrinks to fit */
     .treeScroll{
-      overflow-x:hidden;
+      overflow-x:hidden;   /* portrait: no scroll */
       overflow-y:hidden;
       -webkit-overflow-scrolling: touch;
     }
@@ -272,19 +271,13 @@
       gap: var(--matchGap);
       min-width:0;
     }
-    .col.r1{
-      justify-content:flex-start;
-    }
+    .col.r1{justify-content:flex-start;}
     .col.r2{
       justify-content:flex-start;
       padding-top: calc((var(--matchH) + var(--matchGap)) / 2);
     }
-    .r2Spacer{
-      height: var(--matchH);
-    }
-    .col.final{
-      justify-content:center;
-    }
+    .r2Spacer{height: var(--matchH);}
+    .col.final{justify-content:center;}
 
     .match{
       width:100%;
@@ -292,7 +285,7 @@
       border:1px solid rgba(255,255,255,.08);
       border-radius:16px;
       background: rgba(255,255,255,.02);
-      padding:8px;                 /* slightly smaller to help fit */
+      padding:8px;
       position:relative;
       overflow:hidden;
       min-width:0;
@@ -314,29 +307,27 @@
       opacity:.9;
     }
 
+    /* ✅ Key fix: make two slot rows fit inside match height */
     .slot{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:8px 10px;
+      padding:7px 10px;
       border-radius: 12px;
       background: rgba(0,0,0,.18);
       border:1px solid rgba(255,255,255,.06);
       margin-bottom:8px;
       gap:8px;
-      min-height:38px;
+      min-height:0;        /* allow flex shrink */
       min-width:0;
     }
     .slot:last-child{margin-bottom:0}
-    .slot .left{display:flex;flex-direction:column;gap:3px;min-width:0;}
-    .slot .nm{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    /* ✅ Prevent empty “Add bowlers…” from wrapping and cutting off 2nd slot */
+    .slot .left{display:flex;flex-direction:column;gap:2px;min-width:0;}
+    .slot .nm{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;}
     .slot .sc{
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-size:12px;color:var(--muted);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      line-height:1.12;
     }
     .slot .right{
       font-size:12px;color:var(--muted);
@@ -382,13 +373,13 @@
       font-size:12px;color:var(--muted)
     }
 
-    /* Small phones: slightly shrink to guarantee fit without scrolling */
+    /* Small phones: shrink a bit but keep matchH large enough for 2 slots */
     @media (max-width: 420px){
       :root{
         --treePadX: 10px;
         --treeGap: 10px;
         --matchGap: 12px;
-        --matchH: 112px;
+        --matchH: 124px; /* ✅ still enough for both slot rows */
       }
       .treeHead h3{font-size:11px}
       .match{padding:7px;border-radius:14px}
@@ -397,12 +388,12 @@
       .slot .sc{font-size:11px}
     }
 
-    /* Landscape: let it breathe and optionally allow scroll if user wants “bigger” */
+    /* Landscape: larger + allow scroll (bigger bracket) */
     @media (orientation: landscape){
       :root{
         --treePadX: 18px;
         --treeGap: 14px;
-        --matchH: 124px;
+        --matchH: 138px;
       }
       .treeScroll{overflow-x:auto}
       .treeScroll::-webkit-scrollbar{height:10px}
@@ -517,17 +508,13 @@
 
 <script>
 (() => {
-  const state = {
-    bowlers: new Map(), // name -> {name, hcp:number, scores:{1?:n,2?:n,3?:n}}
-    brackets: [],
-  };
-
+  const state = { bowlers: new Map(), brackets: [] };
   const BRACKET_SIZE = 8;
 
   function makeBracket(id){
     return {
       id,
-      type: "scratch", // "scratch" | "handicap"
+      type: "scratch",
       payout1: 0,
       payout2: 0,
       slots: Array(BRACKET_SIZE).fill(null),
@@ -659,10 +646,8 @@
 
   function neededRoundForBowler(name){
     let needed = null;
-
     for (const br of state.brackets){
       if (!br.slots.includes(name)) continue;
-
       advanceBracketIfReady(br);
 
       const eliminated =
@@ -673,19 +658,13 @@
       if (eliminated) continue;
 
       for (const m of br.r1){
-        if ((m.a===name || m.b===name) && !m.winner){
-          needed = needed === null ? 1 : Math.min(needed, 1);
-        }
+        if ((m.a===name || m.b===name) && !m.winner) needed = needed === null ? 1 : Math.min(needed, 1);
       }
       for (const m of br.r2){
-        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner){
-          needed = needed === null ? 2 : Math.min(needed, 2);
-        }
+        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner) needed = needed === null ? 2 : Math.min(needed, 2);
       }
       for (const m of br.r3){
-        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner){
-          needed = needed === null ? 3 : Math.min(needed, 3);
-        }
+        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner) needed = needed === null ? 3 : Math.min(needed, 3);
       }
     }
     return needed;
@@ -706,7 +685,6 @@
       advanceBracketIfReady(br);
       const p1 = Number(br.payout1 || 0);
       const p2 = Number(br.payout2 || 0);
-
       if (br.champion) totals.set(br.champion, (totals.get(br.champion)||0) + p1);
       if (br.runnerUp) totals.set(br.runnerUp, (totals.get(br.runnerUp)||0) + p2);
     }
@@ -1016,9 +994,7 @@
       if (!b) return;
 
       const v = inp.value;
-      if (v === "" || v === null || v === undefined){
-        return; // blank = skip
-      }
+      if (v === "" || v === null || v === undefined) return; // blank = skip
       const n = Number(v);
       if (!Number.isNaN(n)) b.scores[round] = n;
     });
@@ -1043,7 +1019,6 @@
     if (!state.brackets.length) return;
 
     ensureBowler(name, hcp);
-
     const ok = placeBowlerRandomly(name);
     if (!ok) return;
 
