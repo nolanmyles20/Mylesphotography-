@@ -87,6 +87,7 @@
     input[type="number"]{width:120px}
     .w-sm{width:160px}
     .w-md{width:240px}
+    .w-xs{width:110px}
 
     .btn{
       border:1px solid rgba(255,255,255,.12);
@@ -331,6 +332,88 @@
       .tree{min-width: 920px;}
       .slot .nm{font-size: 15px;}
     }
+
+    /* ---- Bowler picker modal ---- */
+    .modalBackdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.60);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index: 9999;
+    }
+    .modal{
+      width:min(720px, 100%);
+      max-height:min(82vh, 720px);
+      overflow:hidden;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      display:flex;
+      flex-direction:column;
+    }
+    .modal .mhd{
+      padding:12px 12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .modal .mhd .ttl{
+      font-weight:900;
+      letter-spacing:.3px;
+    }
+    .modal .mhd .x{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      border-radius: 999px;
+      padding:8px 11px;
+      cursor:pointer;
+    }
+    .modal .mbd{padding:12px; overflow:auto;}
+    .modal .mft{
+      padding:12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .list{
+      display:grid;
+      gap:10px;
+    }
+    .rowPick{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.12);
+      cursor:pointer;
+      transition:.12s ease;
+    }
+    .rowPick:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.14)}
+    .rowPick .nm{font-weight:900}
+    .rowPick .hc{color:var(--muted); font-size:12px}
+    .pillSm{
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      color:var(--muted);
+      white-space:nowrap;
+    }
   </style>
 </head>
 
@@ -358,16 +441,25 @@
         </div>
         <div class="bd">
           <div class="row">
-            <input class="w-md" id="bowlerName" placeholder="Bowler name (randomly placed into an open bracket)" />
+            <input class="w-md" id="bowlerName" placeholder="Bowler name (tap to pick from list)" readonly />
+            <button class="btn" id="btnPickBowler">Pick</button>
+
             <select id="entryType" class="w-sm" title="Which bracket type to enter">
               <option value="scratch">Enter Scratch bracket</option>
               <option value="handicap">Enter Handicap bracket</option>
             </select>
-            <input type="number" id="bowlerHcp" placeholder="Handicap (only used for Handicap)" />
+
+            <input type="number" id="bowlerHcp" placeholder="Handicap" />
+
+            <input type="number" id="entryQty" class="w-xs" min="1" max="20" value="1" title="How many bracket entries for this bowler" />
+            <span class="pillSm">Qty</span>
+
             <button class="btn good" id="btnAddBowler">Add Bowler</button>
+
             <div class="spacer"></div>
             <span class="hint">Blank score fields are ignored when applying. Use <b>Clear</b> to remove a score intentionally.</span>
           </div>
+
           <div class="hr"></div>
           <div class="kpi">
             <div class="box"><span class="lbl">Brackets</span> <span class="val" id="kpiBrackets">0</span></div>
@@ -437,67 +529,77 @@
     </div>
   </div>
 
+  <!-- Bowler picker modal -->
+  <div class="modalBackdrop" id="pickerBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Pick bowler">
+      <div class="mhd">
+        <div>
+          <div class="ttl">Select Bowler</div>
+          <div class="hint">Loaded from <span class="mono">data/bowlers.csv</span>, sorted by last name.</div>
+        </div>
+        <button class="x" id="pickerClose">Close</button>
+      </div>
+
+      <div class="mbd">
+        <div class="row" style="margin-bottom:10px">
+          <input class="w-md" id="pickerSearch" placeholder="Search name…" />
+          <button class="btn" id="pickerReload">Reload CSV</button>
+          <div class="spacer"></div>
+          <span class="pillSm" id="pickerCount">0 bowlers</span>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row" style="margin-bottom:10px">
+          <input class="w-md" id="pickerManualName" placeholder="Add bowler not listed (type name here)" />
+          <input type="number" id="pickerManualHcp" placeholder="Handicap" />
+          <button class="btn good" id="pickerUseManual">Use New Bowler</button>
+          <span class="hint" id="manualHint"></span>
+        </div>
+
+        <div class="list" id="pickerList"></div>
+      </div>
+
+      <div class="mft">
+        <button class="btn" id="pickerClear">Clear Selection</button>
+        <button class="btn primary" id="pickerUseSelected">Use Selected</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 (() => {
-  const state = { bowlers: new Map(), brackets: [] };
+  const state = { bowlers: new Map(), brackets: [], roster: [], rosterLoaded:false, selectedRoster:null };
   const BRACKET_SIZE = 8;
 
-  function makeMatch(){
-    return {a:null,b:null,winner:null,loser:null,tie:false,tieNeedsRound:null,finalSplit:false,splitEach:0,splitWith:[]};
-  }
+  function makeMatch(){ return {a:null,b:null,winner:null,loser:null,tie:false,tieNeedsRound:null,finalSplit:false,splitEach:0,splitWith:[]}; }
   function makeBracket(id, type="scratch"){
-    return {
-      id,
-      type,
-      payout1: 0,
-      payout2: 0,
-      slots: Array(BRACKET_SIZE).fill(null),
-      r1: Array.from({length:4}, makeMatch),
-      r2: Array.from({length:2}, makeMatch),
-      r3: Array.from({length:1}, makeMatch),
-      champion: null,
-      runnerUp: null
+    return { id, type, payout1:0, payout2:0, slots:Array(BRACKET_SIZE).fill(null),
+      r1:Array.from({length:4}, makeMatch), r2:Array.from({length:2}, makeMatch), r3:Array.from({length:1}, makeMatch),
+      champion:null, runnerUp:null
     };
   }
   function rebuildMatchesFromSlots(br){
-    const pairs = [[0,1],[2,3],[4,5],[6,7]];
-    br.r1.forEach((m,i)=>{
-      const [p,q] = pairs[i];
-      Object.assign(m, makeMatch());
-      m.a = br.slots[p] || null;
-      m.b = br.slots[q] || null;
-    });
+    const pairs=[[0,1],[2,3],[4,5],[6,7]];
+    br.r1.forEach((m,i)=>{ const [p,q]=pairs[i]; Object.assign(m, makeMatch()); m.a=br.slots[p]||null; m.b=br.slots[q]||null; });
     br.r2.forEach(m=>Object.assign(m, makeMatch()));
     br.r3.forEach(m=>Object.assign(m, makeMatch()));
-    br.champion = null;
-    br.runnerUp = null;
+    br.champion=null; br.runnerUp=null;
   }
 
-  const $ = (id) => document.getElementById(id);
-  const money = (n) => "$" + Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2});
-
-  function normalizeName(name){
-    return String(name||"").trim().replace(/\s+/g," ");
-  }
-
-  function bracketHasBowler(br, name){
-    return br.slots.includes(name);
-  }
-
-  function anyBracketHasBowlerOfType(name, type){
-    return state.brackets.some(b => b.type===type && b.slots.includes(name));
-  }
+  const $ = (id)=>document.getElementById(id);
+  const money = (n)=>"$"+Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2});
+  const normalizeName = (name)=>String(name||"").trim().replace(/\s+/g," ");
+  const escapeHtml = (s)=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const escapeAttr = (s)=>escapeHtml(s).replace(/"/g,'&quot;');
 
   function openSpotsCount(){
-    let open = 0;
-    for (const b of state.brackets){
-      for (const s of b.slots) if (!s) open++;
-    }
+    let open=0; for(const b of state.brackets){ for(const s of b.slots) if(!s) open++; }
     return open;
   }
   function addBracket(type="scratch"){
-    const id = state.brackets.length + 1;
-    const br = makeBracket(id, type);
+    const id = state.brackets.length+1;
+    const br = makeBracket(id,type);
     state.brackets.push(br);
     renderAll();
     return br;
@@ -505,230 +607,191 @@
 
   function ensureBowler(name, hcp){
     const key = normalizeName(name);
-    if (!key) return null;
-    if (!state.bowlers.has(key)){
-      state.bowlers.set(key, { name:key, hcp: Number(hcp||0), scores:{} });
-    } else {
+    if(!key) return null;
+    if(!state.bowlers.has(key)) state.bowlers.set(key,{name:key,hcp:Number(hcp||0),scores:{}});
+    else{
       const b = state.bowlers.get(key);
-      if (hcp !== "" && hcp !== null && hcp !== undefined && !Number.isNaN(Number(hcp))){
-        b.hcp = Number(hcp);
-      }
+      if(hcp!=="" && hcp!==null && hcp!==undefined && !Number.isNaN(Number(hcp))) b.hcp = Number(hcp);
     }
     return state.bowlers.get(key);
   }
 
+  function anyBracketHasBowlerOfType(name,type){
+    return state.brackets.some(b=>b.type===type && b.slots.includes(name));
+  }
   function findOpenSlotInType(type){
-    const options = [];
-    state.brackets.forEach((br)=>{
-      if (br.type !== type) return;
-      br.slots.forEach((s, si)=>{
-        if (!s) options.push({br, si});
-      });
+    const opts=[];
+    state.brackets.forEach(br=>{
+      if(br.type!==type) return;
+      br.slots.forEach((s,si)=>{ if(!s) opts.push({br,si}); });
     });
-    if (!options.length) return null;
-    return options[Math.floor(Math.random()*options.length)];
+    if(!opts.length) return null;
+    return opts[Math.floor(Math.random()*opts.length)];
   }
 
-  // ✅ ENTRY RULES:
-  // - A bowler can only appear once inside a given bracket (no duplicates)
-  // - Also prevent the same bowler from being entered multiple times into SAME TYPE across different brackets
-  // - If no bracket of that type exists, auto-create one
-  // - If all brackets of that type are full, auto-create another
-  function placeBowlerIntoType(name, type){
+  // ENTRY RULES
+  // - Cannot enter same bowler twice in SAME type anywhere
+  // - Auto-create bracket of requested type if needed
+  // - If all full, create another
+  function placeBowlerIntoType(name,type){
     name = normalizeName(name);
-    if (!name) return {ok:false, msg:"Name is blank"};
+    if(!name) return {ok:false,msg:"Name is blank"};
 
-    // already entered somewhere for this type?
-    if (anyBracketHasBowlerOfType(name, type)){
-      return {ok:false, msg:`"${name}" is already entered in a ${type==="handicap"?"Handicap":"Scratch"} bracket.`};
+    if(anyBracketHasBowlerOfType(name,type)){
+      return {ok:false,msg:`"${name}" is already entered in a ${type==="handicap"?"Handicap":"Scratch"} bracket.`};
     }
 
-    // ensure at least one bracket of that type exists
-    if (!state.brackets.some(b=>b.type===type)){
-      addBracket(type);
-    }
+    if(!state.brackets.some(b=>b.type===type)) addBracket(type);
 
-    // find open slot
     let spot = findOpenSlotInType(type);
-    if (!spot){
-      // all full -> create new bracket then place
+    if(!spot){
       const br = addBracket(type);
       spot = {br, si: br.slots.findIndex(s=>!s)};
     }
 
-    // extra guard: no duplicates inside bracket (shouldn't happen now)
-    if (spot.br.slots.includes(name)){
-      return {ok:false, msg:`"${name}" already exists in Bracket #${spot.br.id}.`};
-    }
-
-    spot.br.slots[spot.si] = name;
+    spot.br.slots[spot.si]=name;
     rebuildMatchesFromSlots(spot.br);
-    return {ok:true, msg:""};
+    return {ok:true,msg:""};
   }
 
   function scoreForMatch(br, bowlerName, game){
-    if (!bowlerName) return null;
+    if(!bowlerName) return null;
     const bowler = state.bowlers.get(bowlerName);
-    if (!bowler) return null;
+    if(!bowler) return null;
     const base = bowler.scores[game];
-    if (base === undefined || base === null || base === "") return null;
+    if(base===undefined||base===null||base==="") return null;
     const val = Number(base);
-    if (Number.isNaN(val)) return null;
-    return br.type === "handicap" ? (val + Number(bowler.hcp || 0)) : val;
+    if(Number.isNaN(val)) return null;
+    return br.type==="handicap" ? (val + Number(bowler.hcp||0)) : val;
   }
 
   function decideMatchWinner(br, match, baseGame){
-    match.winner = null;
-    match.loser = null;
-    match.tie = false;
-    match.tieNeedsRound = null;
-    match.finalSplit = false;
-    match.splitEach = 0;
-    match.splitWith = [];
+    match.winner=null; match.loser=null; match.tie=false; match.tieNeedsRound=null;
+    match.finalSplit=false; match.splitEach=0; match.splitWith=[];
 
-    if (!match.a || !match.b) return;
+    if(!match.a || !match.b) return;
 
-    const sA = scoreForMatch(br, match.a, baseGame);
-    const sB = scoreForMatch(br, match.b, baseGame);
-    if (sA === null || sB === null) return;
+    const sA=scoreForMatch(br,match.a,baseGame);
+    const sB=scoreForMatch(br,match.b,baseGame);
+    if(sA===null || sB===null) return;
 
-    if (sA !== sB){
-      match.winner = (sA > sB) ? match.a : match.b;
-      match.loser  = (sA > sB) ? match.b : match.a;
+    if(sA!==sB){
+      match.winner = (sA>sB)?match.a:match.b;
+      match.loser  = (sA>sB)?match.b:match.a;
       return;
     }
 
-    match.tie = true;
+    match.tie=true;
 
-    if (baseGame === 3){
-      const totalPot = Number(br.payout1||0) + Number(br.payout2||0);
-      match.finalSplit = true;
-      match.splitEach = totalPot / 2;
-      match.splitWith = [match.a, match.b];
+    if(baseGame===3){
+      const totalPot = Number(br.payout1||0)+Number(br.payout2||0);
+      match.finalSplit=true;
+      match.splitEach=totalPot/2;
+      match.splitWith=[match.a,match.b];
       return;
     }
 
-    const tbGame = baseGame + 1;  // game2 for round1, game3 for round2
+    const tbGame = baseGame+1;
     match.tieNeedsRound = tbGame;
 
-    const tA = scoreForMatch(br, match.a, tbGame);
-    const tB = scoreForMatch(br, match.b, tbGame);
-    if (tA === null || tB === null) return;
+    const tA=scoreForMatch(br,match.a,tbGame);
+    const tB=scoreForMatch(br,match.b,tbGame);
+    if(tA===null || tB===null) return;
 
-    if (tA !== tB){
-      match.winner = (tA > tB) ? match.a : match.b;
-      match.loser  = (tA > tB) ? match.b : match.a;
-      match.tie = false;
-      match.tieNeedsRound = null;
+    if(tA!==tB){
+      match.winner = (tA>tB)?match.a:match.b;
+      match.loser  = (tA>tB)?match.b:match.a;
+      match.tie=false;
+      match.tieNeedsRound=null;
       return;
     }
 
     // still tied after allowed tiebreak -> coin flip
-    const pickA = Math.random() < 0.5;
-    match.winner = pickA ? match.a : match.b;
-    match.loser  = pickA ? match.b : match.a;
-    match.tie = false;
-    match.tieNeedsRound = null;
+    const pickA = Math.random()<0.5;
+    match.winner = pickA?match.a:match.b;
+    match.loser  = pickA?match.b:match.a;
+    match.tie=false;
+    match.tieNeedsRound=null;
   }
 
   function advanceBracketIfReady(br){
-    br.r1.forEach(m => decideMatchWinner(br, m, 1));
+    br.r1.forEach(m=>decideMatchWinner(br,m,1));
 
     br.r2.forEach((m,i)=>{
-      const w1 = br.r1[i*2]?.winner || null;
-      const w2 = br.r1[i*2+1]?.winner || null;
-      m.a = w1; m.b = w2;
-      decideMatchWinner(br, m, 2);
+      const w1=br.r1[i*2]?.winner||null;
+      const w2=br.r1[i*2+1]?.winner||null;
+      m.a=w1; m.b=w2;
+      decideMatchWinner(br,m,2);
     });
 
-    br.r3[0].a = br.r2[0]?.winner || null;
-    br.r3[0].b = br.r2[1]?.winner || null;
+    br.r3[0].a = br.r2[0]?.winner||null;
+    br.r3[0].b = br.r2[1]?.winner||null;
     decideMatchWinner(br, br.r3[0], 3);
 
     const fin = br.r3[0];
-    if (fin.finalSplit){
-      br.champion = null;
-      br.runnerUp = null;
-      return;
-    }
-    if (fin.winner && fin.loser){
-      br.champion = fin.winner;
-      br.runnerUp = fin.loser;
-    } else {
-      br.champion = null;
-      br.runnerUp = null;
-    }
+    if(fin.finalSplit){ br.champion=null; br.runnerUp=null; return; }
+    if(fin.winner && fin.loser){ br.champion=fin.winner; br.runnerUp=fin.loser; }
+    else { br.champion=null; br.runnerUp=null; }
   }
 
   function matchNeededGame(br, match, baseGame, name){
-    if (!match.a || !match.b) return null;
-    if (!(match.a===name || match.b===name)) return null;
-    if (match.winner || match.loser || match.finalSplit) return null;
+    if(!match.a || !match.b) return null;
+    if(!(match.a===name || match.b===name)) return null;
+    if(match.winner || match.loser || match.finalSplit) return null;
 
-    const sA = scoreForMatch(br, match.a, baseGame);
-    const sB = scoreForMatch(br, match.b, baseGame);
-    if (sA === null || sB === null) return baseGame;
+    const sA=scoreForMatch(br,match.a,baseGame);
+    const sB=scoreForMatch(br,match.b,baseGame);
+    if(sA===null || sB===null) return baseGame;
 
-    if (sA === sB && baseGame < 3){
-      const tb = baseGame + 1;
-      const tA = scoreForMatch(br, match.a, tb);
-      const tB = scoreForMatch(br, match.b, tb);
-      if (tA === null || tB === null) return tb;
+    if(sA===sB && baseGame<3){
+      const tb=baseGame+1;
+      const tA=scoreForMatch(br,match.a,tb);
+      const tB=scoreForMatch(br,match.b,tb);
+      if(tA===null || tB===null) return tb;
     }
     return null;
   }
 
   function neededGameForBowler(name){
-    let needed = null;
-    for (const br of state.brackets){
-      if (!br.slots.includes(name)) continue;
+    let needed=null;
+    for(const br of state.brackets){
+      if(!br.slots.includes(name)) continue;
       advanceBracketIfReady(br);
 
       const eliminated =
-        br.r1.some(m => m.loser === name) ||
-        br.r2.some(m => m.loser === name) ||
-        br.r3.some(m => m.loser === name);
+        br.r1.some(m=>m.loser===name) ||
+        br.r2.some(m=>m.loser===name) ||
+        br.r3.some(m=>m.loser===name);
 
-      if (eliminated) continue;
+      if(eliminated) continue;
 
-      for (const m of br.r1){
-        const g = matchNeededGame(br, m, 1, name);
-        if (g) needed = needed === null ? g : Math.min(needed, g);
-      }
-      for (const m of br.r2){
-        const g = matchNeededGame(br, m, 2, name);
-        if (g) needed = needed === null ? g : Math.min(needed, g);
-      }
-      for (const m of br.r3){
-        const g = matchNeededGame(br, m, 3, name);
-        if (g) needed = needed === null ? g : Math.min(needed, g);
-      }
+      for(const m of br.r1){ const g=matchNeededGame(br,m,1,name); if(g) needed = needed===null?g:Math.min(needed,g); }
+      for(const m of br.r2){ const g=matchNeededGame(br,m,2,name); if(g) needed = needed===null?g:Math.min(needed,g); }
+      for(const m of br.r3){ const g=matchNeededGame(br,m,3,name); if(g) needed = needed===null?g:Math.min(needed,g); }
     }
     return needed;
   }
 
   function scoreUsesForName(name){
-    const uses = [];
-    for (const br of state.brackets){
-      if (!br.slots.includes(name)) continue;
-      uses.push(`#${br.id} ${br.type === "handicap" ? "HCP" : "SCR"}`);
+    const uses=[];
+    for(const br of state.brackets){
+      if(!br.slots.includes(name)) continue;
+      uses.push(`#${br.id} ${br.type==="handicap"?"HCP":"SCR"}`);
     }
     return uses;
   }
 
   function winningsByBowler(){
-    const totals = new Map();
-    for (const br of state.brackets){
+    const totals=new Map();
+    for(const br of state.brackets){
       advanceBracketIfReady(br);
+      const p1=Number(br.payout1||0), p2=Number(br.payout2||0);
 
-      const p1 = Number(br.payout1 || 0);
-      const p2 = Number(br.payout2 || 0);
+      if(br.champion) totals.set(br.champion,(totals.get(br.champion)||0)+p1);
+      if(br.runnerUp) totals.set(br.runnerUp,(totals.get(br.runnerUp)||0)+p2);
 
-      if (br.champion) totals.set(br.champion, (totals.get(br.champion)||0) + p1);
-      if (br.runnerUp) totals.set(br.runnerUp, (totals.get(br.runnerUp)||0) + p2);
-
-      const fin = br.r3[0];
-      if (fin.finalSplit && fin.splitWith.length === 2){
+      const fin=br.r3[0];
+      if(fin.finalSplit && fin.splitWith.length===2){
         totals.set(fin.splitWith[0], (totals.get(fin.splitWith[0])||0) + fin.splitEach);
         totals.set(fin.splitWith[1], (totals.get(fin.splitWith[1])||0) + fin.splitEach);
       }
@@ -737,29 +800,25 @@
   }
 
   function renderScoreSections(){
-    const root = $("scoreSections");
-    root.innerHTML = "";
+    const root=$("scoreSections");
+    root.innerHTML="";
 
-    const byGame = {1:[],2:[],3:[]};
-    for (const [name] of state.bowlers.entries()){
-      const g = neededGameForBowler(name);
-      if (g === 1 || g === 2 || g === 3) byGame[g].push(name);
+    const byGame={1:[],2:[],3:[]};
+    for(const [name] of state.bowlers.entries()){
+      const g=neededGameForBowler(name);
+      if(g===1||g===2||g===3) byGame[g].push(name);
     }
     byGame[1].sort((a,b)=>a.localeCompare(b));
     byGame[2].sort((a,b)=>a.localeCompare(b));
     byGame[3].sort((a,b)=>a.localeCompare(b));
 
-    const titles = {
-      1:"Game 1 (Round 1)",
-      2:"Game 2 (Round 2 / R1 Tiebreak)",
-      3:"Game 3 (Final / R2 Tiebreak)"
-    };
+    const titles={1:"Game 1 (Round 1)",2:"Game 2 (Round 2 / R1 Tiebreak)",3:"Game 3 (Final / R2 Tiebreak)"};
 
-    [1,2,3].forEach((game)=>{
-      const names = byGame[game];
-      const sec = document.createElement("div");
-      sec.className = "score-section";
-      sec.innerHTML = `
+    [1,2,3].forEach(game=>{
+      const names=byGame[game];
+      const sec=document.createElement("div");
+      sec.className="score-section";
+      sec.innerHTML=`
         <div class="shd">
           <div class="ttl">${titles[game]}</div>
           <div class="meta">${names.length} bowler${names.length===1?"":"s"} need this score</div>
@@ -768,21 +827,19 @@
           <div class="score-list" id="scoreList_${game}">
             ${names.length ? "" : `<div class="hint">No active bowlers needing Game ${game} right now.</div>`}
           </div>
-        </div>
-      `;
+        </div>`;
       root.appendChild(sec);
 
-      const list = sec.querySelector(`#scoreList_${game}`);
-      if (!names.length) return;
+      const list=sec.querySelector(`#scoreList_${game}`);
+      if(!names.length) return;
 
-      names.forEach((name)=>{
-        const bowler = state.bowlers.get(name);
-        const val = bowler?.scores?.[game] ?? "";
-        const uses = scoreUsesForName(name);
-
-        const item = document.createElement("div");
-        item.className = "score-item";
-        item.innerHTML = `
+      names.forEach(name=>{
+        const bowler=state.bowlers.get(name);
+        const val=bowler?.scores?.[game] ?? "";
+        const uses=scoreUsesForName(name);
+        const item=document.createElement("div");
+        item.className="score-item";
+        item.innerHTML=`
           <div>
             <div style="font-weight:900">${escapeHtml(name)}</div>
             <div class="muted" style="font-size:12px">HCP: <span class="mono">${Number(bowler?.hcp||0)}</span></div>
@@ -797,10 +854,10 @@
 
     root.querySelectorAll("[data-clear]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        const name = btn.getAttribute("data-clear");
-        const game = Number(btn.getAttribute("data-clear-game"));
-        const b = state.bowlers.get(name);
-        if (!b) return;
+        const name=btn.getAttribute("data-clear");
+        const game=Number(btn.getAttribute("data-clear-game"));
+        const b=state.bowlers.get(name);
+        if(!b) return;
         delete b.scores[game];
         renderAll();
       });
@@ -808,11 +865,11 @@
   }
 
   function formatNameTwoLines(name){
-    if (!name) return "";
-    const parts = String(name).trim().split(/\s+/).filter(Boolean);
-    if (parts.length <= 1) return escapeHtml(name);
-    const first = parts[0];
-    const rest = parts.slice(1).join(" ");
+    if(!name) return "";
+    const parts=String(name).trim().split(/\s+/).filter(Boolean);
+    if(parts.length<=1) return escapeHtml(name);
+    const first=parts[0];
+    const rest=parts.slice(1).join(" ");
     return `<span class="nm1">${escapeHtml(first)}</span><span class="nm2">${escapeHtml(rest)}</span>`;
   }
 
@@ -823,51 +880,39 @@
       ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${adj ?? "—"}</b>`
       : "";
 
-    const winner = match.winner;
-    const loser = match.loser;
+    const winner=match.winner, loser=match.loser;
+    let cls="";
+    if(name && winner && name===winner) cls="winner";
+    if(name && loser && name===loser) cls="loser";
 
-    let cls = "";
-    if (name && winner && name === winner) cls = "winner";
-    if (name && loser && name === loser) cls = "loser";
-
-    let tiePill = "";
-    if (match.finalSplit){
-      tiePill = `<span class="pill">FINAL SPLIT</span>`;
-    } else if (match.tie && !match.winner){
-      tiePill = match.tieNeedsRound ? `<span class="pill">TIE → G${match.tieNeedsRound}</span>` : `<span class="pill">TIE</span>`;
-    }
+    let tiePill="";
+    if(match.finalSplit) tiePill=`<span class="pill">FINAL SPLIT</span>`;
+    else if(match.tie && !match.winner) tiePill = match.tieNeedsRound ? `<span class="pill">TIE → G${match.tieNeedsRound}</span>` : `<span class="pill">TIE</span>`;
 
     return `
       <div class="slot">
         <div class="left">
           <div class="nm ${cls}">${name ? formatNameTwoLines(name) : `<span class="muted">— empty —</span>`}</div>
-          <div class="sc">${name ? `G${baseGame}: <span class="mono">${raw === "" ? "—" : raw}</span>${showAdj}` : `<span class="muted">Add bowlers to fill slots</span>`}</div>
+          <div class="sc">${name ? `G${baseGame}: <span class="mono">${raw===""?"—":raw}</span>${showAdj}` : `<span class="muted">Add bowlers to fill slots</span>`}</div>
         </div>
         <div class="right">
           ${tiePill}
           ${name && winner && name===winner ? `<span class="pill">WIN</span>` : ``}
           ${name && loser && name===loser ? `<span class="pill">OUT</span>` : ``}
         </div>
-      </div>
-    `;
+      </div>`;
   }
 
   function renderMatchCard(br, m, baseGame){
-    return `
-      <div class="match">
-        ${renderSlotHTML(br, m.a, m, baseGame)}
-        ${renderSlotHTML(br, m.b, m, baseGame)}
-      </div>
-    `;
+    return `<div class="match">${renderSlotHTML(br,m.a,m,baseGame)}${renderSlotHTML(br,m.b,m,baseGame)}</div>`;
   }
 
   function renderFinalResults(br){
-    const p1 = Number(br.payout1||0);
-    const p2 = Number(br.payout2||0);
-    const fin = br.r3[0];
+    const p1=Number(br.payout1||0), p2=Number(br.payout2||0);
+    const fin=br.r3[0];
 
-    if (fin.finalSplit && fin.splitWith.length === 2){
-      const each = fin.splitEach;
+    if(fin.finalSplit && fin.splitWith.length===2){
+      const each=fin.splitEach;
       return `
         <div class="winnerline">
           <div class="who">
@@ -898,11 +943,10 @@
             </div>
           </div>
           <div class="amt">${money(each)}</div>
-        </div>
-      `;
+        </div>`;
     }
 
-    if (!br.champion || !br.runnerUp){
+    if(!br.champion || !br.runnerUp){
       return `<div class="hint">Final results will appear here after the final matchup has both scores (and payouts are set).</div>`;
     }
 
@@ -927,17 +971,16 @@
           </div>
         </div>
         <div class="amt">${money(p2)}</div>
-      </div>
-    `;
+      </div>`;
   }
 
   function saveBracketToPDF(brId){
-    const el = document.getElementById(`bracket_${brId}`);
-    if (!el) return;
-    const clone = el.cloneNode(true);
+    const el=document.getElementById(`bracket_${brId}`);
+    if(!el) return;
+    const clone=el.cloneNode(true);
     clone.querySelectorAll("[data-save-del]").forEach(b=>b.remove());
 
-    const html = `
+    const html=`
       <!doctype html><html><head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -955,13 +998,11 @@
         <p class="note">Use Print → Save as PDF (iOS: Share → Print → pinch-out → Share → Save to Files).</p>
         ${clone.outerHTML}
         <script>setTimeout(()=>{ window.print(); }, 250);<\/script>
-      </body></html>
-    `;
-    const w = window.open("", "_blank");
-    if (!w) return;
+      </body></html>`;
+    const w=window.open("","_blank");
+    if(!w) return;
     w.document.open(); w.document.write(html); w.document.close();
   }
-
   function deleteBracketById(brId){
     state.brackets = state.brackets.filter(b=>b.id!==brId);
     state.brackets.forEach((b,i)=>b.id=i+1);
@@ -969,21 +1010,21 @@
   }
 
   function renderBrackets(){
-    const root = $("brackets");
-    root.innerHTML = "";
+    const root=$("brackets");
+    root.innerHTML="";
 
-    for (const br of state.brackets){
+    for(const br of state.brackets){
       advanceBracketIfReady(br);
 
-      const card = document.createElement("div");
-      card.className = "bracket";
-      card.id = `bracket_${br.id}`;
-      card.innerHTML = `
+      const card=document.createElement("div");
+      card.className="bracket";
+      card.id=`bracket_${br.id}`;
+      card.innerHTML=`
         <div class="top">
           <div class="meta">
             <div class="name">Bracket #${br.id}</div>
             <div class="small">
-              Type: <b>${br.type === "handicap" ? "Handicap" : "Scratch"}</b> •
+              Type: <b>${br.type==="handicap"?"Handicap":"Scratch"}</b> •
               Slots: <b>${br.slots.filter(Boolean).length}/8</b>
             </div>
           </div>
@@ -1034,30 +1075,30 @@
 
     root.querySelectorAll("[data-type]").forEach(sel=>{
       sel.addEventListener("change", ()=>{
-        const id = Number(sel.getAttribute("data-type"));
-        const br = state.brackets.find(b=>b.id===id);
-        if (!br) return;
-        br.type = sel.value;
+        const id=Number(sel.getAttribute("data-type"));
+        const br=state.brackets.find(b=>b.id===id);
+        if(!br) return;
+        br.type=sel.value;
         renderAll();
       });
     });
 
     root.querySelectorAll("[data-p1]").forEach(inp=>{
       inp.addEventListener("input", ()=>{
-        const id = Number(inp.getAttribute("data-p1"));
-        const br = state.brackets.find(b=>b.id===id);
-        if (!br) return;
-        br.payout1 = Number(inp.value||0);
+        const id=Number(inp.getAttribute("data-p1"));
+        const br=state.brackets.find(b=>b.id===id);
+        if(!br) return;
+        br.payout1=Number(inp.value||0);
         renderTotals(); renderKPIs();
       });
       inp.addEventListener("change", ()=>{ renderTotals(); renderKPIs(); });
     });
     root.querySelectorAll("[data-p2]").forEach(inp=>{
       inp.addEventListener("input", ()=>{
-        const id = Number(inp.getAttribute("data-p2"));
-        const br = state.brackets.find(b=>b.id===id);
-        if (!br) return;
-        br.payout2 = Number(inp.value||0);
+        const id=Number(inp.getAttribute("data-p2"));
+        const br=state.brackets.find(b=>b.id===id);
+        if(!br) return;
+        br.payout2=Number(inp.value||0);
         renderTotals(); renderKPIs();
       });
       inp.addEventListener("change", ()=>{ renderTotals(); renderKPIs(); });
@@ -1065,7 +1106,7 @@
 
     root.querySelectorAll("[data-save-del]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        const id = Number(btn.getAttribute("data-save-del"));
+        const id=Number(btn.getAttribute("data-save-del"));
         saveBracketToPDF(id);
         deleteBracketById(id);
       });
@@ -1073,128 +1114,339 @@
   }
 
   function renderTotals(){
-    const totals = winningsByBowler();
-    const filter = ($("filterName").value || "").trim().toLowerCase();
-    const mode = $("sortMode").value;
+    const totals=winningsByBowler();
+    const filter=($("filterName").value||"").trim().toLowerCase();
+    const mode=$("sortMode").value;
 
-    let items = Array.from(totals.entries()).map(([name, amt]) => ({name, amt}));
-    if (filter) items = items.filter(x => x.name.toLowerCase().includes(filter));
+    let items=Array.from(totals.entries()).map(([name,amt])=>({name,amt}));
+    if(filter) items=items.filter(x=>x.name.toLowerCase().includes(filter));
 
     items.sort((a,b)=>{
-      if (mode==="high") return b.amt - a.amt;
-      if (mode==="low") return a.amt - b.amt;
-      if (mode==="az") return a.name.localeCompare(b.name);
-      if (mode==="za") return b.name.localeCompare(a.name);
+      if(mode==="high") return b.amt-a.amt;
+      if(mode==="low") return a.amt-b.amt;
+      if(mode==="az") return a.name.localeCompare(b.name);
+      if(mode==="za") return b.name.localeCompare(a.name);
       return 0;
     });
 
-    const root = $("payoutList");
-    root.innerHTML = "";
-
-    if (!items.length){
-      root.innerHTML = `<div class="hint">No payouts yet. Finish a bracket final and set payouts.</div>`;
-    } else {
-      for (const it of items){
-        const row = document.createElement("div");
-        row.className = "winnerline";
-        row.innerHTML = `
+    const root=$("payoutList");
+    root.innerHTML="";
+    if(!items.length){
+      root.innerHTML=`<div class="hint">No payouts yet. Finish a bracket final and set payouts.</div>`;
+    }else{
+      for(const it of items){
+        const row=document.createElement("div");
+        row.className="winnerline";
+        row.innerHTML=`
           <div class="who">
             <span class="pill">WIN</span>
             <div class="nm">${escapeHtml(it.name)}</div>
           </div>
-          <div class="amt">${money(it.amt)}</div>
-        `;
+          <div class="amt">${money(it.amt)}</div>`;
         root.appendChild(row);
       }
     }
 
-    const totalPaid = items.reduce((s,x)=>s+x.amt,0);
-    $("kpiTotalPaid").textContent = money(totalPaid);
-    $("kpiWinners").textContent = String(items.length);
+    const totalPaid=items.reduce((s,x)=>s+x.amt,0);
+    $("kpiTotalPaid").textContent=money(totalPaid);
+    $("kpiWinners").textContent=String(items.length);
   }
 
   function renderKPIs(){
-    $("kpiBrackets").textContent = String(state.brackets.length);
-    $("kpiBowlers").textContent = String(state.bowlers.size);
+    $("kpiBrackets").textContent=String(state.brackets.length);
+    $("kpiBowlers").textContent=String(state.bowlers.size);
 
-    let done = 0;
+    let done=0;
     state.brackets.forEach(br=>{
       advanceBracketIfReady(br);
-      const fin = br.r3[0];
-      if ((br.champion && br.runnerUp) || (fin && fin.finalSplit)) done++;
+      const fin=br.r3[0];
+      if((br.champion && br.runnerUp) || (fin && fin.finalSplit)) done++;
     });
-    $("kpiDone").textContent = String(done);
+    $("kpiDone").textContent=String(done);
 
-    const open = openSpotsCount();
-    $("openSpots").textContent = String(open);
-    $("chipOpen").classList.toggle("on", open > 0);
+    const open=openSpotsCount();
+    $("openSpots").textContent=String(open);
+    $("chipOpen").classList.toggle("on", open>0);
   }
 
   function applyScoresFromInputs(){
     document.querySelectorAll(".scoreInput").forEach(inp=>{
-      const name = inp.getAttribute("data-name");
-      const game = Number(inp.getAttribute("data-game"));
-      const b = state.bowlers.get(name);
-      if (!b) return;
+      const name=inp.getAttribute("data-name");
+      const game=Number(inp.getAttribute("data-game"));
+      const b=state.bowlers.get(name);
+      if(!b) return;
 
-      const v = inp.value;
-      if (v === "" || v === null || v === undefined) return;
-      const n = Number(v);
-      if (!Number.isNaN(n)) b.scores[game] = n;
+      const v=inp.value;
+      if(v===""||v===null||v===undefined) return;
+      const n=Number(v);
+      if(!Number.isNaN(n)) b.scores[game]=n;
     });
-
-    state.brackets.forEach(br => advanceBracketIfReady(br));
+    state.brackets.forEach(br=>advanceBracketIfReady(br));
   }
 
   function renderAll(){
-    state.brackets.forEach(br => advanceBracketIfReady(br));
+    state.brackets.forEach(br=>advanceBracketIfReady(br));
     renderKPIs();
     renderScoreSections();
     renderBrackets();
     renderTotals();
+    updateHcpVisibility();
+    updateManualHint();
   }
 
   function showEntryWarn(msg){
-    const el = $("entryWarn");
-    if (!msg){
-      el.style.display = "none";
-      el.textContent = "";
-      return;
-    }
-    el.style.display = "block";
-    el.textContent = msg;
+    const el=$("entryWarn");
+    if(!msg){ el.style.display="none"; el.textContent=""; return; }
+    el.style.display="block"; el.textContent=msg;
   }
 
+  // ---- CSV roster loading + picker ----
+  async function loadRoster(){
+    try{
+      const res = await fetch("data/bowlers.csv", {cache:"no-store"});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const text = await res.text();
+      const rows = parseCSV(text);
+      // expected columns: name, handicap OR First, Last, Handicap (we handle both)
+      const roster = rows
+        .map(r => normalizeRosterRow(r))
+        .filter(r => r && r.name)
+        .sort((a,b)=> sortByLastName(a.name,b.name));
+      state.roster = roster;
+      state.rosterLoaded = true;
+      renderPickerList();
+    }catch(e){
+      state.roster = [];
+      state.rosterLoaded = false;
+      renderPickerList();
+    }
+  }
+
+  function parseCSV(text){
+    // basic CSV parser w/ quotes
+    const lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(l=>l.trim()!=="");
+    if(!lines.length) return [];
+    const header = splitCSVLine(lines[0]).map(h=>h.trim());
+    const out=[];
+    for(let i=1;i<lines.length;i++){
+      const cols = splitCSVLine(lines[i]);
+      const obj = {};
+      header.forEach((h,idx)=> obj[h]= (cols[idx]??"").trim());
+      out.push(obj);
+    }
+    return out;
+  }
+  function splitCSVLine(line){
+    const res=[]; let cur=""; let q=false;
+    for(let i=0;i<line.length;i++){
+      const c=line[i];
+      if(c === '"' ){
+        if(q && line[i+1]==='"'){ cur+='"'; i++; }
+        else q=!q;
+      } else if(c === ',' && !q){
+        res.push(cur); cur="";
+      } else {
+        cur+=c;
+      }
+    }
+    res.push(cur);
+    return res;
+  }
+  function normalizeRosterRow(r){
+    const keys = Object.keys(r).map(k=>k.toLowerCase());
+    const get = (name) => {
+      const idx = keys.indexOf(name);
+      if(idx<0) return "";
+      return r[Object.keys(r)[idx]];
+    };
+
+    let name = "";
+    const first = get("first") || get("firstname") || get("first_name");
+    const last  = get("last")  || get("lastname")  || get("last_name");
+    if(first || last) name = normalizeName([first,last].filter(Boolean).join(" "));
+    else name = normalizeName(get("name") || get("bowler") || get("bowlername") || get("player"));
+
+    let h = get("handicap") || get("hcp") || get("hdcp");
+    h = h==="" ? "" : String(h);
+    const handicap = h==="" ? null : (Number.isNaN(Number(h)) ? null : Number(h));
+    return {name, handicap};
+  }
+  function sortByLastName(a,b){
+    const la = lastNameKey(a);
+    const lb = lastNameKey(b);
+    if(la !== lb) return la.localeCompare(lb);
+    return a.localeCompare(b);
+  }
+  function lastNameKey(name){
+    const parts = normalizeName(name).split(" ").filter(Boolean);
+    if(parts.length<=1) return parts[0] || "";
+    return parts[parts.length-1] + ", " + parts.slice(0,-1).join(" ");
+  }
+
+  function openPicker(){
+    $("pickerBackdrop").style.display="flex";
+    $("pickerBackdrop").setAttribute("aria-hidden","false");
+    $("pickerSearch").value = "";
+    $("pickerManualName").value = "";
+    $("pickerManualHcp").value = "";
+    state.selectedRoster = null;
+    renderPickerList();
+    updateManualHint();
+  }
+  function closePicker(){
+    $("pickerBackdrop").style.display="none";
+    $("pickerBackdrop").setAttribute("aria-hidden","true");
+  }
+
+  function renderPickerList(){
+    const list = $("pickerList");
+    const q = ($("pickerSearch").value||"").trim().toLowerCase();
+    list.innerHTML = "";
+
+    const roster = (state.roster||[]).filter(r=>{
+      if(!q) return true;
+      return r.name.toLowerCase().includes(q);
+    });
+
+    $("pickerCount").textContent = `${roster.length} bowlers`;
+
+    if(!state.rosterLoaded){
+      const div = document.createElement("div");
+      div.className = "hint";
+      div.innerHTML = `Could not load <span class="mono">data/bowlers.csv</span>. You can still type a new bowler above.`;
+      list.appendChild(div);
+      return;
+    }
+
+    if(!roster.length){
+      const div = document.createElement("div");
+      div.className = "hint";
+      div.textContent = "No matches. You can add a new bowler above.";
+      list.appendChild(div);
+      return;
+    }
+
+    roster.forEach(r=>{
+      const row = document.createElement("div");
+      row.className = "rowPick";
+      row.innerHTML = `
+        <div style="min-width:0">
+          <div class="nm">${escapeHtml(r.name)}</div>
+          <div class="hc">${r.handicap==null ? "HCP: —" : `HCP: <span class="mono">${r.handicap}</span>`}</div>
+        </div>
+        <div class="pillSm">${escapeHtml(lastNameKey(r.name))}</div>
+      `;
+      row.addEventListener("click", ()=>{
+        state.selectedRoster = r;
+        // Visual select
+        document.querySelectorAll(".rowPick").forEach(x=>x.style.outline="none");
+        row.style.outline = "2px solid rgba(106,167,255,.45)";
+        row.style.outlineOffset = "2px";
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function applyPickedBowler(name, handicap){
+    $("bowlerName").value = normalizeName(name);
+    if(handicap!==null && handicap!==undefined && handicap!=="" && !Number.isNaN(Number(handicap))){
+      $("bowlerHcp").value = String(Number(handicap));
+    } else {
+      // keep whatever user had typed
+      if($("bowlerHcp").value==="") $("bowlerHcp").value = "";
+    }
+    updateHcpVisibility();
+  }
+
+  function updateHcpVisibility(){
+    const type = $("entryType").value;
+    $("bowlerHcp").style.display = (type==="handicap") ? "" : "none";
+    $("bowlerHcp").disabled = (type!=="handicap");
+    $("pickerManualHcp").style.display = (type==="handicap") ? "" : "none";
+    $("pickerManualHcp").disabled = (type!=="handicap");
+  }
+
+  function updateManualHint(){
+    const type = $("entryType").value;
+    $("manualHint").textContent = (type==="handicap")
+      ? "If the bowler isn't listed, enter a name + handicap here."
+      : "Scratch entry: handicap is hidden/ignored.";
+  }
+
+  // ---- Events ----
   $("btnAddBracket").addEventListener("click", ()=>addBracket("scratch"));
+
+  $("entryType").addEventListener("change", ()=>{
+    updateHcpVisibility();
+    updateManualHint();
+    // if switching to scratch, clear the handicap input in UI (doesn't delete stored bowler HCP)
+    if($("entryType").value==="scratch"){
+      $("bowlerHcp").value = "";
+      $("pickerManualHcp").value = "";
+    }
+  });
+
+  $("bowlerName").addEventListener("click", openPicker);
+  $("btnPickBowler").addEventListener("click", openPicker);
+  $("pickerClose").addEventListener("click", closePicker);
+  $("pickerBackdrop").addEventListener("click", (e)=>{ if(e.target === $("pickerBackdrop")) closePicker(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && $("pickerBackdrop").style.display==="flex") closePicker(); });
+
+  $("pickerSearch").addEventListener("input", renderPickerList);
+  $("pickerReload").addEventListener("click", async ()=>{ await loadRoster(); });
+
+  $("pickerUseSelected").addEventListener("click", ()=>{
+    if(!state.selectedRoster) return closePicker();
+    applyPickedBowler(state.selectedRoster.name, state.selectedRoster.handicap);
+    closePicker();
+  });
+
+  $("pickerClear").addEventListener("click", ()=>{
+    $("bowlerName").value = "";
+    $("bowlerHcp").value = "";
+    closePicker();
+  });
+
+  $("pickerUseManual").addEventListener("click", ()=>{
+    const name = normalizeName($("pickerManualName").value);
+    if(!name) return;
+    const type = $("entryType").value;
+    const hcp = type==="handicap" ? $("pickerManualHcp").value : "";
+    applyPickedBowler(name, hcp);
+    closePicker();
+  });
 
   $("btnAddBowler").addEventListener("click", ()=>{
     showEntryWarn("");
-    const name = normalizeName($("bowlerName").value);
-    const hcp = $("bowlerHcp").value;
+    const name = normalizeName($("bowlerName").value || "");
     const type = $("entryType").value;
+    const qty  = Math.max(1, Math.min(50, Number($("entryQty").value || 1)));
 
-    if (!name) return;
+    if(!name) return;
 
+    const hcp = (type==="handicap") ? $("bowlerHcp").value : "";
     ensureBowler(name, hcp);
 
-    const res = placeBowlerIntoType(name, type);
-    if (!res.ok){
-      showEntryWarn(res.msg);
+    let lastErr = "";
+    for(let i=0;i<qty;i++){
+      const res = placeBowlerIntoType(name, type);
+      if(!res.ok){ lastErr = res.msg; break; }
+    }
+    if(lastErr){
+      showEntryWarn(lastErr + (qty>1 ? " (Qty stopped early when duplicate prevented.)" : ""));
       return;
     }
 
-    $("bowlerName").value = "";
+    // keep name for multi entries? (you asked qty so we keep it, but clear qty back to 1)
+    $("entryQty").value = "1";
     renderAll();
   });
 
-  $("btnApplyScores").addEventListener("click", ()=>{
-    applyScoresFromInputs();
-    renderAll();
-  });
+  $("btnApplyScores").addEventListener("click", ()=>{ applyScoresFromInputs(); renderAll(); });
 
   document.addEventListener("keydown", (e)=>{
-    const t = e.target;
-    if (e.key === "Enter" && t && t.classList && t.classList.contains("scoreInput")){
+    const t=e.target;
+    if(e.key==="Enter" && t && t.classList && t.classList.contains("scoreInput")){
       applyScoresFromInputs();
       renderAll();
     }
@@ -1209,14 +1461,474 @@
     renderAll();
   });
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-  function escapeAttr(s){
-    return escapeHtml(s).replace(/"/g,'&quot;');
+  // ---- render pieces ----
+  function renderAll(){
+    state.brackets.forEach(br=>advanceBracketIfReady(br));
+    renderKPIs();
+    renderScoreSections();
+    renderBrackets();
+    renderTotals();
+    updateHcpVisibility();
+    updateManualHint();
   }
 
-  renderAll();
+  function renderKPIs(){
+    $("kpiBrackets").textContent=String(state.brackets.length);
+    $("kpiBowlers").textContent=String(state.bowlers.size);
+
+    let done=0;
+    state.brackets.forEach(br=>{
+      advanceBracketIfReady(br);
+      const fin=br.r3[0];
+      if((br.champion && br.runnerUp) || (fin && fin.finalSplit)) done++;
+    });
+    $("kpiDone").textContent=String(done);
+
+    const open=openSpotsCount();
+    $("openSpots").textContent=String(open);
+    $("chipOpen").classList.toggle("on", open>0);
+  }
+
+  function renderTotals(){
+    const totals=winningsByBowler();
+    const filter=($("filterName").value||"").trim().toLowerCase();
+    const mode=$("sortMode").value;
+
+    let items=Array.from(totals.entries()).map(([name,amt])=>({name,amt}));
+    if(filter) items=items.filter(x=>x.name.toLowerCase().includes(filter));
+
+    items.sort((a,b)=>{
+      if(mode==="high") return b.amt-a.amt;
+      if(mode==="low") return a.amt-b.amt;
+      if(mode==="az") return a.name.localeCompare(b.name);
+      if(mode==="za") return b.name.localeCompare(a.name);
+      return 0;
+    });
+
+    const root=$("payoutList");
+    root.innerHTML="";
+    if(!items.length){
+      root.innerHTML=`<div class="hint">No payouts yet. Finish a bracket final and set payouts.</div>`;
+    } else {
+      for(const it of items){
+        const row=document.createElement("div");
+        row.className="winnerline";
+        row.innerHTML=`
+          <div class="who">
+            <span class="pill">WIN</span>
+            <div class="nm">${escapeHtml(it.name)}</div>
+          </div>
+          <div class="amt">${money(it.amt)}</div>`;
+        root.appendChild(row);
+      }
+    }
+
+    const totalPaid=items.reduce((s,x)=>s+x.amt,0);
+    $("kpiTotalPaid").textContent=money(totalPaid);
+    $("kpiWinners").textContent=String(items.length);
+  }
+
+  function renderScoreSections(){
+    const root=$("scoreSections");
+    root.innerHTML="";
+
+    const byGame={1:[],2:[],3:[]};
+    for(const [name] of state.bowlers.entries()){
+      const g=neededGameForBowler(name);
+      if(g===1||g===2||g===3) byGame[g].push(name);
+    }
+    byGame[1].sort((a,b)=>a.localeCompare(b));
+    byGame[2].sort((a,b)=>a.localeCompare(b));
+    byGame[3].sort((a,b)=>a.localeCompare(b));
+
+    const titles={1:"Game 1 (Round 1)",2:"Game 2 (Round 2 / R1 Tiebreak)",3:"Game 3 (Final / R2 Tiebreak)"};
+
+    [1,2,3].forEach(game=>{
+      const names=byGame[game];
+      const sec=document.createElement("div");
+      sec.className="score-section";
+      sec.innerHTML=`
+        <div class="shd">
+          <div class="ttl">${titles[game]}</div>
+          <div class="meta">${names.length} bowler${names.length===1?"":"s"} need this score</div>
+        </div>
+        <div class="sbd">
+          <div class="score-list" id="scoreList_${game}">
+            ${names.length ? "" : `<div class="hint">No active bowlers needing Game ${game} right now.</div>`}
+          </div>
+        </div>`;
+      root.appendChild(sec);
+
+      const list=sec.querySelector(`#scoreList_${game}`);
+      if(!names.length) return;
+
+      names.forEach(name=>{
+        const bowler=state.bowlers.get(name);
+        const val=bowler?.scores?.[game] ?? "";
+        const uses=scoreUsesForName(name);
+        const item=document.createElement("div");
+        item.className="score-item";
+        item.innerHTML=`
+          <div>
+            <div style="font-weight:900">${escapeHtml(name)}</div>
+            <div class="muted" style="font-size:12px">HCP: <span class="mono">${Number(bowler?.hcp||0)}</span></div>
+          </div>
+          <input type="number" class="scoreInput" data-game="${game}" data-name="${escapeAttr(name)}" placeholder="Score" value="${escapeAttr(val)}" />
+          <div class="tag">${uses.length ? uses.join(" • ") : "—"}</div>
+          <button class="btn" data-clear="${escapeAttr(name)}" data-clear-game="${game}">Clear</button>
+        `;
+        list.appendChild(item);
+      });
+    });
+
+    root.querySelectorAll("[data-clear]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const name=btn.getAttribute("data-clear");
+        const game=Number(btn.getAttribute("data-clear-game"));
+        const b=state.bowlers.get(name);
+        if(!b) return;
+        delete b.scores[game];
+        renderAll();
+      });
+    });
+  }
+
+  function formatNameTwoLines(name){
+    if(!name) return "";
+    const parts=String(name).trim().split(/\s+/).filter(Boolean);
+    if(parts.length<=1) return escapeHtml(name);
+    const first=parts[0];
+    const rest=parts.slice(1).join(" ");
+    return `<span class="nm1">${escapeHtml(first)}</span><span class="nm2">${escapeHtml(rest)}</span>`;
+  }
+
+  function renderSlotHTML(br, name, match, baseGame){
+    const raw = name ? (state.bowlers.get(name)?.scores?.[baseGame] ?? "") : "";
+    const adj = scoreForMatch(br, name, baseGame);
+    const showAdj = (br.type==="handicap" && name && raw!=="")
+      ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${adj ?? "—"}</b>`
+      : "";
+
+    const winner=match.winner, loser=match.loser;
+    let cls="";
+    if(name && winner && name===winner) cls="winner";
+    if(name && loser && name===loser) cls="loser";
+
+    let tiePill="";
+    if(match.finalSplit) tiePill=`<span class="pill">FINAL SPLIT</span>`;
+    else if(match.tie && !match.winner) tiePill = match.tieNeedsRound ? `<span class="pill">TIE → G${match.tieNeedsRound}</span>` : `<span class="pill">TIE</span>`;
+
+    return `
+      <div class="slot">
+        <div class="left">
+          <div class="nm ${cls}">${name ? formatNameTwoLines(name) : `<span class="muted">— empty —</span>`}</div>
+          <div class="sc">${name ? `G${baseGame}: <span class="mono">${raw===""?"—":raw}</span>${showAdj}` : `<span class="muted">Add bowlers to fill slots</span>`}</div>
+        </div>
+        <div class="right">
+          ${tiePill}
+          ${name && winner && name===winner ? `<span class="pill">WIN</span>` : ``}
+          ${name && loser && name===loser ? `<span class="pill">OUT</span>` : ``}
+        </div>
+      </div>`;
+  }
+
+  function renderMatchCard(br, m, baseGame){
+    return `<div class="match">${renderSlotHTML(br,m.a,m,baseGame)}${renderSlotHTML(br,m.b,m,baseGame)}</div>`;
+  }
+
+  function renderBrackets(){
+    const root=$("brackets");
+    root.innerHTML="";
+
+    for(const br of state.brackets){
+      advanceBracketIfReady(br);
+
+      const card=document.createElement("div");
+      card.className="bracket";
+      card.id=`bracket_${br.id}`;
+      card.innerHTML=`
+        <div class="top">
+          <div class="meta">
+            <div class="name">Bracket #${br.id}</div>
+            <div class="small">
+              Type: <b>${br.type==="handicap"?"Handicap":"Scratch"}</b> •
+              Slots: <b>${br.slots.filter(Boolean).length}/8</b>
+            </div>
+          </div>
+          <div class="tools">
+            <select data-type="${br.id}">
+              <option value="scratch" ${br.type==="scratch"?"selected":""}>Scratch</option>
+              <option value="handicap" ${br.type==="handicap"?"selected":""}>Handicap</option>
+            </select>
+            <input type="number" class="w-sm" data-p1="${br.id}" placeholder="1st payout" value="${escapeAttr(br.payout1||"")}" />
+            <input type="number" class="w-sm" data-p2="${br.id}" placeholder="2nd payout" value="${escapeAttr(br.payout2||"")}" />
+            <button class="btn danger" data-save-del="${br.id}">Save + Delete</button>
+          </div>
+        </div>
+
+        <div class="treeHead">
+          <h3>Round 1</h3>
+          <h3>Round 2</h3>
+          <h3>Final</h3>
+        </div>
+
+        <div class="treeScroll">
+          <div class="tree">
+            <div class="col r1">
+              ${renderMatchCard(br, br.r1[0], 1)}
+              ${renderMatchCard(br, br.r1[1], 1)}
+              ${renderMatchCard(br, br.r1[2], 1)}
+              ${renderMatchCard(br, br.r1[3], 1)}
+            </div>
+
+            <div class="col r2">
+              ${renderMatchCard(br, br.r2[0], 2)}
+              <div class="r2Spacer"></div>
+              ${renderMatchCard(br, br.r2[1], 2)}
+            </div>
+
+            <div class="col final">
+              ${renderMatchCard(br, br.r3[0], 3)}
+            </div>
+          </div>
+        </div>
+
+        <div class="foot">
+          ${renderFinalResults(br)}
+        </div>
+      `;
+      root.appendChild(card);
+    }
+
+    root.querySelectorAll("[data-type]").forEach(sel=>{
+      sel.addEventListener("change", ()=>{
+        const id=Number(sel.getAttribute("data-type"));
+        const br=state.brackets.find(b=>b.id===id);
+        if(!br) return;
+        br.type=sel.value;
+        renderAll();
+      });
+    });
+
+    root.querySelectorAll("[data-p1]").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id=Number(inp.getAttribute("data-p1"));
+        const br=state.brackets.find(b=>b.id===id);
+        if(!br) return;
+        br.payout1=Number(inp.value||0);
+        renderTotals(); renderKPIs();
+      });
+      inp.addEventListener("change", ()=>{ renderTotals(); renderKPIs(); });
+    });
+    root.querySelectorAll("[data-p2]").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id=Number(inp.getAttribute("data-p2"));
+        const br=state.brackets.find(b=>b.id===id);
+        if(!br) return;
+        br.payout2=Number(inp.value||0);
+        renderTotals(); renderKPIs();
+      });
+      inp.addEventListener("change", ()=>{ renderTotals(); renderKPIs(); });
+    });
+
+    root.querySelectorAll("[data-save-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id=Number(btn.getAttribute("data-save-del"));
+        saveBracketToPDF(id);
+        deleteBracketById(id);
+      });
+    });
+  }
+
+  function renderFinalResults(br){
+    const p1=Number(br.payout1||0), p2=Number(br.payout2||0);
+    const fin=br.r3[0];
+
+    if(fin.finalSplit && fin.splitWith.length===2){
+      const each=fin.splitEach;
+      return `
+        <div class="winnerline">
+          <div class="who">
+            <span class="badge gold">≡</span>
+            <div style="min-width:0">
+              <div class="nm" style="color:var(--warn)">Final tied — split pot</div>
+              <div class="muted" style="font-size:12px">(${money(p1)} + ${money(p2)}) ÷ 2 = <b>${money(each)}</b> each</div>
+            </div>
+          </div>
+          <div class="amt">${money(each)}</div>
+        </div>
+        <div class="winnerline">
+          <div class="who">
+            <span class="badge gold">1</span>
+            <div style="min-width:0">
+              <div class="nm" style="color:var(--success)">${escapeHtml(fin.splitWith[0])}</div>
+              <div class="muted" style="font-size:12px">Split winner</div>
+            </div>
+          </div>
+          <div class="amt">${money(each)}</div>
+        </div>
+        <div class="winnerline">
+          <div class="who">
+            <span class="badge gold">1</span>
+            <div style="min-width:0">
+              <div class="nm" style="color:var(--success)">${escapeHtml(fin.splitWith[1])}</div>
+              <div class="muted" style="font-size:12px">Split winner</div>
+            </div>
+          </div>
+          <div class="amt">${money(each)}</div>
+        </div>`;
+    }
+
+    if(!br.champion || !br.runnerUp){
+      return `<div class="hint">Final results will appear here after the final matchup has both scores (and payouts are set).</div>`;
+    }
+
+    return `
+      <div class="winnerline">
+        <div class="who">
+          <span class="badge gold">1</span>
+          <div style="min-width:0">
+            <div class="nm" style="color:var(--success)">${escapeHtml(br.champion)}</div>
+            <div class="muted" style="font-size:12px">1st place</div>
+          </div>
+        </div>
+        <div class="amt">${money(p1)}</div>
+      </div>
+
+      <div class="winnerline">
+        <div class="who">
+          <span class="badge silver">2</span>
+          <div style="min-width:0">
+            <div class="nm" style="color:var(--silver)">${escapeHtml(br.runnerUp)}</div>
+            <div class="muted" style="font-size:12px">2nd place</div>
+          </div>
+        </div>
+        <div class="amt">${money(p2)}</div>
+      </div>`;
+  }
+
+  function renderScoreSections(){ /* defined above */ }
+  function renderTotals(){ /* defined above */ }
+  function renderKPIs(){ /* defined above */ }
+
+  function showEntryWarn(msg){
+    const el=$("entryWarn");
+    if(!msg){ el.style.display="none"; el.textContent=""; return; }
+    el.style.display="block"; el.textContent=msg;
+  }
+
+  // applyScoresFromInputs
+  function applyScoresFromInputs(){
+    document.querySelectorAll(".scoreInput").forEach(inp=>{
+      const name=inp.getAttribute("data-name");
+      const game=Number(inp.getAttribute("data-game"));
+      const b=state.bowlers.get(name);
+      if(!b) return;
+      const v=inp.value;
+      if(v===""||v===null||v===undefined) return;
+      const n=Number(v);
+      if(!Number.isNaN(n)) b.scores[game]=n;
+    });
+    state.brackets.forEach(br=>advanceBracketIfReady(br));
+  }
+
+  // ---- hookup remaining functions by hoisting (keep JS simple) ----
+  // (These are already declared above in this single script. Nothing else needed.)
+
+  // Fix: because we referenced renderScoreSections/renderTotals/renderKPIs earlier as placeholders in this view,
+  // we re-declare them here in correct order for the browser (function declarations are hoisted, so OK).
+
+  // Re-render helpers already present above; call at end:
+  async function init(){
+    updateHcpVisibility();
+    updateManualHint();
+    await loadRoster();
+    renderAll();
+  }
+
+  // Add Bowler action with Qty + roster auto handicap
+  $("btnAddBowler").addEventListener("click", ()=>{
+    showEntryWarn("");
+    const name = normalizeName($("bowlerName").value || "");
+    const type = $("entryType").value;
+    const qty  = Math.max(1, Math.min(50, Number($("entryQty").value || 1)));
+    if(!name) return;
+
+    const hcp = (type==="handicap") ? $("bowlerHcp").value : "";
+    ensureBowler(name, hcp);
+
+    let lastErr="";
+    for(let i=0;i<qty;i++){
+      const res = placeBowlerIntoType(name, type);
+      if(!res.ok){ lastErr=res.msg; break; }
+    }
+    if(lastErr){
+      showEntryWarn(lastErr + (qty>1 ? " (Qty stopped early when duplicate prevented.)" : ""));
+      return;
+    }
+    $("entryQty").value="1";
+    renderAll();
+  });
+
+  $("btnAddBracket").addEventListener("click", ()=>addBracket("scratch"));
+
+  $("btnApplyScores").addEventListener("click", ()=>{ applyScoresFromInputs(); renderAll(); });
+  document.addEventListener("keydown", (e)=>{
+    const t=e.target;
+    if(e.key==="Enter" && t && t.classList && t.classList.contains("scoreInput")){
+      applyScoresFromInputs();
+      renderAll();
+    }
+  });
+
+  $("filterName").addEventListener("input", renderTotals);
+  $("sortMode").addEventListener("change", renderTotals);
+
+  $("btnReset").addEventListener("click", ()=>{
+    state.bowlers.clear();
+    state.brackets=[];
+    renderAll();
+  });
+
+  $("entryType").addEventListener("change", ()=>{
+    updateHcpVisibility();
+    updateManualHint();
+    if($("entryType").value==="scratch"){
+      $("bowlerHcp").value="";
+      $("pickerManualHcp").value="";
+    }
+  });
+
+  $("bowlerName").addEventListener("click", openPicker);
+  $("btnPickBowler").addEventListener("click", openPicker);
+  $("pickerClose").addEventListener("click", closePicker);
+  $("pickerBackdrop").addEventListener("click", (e)=>{ if(e.target === $("pickerBackdrop")) closePicker(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && $("pickerBackdrop").style.display==="flex") closePicker(); });
+
+  $("pickerSearch").addEventListener("input", renderPickerList);
+  $("pickerReload").addEventListener("click", async ()=>{ await loadRoster(); });
+
+  $("pickerUseSelected").addEventListener("click", ()=>{
+    if(!state.selectedRoster) return closePicker();
+    applyPickedBowler(state.selectedRoster.name, state.selectedRoster.handicap);
+    closePicker();
+  });
+  $("pickerClear").addEventListener("click", ()=>{
+    $("bowlerName").value="";
+    $("bowlerHcp").value="";
+    closePicker();
+  });
+  $("pickerUseManual").addEventListener("click", ()=>{
+    const name=normalizeName($("pickerManualName").value);
+    if(!name) return;
+    const type=$("entryType").value;
+    const hcp = (type==="handicap") ? $("pickerManualHcp").value : "";
+    applyPickedBowler(name, hcp);
+    closePicker();
+  });
+
+  init();
+
 })();
 </script>
 </body>
