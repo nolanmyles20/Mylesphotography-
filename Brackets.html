@@ -347,6 +347,7 @@
     .rowPick .hc{color:var(--muted); font-size:12px}
     .pillSm{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.03);color:var(--muted);white-space:nowrap;}
     form{margin:0}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
   </style>
 </head>
 
@@ -556,7 +557,10 @@
     return state.bowlers.get(key);
   }
 
-  function bracketAlreadyHasBowler(br, name){ return br.slots.includes(name); }
+  function bracketAlreadyHasBowler(br, name){
+    const n = normalizeName(name);
+    return br.slots.some(s => s && normalizeName(s) === n);
+  }
 
   function ensureOneOpenBracketForType(type){
     if(!state.brackets.some(b=>b.type===type)) addBracket(type);
@@ -597,7 +601,7 @@
   // ---- scoring / advancement ----
   function scoreForMatch(br, bowlerName, game){
     if(!bowlerName) return null;
-    const bowler = state.bowlers.get(bowlerName);
+    const bowler = state.bowlers.get(normalizeName(bowlerName));
     if(!bowler) return null;
     const base = bowler.scores[game];
     if(base===undefined||base===null||base==="") return null;
@@ -673,7 +677,7 @@
 
   function matchNeededGame(br, match, baseGame, name){
     if(!match.a || !match.b) return null;
-    if(!(match.a===name || match.b===name)) return null;
+    if(!(normalizeName(match.a)===normalizeName(name) || normalizeName(match.b)===normalizeName(name))) return null;
     if(match.winner || match.loser || match.finalSplit) return null;
 
     const sA=scoreForMatch(br,match.a,baseGame);
@@ -692,13 +696,13 @@
   function neededGameForBowler(name){
     let needed=null;
     for(const br of state.brackets){
-      if(!br.slots.includes(name)) continue;
+      if(!br.slots.some(s => s && normalizeName(s)===normalizeName(name))) continue;
       advanceBracketIfReady(br);
 
       const eliminated =
-        br.r1.some(m=>m.loser===name) ||
-        br.r2.some(m=>m.loser===name) ||
-        br.r3.some(m=>m.loser===name);
+        br.r1.some(m=>normalizeName(m.loser)===normalizeName(name)) ||
+        br.r2.some(m=>normalizeName(m.loser)===normalizeName(name)) ||
+        br.r3.some(m=>normalizeName(m.loser)===normalizeName(name));
 
       if(eliminated) continue;
 
@@ -712,7 +716,7 @@
   function scoreUsesForName(name){
     const uses=[];
     for(const br of state.brackets){
-      if(!br.slots.includes(name)) continue;
+      if(!br.slots.some(s => s && normalizeName(s)===normalizeName(name))) continue;
       uses.push(`#${br.id} ${br.type==="handicap"?"HCP":"SCR"}`);
     }
     return uses;
@@ -874,16 +878,16 @@
   }
 
   function renderSlotHTML(br, name, match, baseGame){
-    const raw = name ? (state.bowlers.get(name)?.scores?.[baseGame] ?? "") : "";
+    const raw = name ? (state.bowlers.get(normalizeName(name))?.scores?.[baseGame] ?? "") : "";
     const adj = scoreForMatch(br, name, baseGame);
     const showAdj = (br.type==="handicap" && name && raw!=="")
-      ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${adj ?? "—"}</b>`
+      ? ` +HCP ${Number(state.bowlers.get(normalizeName(name))?.hcp||0)} = <b class="mono">${adj ?? "—"}</b>`
       : "";
 
     const winner=match.winner, loser=match.loser;
     let cls="";
-    if(name && winner && name===winner) cls="winner";
-    if(name && loser && name===loser) cls="loser";
+    if(name && winner && normalizeName(name)===normalizeName(winner)) cls="winner";
+    if(name && loser && normalizeName(name)===normalizeName(loser)) cls="loser";
 
     let tiePill="";
     if(match.finalSplit) tiePill=`<span class="pill">FINAL SPLIT</span>`;
@@ -897,8 +901,8 @@
         </div>
         <div class="right">
           ${tiePill}
-          ${name && winner && name===winner ? `<span class="pill">WIN</span>` : ``}
-          ${name && loser && name===loser ? `<span class="pill">OUT</span>` : ``}
+          ${name && winner && normalizeName(name)===normalizeName(winner) ? `<span class="pill">WIN</span>` : ``}
+          ${name && loser && normalizeName(name)===normalizeName(loser) ? `<span class="pill">OUT</span>` : ``}
         </div>
       </div>`;
   }
@@ -955,21 +959,72 @@
   }
 
   /* ===========================
-     EXPORT (WHITE BACKGROUND + LOGO TOP CENTER)
+     EXPORT (KEEP SAME LAYOUT)
+     - white PAGE background
+     - keep bracket dark layout
+     - remove iOS blue form-control rendering by replacing inputs/selects with text pills
+     - add centered logo on export
      =========================== */
+  function replaceControlsForExport(rootEl){
+    // Replace selects with pill text
+    rootEl.querySelectorAll("select").forEach(sel=>{
+      const txt = sel.options[sel.selectedIndex]?.textContent?.trim() || sel.value || "";
+      const span = document.createElement("span");
+      span.className = "pill";
+      span.textContent = txt;
+      span.style.display = "inline-flex";
+      span.style.alignItems = "center";
+      span.style.padding = "10px 12px";
+      span.style.borderRadius = "14px";
+      span.style.height = "auto";
+      span.style.minWidth = "120px";
+      sel.replaceWith(span);
+    });
+
+    // Replace number/text inputs with pill text (but preserve empties)
+    rootEl.querySelectorAll('input').forEach(inp=>{
+      const val = (inp.value ?? "").toString().trim();
+      const placeholder = inp.getAttribute("placeholder") || "";
+      const span = document.createElement("span");
+      span.className = "pill";
+      span.textContent = val !== "" ? val : (placeholder ? placeholder : "—");
+      span.style.display = "inline-flex";
+      span.style.alignItems = "center";
+      span.style.padding = "10px 12px";
+      span.style.borderRadius = "14px";
+      span.style.minWidth = (inp.classList.contains("w-sm") ? "160px" : "120px");
+      inp.replaceWith(span);
+    });
+
+    // Remove Save+Delete buttons (and any other buttons) inside export bracket
+    rootEl.querySelectorAll("button").forEach(b=>b.remove());
+  }
+
   function saveBracketToPDF(brId){
     const el = document.getElementById(`bracket_${brId}`);
     if(!el) return;
 
+    // clone bracket only
     const clone = el.cloneNode(true);
+    // remove save/delete buttons by data attr (safety)
     clone.querySelectorAll("[data-save-del]").forEach(b => b.remove());
 
-    // Wrap export content with logo header
+    // Replace all live controls with static text (fixes iOS blue blocks and layout shifting)
+    replaceControlsForExport(clone);
+
+    const baseCSS = Array.from(document.querySelectorAll("style"))
+      .map(s => s.textContent || "")
+      .join("\n");
+
     const exportHTML = `
-      <div class="exportHeader">
-        <img class="exportLogo" src="${LOGO_PATH}" alt="Logo" />
+      <div class="exportPage">
+        <div class="exportHeader">
+          <img class="exportLogo" src="${LOGO_PATH}" alt="Logo" />
+        </div>
+        <div class="exportBody">
+          ${clone.outerHTML}
+        </div>
       </div>
-      ${clone.outerHTML}
     `;
 
     const html = `
@@ -980,16 +1035,19 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Bracket #${brId}</title>
         <style>
-          *{box-sizing:border-box}
-          body{
-            margin:0;
-            padding:18px;
-            background:#ffffff !important;
-            color:#000000 !important;
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-          }
+          ${baseCSS}
 
-          /* Logo header */
+          /* Export page: WHITE background only (layout stays the same) */
+          :root{ --bg:#fff; }
+          body{
+            background:#fff !important;
+            color:#000;
+          }
+          .wrap{max-width:none !important; padding:0 !important;}
+          .exportPage{
+            padding:18px 18px 22px;
+            background:#fff;
+          }
           .exportHeader{
             display:flex;
             justify-content:center;
@@ -1002,39 +1060,16 @@
             height:auto;
             display:block;
           }
-
-          /* Force light export theme */
-          .bracket,
-          .match,
-          .slot,
-          .winnerline,
-          .foot,
-          .top,
-          .tree,
-          .col{
-            background:#ffffff !important;
-            box-shadow:none !important;
-            border-color:#d9d9d9 !important;
+          /* Keep bracket card centered on the white page */
+          .exportBody{
+            display:flex;
+            justify-content:center;
           }
-
-          .tree::before{ opacity:.55 !important; }
-
-          .nm.winner{ color:#0a8a3a !important; }
-          .nm.loser{ color:#c20000 !important; }
-
-          .pill, .badge{
-            background:#f2f2f2 !important;
-            border:1px solid #cccccc !important;
-            color:#000 !important;
-          }
-
-          /* remove muted gray-on-dark look for export */
-          .muted, .small, .sc, .hint, .tag{
-            color:#333 !important;
-          }
-
+          /* prevent Safari print from adding strange margins */
           @media print{
-            body{padding:0}
+            body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .exportPage{ padding:0; }
+            .exportHeader{ margin:0 0 10px; }
           }
         </style>
       </head>
@@ -1084,8 +1119,8 @@
               <option value="scratch" ${br.type==="scratch"?"selected":""}>Scratch</option>
               <option value="handicap" ${br.type==="handicap"?"selected":""}>Handicap</option>
             </select>
-            <input type="number" class="w-sm" data-p1="${br.id}" placeholder="1st payout" value="${escapeAttr(br.payout1||"")}" />
-            <input type="number" class="w-sm" data-p2="${br.id}" placeholder="2nd payout" value="${escapeAttr(br.payout2||"")}" />
+            <input type="number" class="w-sm payoutInput" data-p1="${br.id}" inputmode="numeric" placeholder="1st payout" value="${escapeAttr(br.payout1||"")}" />
+            <input type="number" class="w-sm payoutInput" data-p2="${br.id}" inputmode="numeric" placeholder="2nd payout" value="${escapeAttr(br.payout2||"")}" />
             <button class="btn danger" data-save-del="${br.id}" type="button">Save + Delete</button>
           </div>
         </div>
@@ -1117,7 +1152,7 @@
           </div>
         </div>
 
-        <div class="foot">
+        <div class="foot" data-foot="${br.id}">
           ${renderFinalResults(br)}
         </div>
       `;
@@ -1134,37 +1169,66 @@
       });
     });
 
+    // FIX: payout inputs losing focus on iOS
+    // - do NOT re-render anything on each keypress
+    // - only update state on input, then update totals/footer on CHANGE/BLUR (keeps keyboard/focus stable)
+    const updateFootOnly = (brId) => {
+      const br = state.brackets.find(b=>b.id===brId);
+      if(!br) return;
+      advanceBracketIfReady(br);
+      const foot = root.querySelector(`[data-foot="${brId}"]`);
+      if(foot) foot.innerHTML = renderFinalResults(br);
+    };
+
     root.querySelectorAll("[data-p1]").forEach(inp=>{
       inp.addEventListener("input", ()=>{
         const id=Number(inp.getAttribute("data-p1"));
         const br=state.brackets.find(b=>b.id===id);
         if(!br) return;
-        br.payout1=Number(inp.value||0);
-        renderTotals(); renderKPIs();
+        br.payout1 = Number(inp.value||0);
+        // no render here
       });
+      const commit = ()=>{
+        const id=Number(inp.getAttribute("data-p1"));
+        updateFootOnly(id);
+        renderTotals();
+        renderKPIs();
+      };
+      inp.addEventListener("change", commit);
+      inp.addEventListener("blur", commit);
     });
+
     root.querySelectorAll("[data-p2]").forEach(inp=>{
       inp.addEventListener("input", ()=>{
         const id=Number(inp.getAttribute("data-p2"));
         const br=state.brackets.find(b=>b.id===id);
         if(!br) return;
-        br.payout2=Number(inp.value||0);
-        renderTotals(); renderKPIs();
+        br.payout2 = Number(inp.value||0);
+        // no render here
       });
+      const commit = ()=>{
+        const id=Number(inp.getAttribute("data-p2"));
+        updateFootOnly(id);
+        renderTotals();
+        renderKPIs();
+      };
+      inp.addEventListener("change", commit);
+      inp.addEventListener("blur", commit);
     });
 
     root.querySelectorAll("[data-save-del]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const id=Number(btn.getAttribute("data-save-del"));
         saveBracketToPDF(id);
-        deleteBracketById(id);
+        // give the new window a moment before deleting (helps on iOS Safari)
+        setTimeout(()=>deleteBracketById(id), 450);
       });
     });
   }
 
   function applyScoresFromInputs(){
     document.querySelectorAll(".scoreInput").forEach(inp=>{
-      const name=inp.getAttribute("data-name");
+      const name=normalizeName(inp.getAttribute("data-name") || "");
       const game=Number(inp.getAttribute("data-game"));
       const b=state.bowlers.get(name);
       if(!b) return;
