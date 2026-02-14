@@ -127,6 +127,7 @@
     .chip.on .dot{background: var(--accent2)}
 
     .hint{font-size:12px;color:var(--muted);line-height:1.45}
+    .warnText{font-size:12px;color:rgba(255,200,74,.9);line-height:1.45}
     .hr{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
 
     .kpi{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
@@ -358,7 +359,11 @@
         <div class="bd">
           <div class="row">
             <input class="w-md" id="bowlerName" placeholder="Bowler name (randomly placed into an open bracket)" />
-            <input type="number" id="bowlerHcp" placeholder="Handicap" title="Used only in Handicap brackets (score + handicap)" />
+            <select id="entryType" class="w-sm" title="Which bracket type to enter">
+              <option value="scratch">Enter Scratch bracket</option>
+              <option value="handicap">Enter Handicap bracket</option>
+            </select>
+            <input type="number" id="bowlerHcp" placeholder="Handicap (only used for Handicap)" />
             <button class="btn good" id="btnAddBowler">Add Bowler</button>
             <div class="spacer"></div>
             <span class="hint">Blank score fields are ignored when applying. Use <b>Clear</b> to remove a score intentionally.</span>
@@ -369,6 +374,8 @@
             <div class="box"><span class="lbl">Bowlers</span> <span class="val" id="kpiBowlers">0</span></div>
             <div class="box"><span class="lbl">Completed Brackets</span> <span class="val" id="kpiDone">0</span></div>
           </div>
+          <div class="hr"></div>
+          <div class="warnText" id="entryWarn" style="display:none"></div>
         </div>
       </div>
 
@@ -438,11 +445,10 @@
   function makeMatch(){
     return {a:null,b:null,winner:null,loser:null,tie:false,tieNeedsRound:null,finalSplit:false,splitEach:0,splitWith:[]};
   }
-
-  function makeBracket(id){
+  function makeBracket(id, type="scratch"){
     return {
       id,
-      type: "scratch",
+      type,
       payout1: 0,
       payout2: 0,
       slots: Array(BRACKET_SIZE).fill(null),
@@ -453,7 +459,6 @@
       runnerUp: null
     };
   }
-
   function rebuildMatchesFromSlots(br){
     const pairs = [[0,1],[2,3],[4,5],[6,7]];
     br.r1.forEach((m,i)=>{
@@ -471,6 +476,18 @@
   const $ = (id) => document.getElementById(id);
   const money = (n) => "$" + Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function normalizeName(name){
+    return String(name||"").trim().replace(/\s+/g," ");
+  }
+
+  function bracketHasBowler(br, name){
+    return br.slots.includes(name);
+  }
+
+  function anyBracketHasBowlerOfType(name, type){
+    return state.brackets.some(b => b.type===type && b.slots.includes(name));
+  }
+
   function openSpotsCount(){
     let open = 0;
     for (const b of state.brackets){
@@ -478,15 +495,16 @@
     }
     return open;
   }
-
-  function addBracket(){
+  function addBracket(type="scratch"){
     const id = state.brackets.length + 1;
-    state.brackets.push(makeBracket(id));
+    const br = makeBracket(id, type);
+    state.brackets.push(br);
     renderAll();
+    return br;
   }
 
   function ensureBowler(name, hcp){
-    const key = name.trim();
+    const key = normalizeName(name);
     if (!key) return null;
     if (!state.bowlers.has(key)){
       state.bowlers.set(key, { name:key, hcp: Number(hcp||0), scores:{} });
@@ -499,9 +517,10 @@
     return state.bowlers.get(key);
   }
 
-  function randomOpenSlot(){
+  function findOpenSlotInType(type){
     const options = [];
     state.brackets.forEach((br)=>{
+      if (br.type !== type) return;
       br.slots.forEach((s, si)=>{
         if (!s) options.push({br, si});
       });
@@ -510,12 +529,41 @@
     return options[Math.floor(Math.random()*options.length)];
   }
 
-  function placeBowlerRandomly(name){
-    const spot = randomOpenSlot();
-    if (!spot) return false;
+  // ✅ ENTRY RULES:
+  // - A bowler can only appear once inside a given bracket (no duplicates)
+  // - Also prevent the same bowler from being entered multiple times into SAME TYPE across different brackets
+  // - If no bracket of that type exists, auto-create one
+  // - If all brackets of that type are full, auto-create another
+  function placeBowlerIntoType(name, type){
+    name = normalizeName(name);
+    if (!name) return {ok:false, msg:"Name is blank"};
+
+    // already entered somewhere for this type?
+    if (anyBracketHasBowlerOfType(name, type)){
+      return {ok:false, msg:`"${name}" is already entered in a ${type==="handicap"?"Handicap":"Scratch"} bracket.`};
+    }
+
+    // ensure at least one bracket of that type exists
+    if (!state.brackets.some(b=>b.type===type)){
+      addBracket(type);
+    }
+
+    // find open slot
+    let spot = findOpenSlotInType(type);
+    if (!spot){
+      // all full -> create new bracket then place
+      const br = addBracket(type);
+      spot = {br, si: br.slots.findIndex(s=>!s)};
+    }
+
+    // extra guard: no duplicates inside bracket (shouldn't happen now)
+    if (spot.br.slots.includes(name)){
+      return {ok:false, msg:`"${name}" already exists in Bracket #${spot.br.id}.`};
+    }
+
     spot.br.slots[spot.si] = name;
     rebuildMatchesFromSlots(spot.br);
-    return true;
+    return {ok:true, msg:""};
   }
 
   function scoreForMatch(br, bowlerName, game){
@@ -529,9 +577,6 @@
     return br.type === "handicap" ? (val + Number(bowler.hcp || 0)) : val;
   }
 
-  // FINAL: tie on game3 => split (p1+p2)/2 each
-  // R1: tie on game1 => wait for game2 tiebreak
-  // R2: tie on game2 => wait for game3 tiebreak
   function decideMatchWinner(br, match, baseGame){
     match.winner = null;
     match.loser = null;
@@ -553,7 +598,6 @@
       return;
     }
 
-    // tie at base game
     match.tie = true;
 
     if (baseGame === 3){
@@ -564,12 +608,12 @@
       return;
     }
 
-    const tbGame = baseGame + 1;  // ✅ game2 for round1, game3 for round2
+    const tbGame = baseGame + 1;  // game2 for round1, game3 for round2
     match.tieNeedsRound = tbGame;
 
     const tA = scoreForMatch(br, match.a, tbGame);
     const tB = scoreForMatch(br, match.b, tbGame);
-    if (tA === null || tB === null) return; // wait for both tiebreak scores
+    if (tA === null || tB === null) return;
 
     if (tA !== tB){
       match.winner = (tA > tB) ? match.a : match.b;
@@ -579,7 +623,7 @@
       return;
     }
 
-    // Still tied after allowed tiebreak (rare). Coin flip.
+    // still tied after allowed tiebreak -> coin flip
     const pickA = Math.random() < 0.5;
     match.winner = pickA ? match.a : match.b;
     match.loser  = pickA ? match.b : match.a;
@@ -616,28 +660,21 @@
     }
   }
 
-  // Determine which GAME score a bowler needs right now (1,2,3).
-  // - If they are in an unresolved matchup and base game score missing => need base game
-  // - If base game tied and tiebreak needed => need tiebreak game
   function matchNeededGame(br, match, baseGame, name){
     if (!match.a || !match.b) return null;
     if (!(match.a===name || match.b===name)) return null;
-
-    // resolved or final split => nothing needed
     if (match.winner || match.loser || match.finalSplit) return null;
 
     const sA = scoreForMatch(br, match.a, baseGame);
     const sB = scoreForMatch(br, match.b, baseGame);
     if (sA === null || sB === null) return baseGame;
 
-    // tie => need next game (except final, which splits when both game3 exist)
     if (sA === sB && baseGame < 3){
       const tb = baseGame + 1;
       const tA = scoreForMatch(br, match.a, tb);
       const tB = scoreForMatch(br, match.b, tb);
       if (tA === null || tB === null) return tb;
     }
-
     return null;
   }
 
@@ -652,7 +689,6 @@
         br.r2.some(m => m.loser === name) ||
         br.r3.some(m => m.loser === name);
 
-      // Note: if final split, nobody is marked loser, so not eliminated
       if (eliminated) continue;
 
       for (const m of br.r1){
@@ -1118,17 +1154,34 @@
     renderTotals();
   }
 
-  $("btnAddBracket").addEventListener("click", addBracket);
+  function showEntryWarn(msg){
+    const el = $("entryWarn");
+    if (!msg){
+      el.style.display = "none";
+      el.textContent = "";
+      return;
+    }
+    el.style.display = "block";
+    el.textContent = msg;
+  }
+
+  $("btnAddBracket").addEventListener("click", ()=>addBracket("scratch"));
 
   $("btnAddBowler").addEventListener("click", ()=>{
-    const name = $("bowlerName").value.trim();
+    showEntryWarn("");
+    const name = normalizeName($("bowlerName").value);
     const hcp = $("bowlerHcp").value;
+    const type = $("entryType").value;
+
     if (!name) return;
-    if (!state.brackets.length) return;
 
     ensureBowler(name, hcp);
-    const ok = placeBowlerRandomly(name);
-    if (!ok) return;
+
+    const res = placeBowlerIntoType(name, type);
+    if (!res.ok){
+      showEntryWarn(res.msg);
+      return;
+    }
 
     $("bowlerName").value = "";
     renderAll();
