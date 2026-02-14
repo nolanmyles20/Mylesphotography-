@@ -7,8 +7,6 @@
   <style>
     :root{
       --bg:#0b0f14;
-      --panel:#0f1620;
-      --panel2:#0c121a;
       --border:rgba(255,255,255,.08);
       --text:#d8e1ee;
       --muted:#8ea0b5;
@@ -30,7 +28,6 @@
       --treePadX: 14px;
       --treeGap: 12px;
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -41,9 +38,7 @@
       color:var(--text);
       min-height:100vh;
     }
-
     .wrap{max-width:1200px;margin:0 auto;padding:18px 14px 60px}
-
     header{
       display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
       margin-bottom:14px;
@@ -51,7 +46,6 @@
     .title{display:flex;flex-direction:column;gap:6px;}
     .title h1{margin:0;font-size:22px;letter-spacing:.3px;font-weight:800;}
     .title .sub{color:var(--muted);font-size:13px;}
-
     .grid{display:grid;grid-template-columns: 1fr;gap:14px;}
 
     .panel{
@@ -93,7 +87,6 @@
     input[type="number"]{width:120px}
     .w-sm{width:160px}
     .w-md{width:240px}
-    .w-lg{width:360px;max-width:100%}
 
     .btn{
       border:1px solid rgba(255,255,255,.12);
@@ -133,22 +126,10 @@
     .chip .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
     .chip.on .dot{background: var(--accent2)}
 
-    .two-col{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:14px;
-    }
-    @media (max-width: 980px){
-      .two-col{grid-template-columns:1fr}
-    }
-
     .hint{font-size:12px;color:var(--muted);line-height:1.45}
     .hr{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
 
-    .kpi{
-      display:flex;gap:10px;flex-wrap:wrap;
-      align-items:center;
-    }
+    .kpi{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
     .kpi .box{
       border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.12);
@@ -157,6 +138,9 @@
     }
     .kpi .box .lbl{font-size:12px;color:var(--muted)}
     .kpi .box .val{font-weight:900;font-size:16px}
+
+    .two-col{display:grid;grid-template-columns: 1.2fr .8fr;gap:14px;}
+    @media (max-width: 980px){ .two-col{grid-template-columns:1fr} }
 
     .score-sections{display:grid;gap:12px}
     .score-section{
@@ -175,11 +159,7 @@
     .score-section .shd .meta{font-size:12px;color:var(--muted);}
     .score-section .sbd{padding:12px}
 
-    .score-list{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
+    .score-list{display:grid;grid-template-columns: 1fr;gap:10px;}
     .score-item{
       display:grid;
       grid-template-columns: 1.1fr .7fr .7fr auto;
@@ -203,18 +183,11 @@
       padding:6px 10px;
       justify-self:start;
     }
-
     .muted{color:var(--muted)}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
 
-    .brackets{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-    }
-    @media (max-width: 980px){
-      .brackets{grid-template-columns:1fr}
-    }
+    .brackets{display:grid;grid-template-columns: 1fr 1fr;gap:14px;}
+    @media (max-width: 980px){ .brackets{grid-template-columns:1fr} }
 
     .bracket{
       border:1px solid rgba(255,255,255,.10);
@@ -233,7 +206,6 @@
     .bracket .top .meta .small{font-size:12px;color:var(--muted)}
     .bracket .top .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
-    /* ===== BRACKET LAYOUT ===== */
     .treeHead{
       display:grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -248,12 +220,7 @@
       text-transform:uppercase;
     }
 
-    .treeScroll{
-      overflow-x:hidden;
-      overflow-y:hidden;
-      -webkit-overflow-scrolling: touch;
-    }
-
+    .treeScroll{overflow-x:hidden;overflow-y:hidden;-webkit-overflow-scrolling: touch;}
     .tree{
       position:relative;
       display:grid;
@@ -264,18 +231,8 @@
       border-radius: 18px;
       width:100%;
     }
-
-    .col{
-      display:flex;
-      flex-direction:column;
-      gap: var(--matchGap);
-      min-width:0;
-    }
-    .col.r1{justify-content:flex-start;}
-    .col.r2{
-      justify-content:flex-start;
-      padding-top: calc((var(--matchH) + var(--matchGap)) / 2);
-    }
+    .col{display:flex;flex-direction:column;gap: var(--matchGap);min-width:0;}
+    .col.r2{padding-top: calc((var(--matchH) + var(--matchGap)) / 2);}
     .r2Spacer{height: var(--matchH);}
     .col.final{justify-content:center;}
 
@@ -301,59 +258,31 @@
         linear-gradient(var(--conn), var(--conn)) calc(33.333% + 2px) calc(12px + (var(--matchH) + var(--matchGap)) + var(--matchH) * 0.5) / 18px 1px no-repeat,
         linear-gradient(var(--conn), var(--conn)) calc(33.333% + 2px) calc(12px + 2*(var(--matchH) + var(--matchGap)) + var(--matchH) * 0.5) / 18px 1px no-repeat,
         linear-gradient(var(--conn), var(--conn)) calc(33.333% + 2px) calc(12px + 3*(var(--matchH) + var(--matchGap)) + var(--matchH) * 0.5) / 18px 1px no-repeat,
-
         linear-gradient(var(--conn), var(--conn)) calc(66.666% + 2px) calc(12px + (var(--matchH) + var(--matchGap))/2 + var(--matchH) * 0.5) / 18px 1px no-repeat,
         linear-gradient(var(--conn), var(--conn)) calc(66.666% + 2px) calc(12px + (var(--matchH) + var(--matchGap))/2 + var(--matchH) + var(--matchH) + var(--matchGap) + var(--matchH) * 0.5) / 18px 1px no-repeat;
       opacity:.9;
     }
 
     .slot{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:7px 10px;
-      border-radius: 12px;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:7px 10px;border-radius: 12px;
       background: rgba(0,0,0,.18);
       border:1px solid rgba(255,255,255,.06);
-      margin-bottom:8px;
-      gap:8px;
-      min-width:0;
+      margin-bottom:8px;gap:8px;min-width:0;
     }
     .slot:last-child{margin-bottom:0}
     .slot .left{display:flex;flex-direction:column;gap:4px;min-width:0;}
-
     .slot .nm{
-      font-weight:900;
-      line-height:1.05;
-      white-space:normal;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      display:-webkit-box;
-      -webkit-line-clamp:2;
-      -webkit-box-orient:vertical;
-      word-break:break-word;
+      font-weight:900;line-height:1.05;white-space:normal;overflow:hidden;text-overflow:ellipsis;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;
       font-size: clamp(12px, 2.6vw, 15px);
     }
-    .slot .nm .nm1,
-    .slot .nm .nm2{
-      display:block;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .slot .sc{
-      font-size:12px;color:var(--muted);
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      line-height:1.12;
-    }
-    .slot .right{
-      font-size:12px;color:var(--muted);
-      display:flex;gap:8px;align-items:center;white-space:nowrap;
-      flex:0 0 auto;
-    }
-
+    .slot .nm .nm1,.slot .nm .nm2{display:block;overflow:hidden;text-overflow:ellipsis;}
+    .slot .sc{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.12;}
+    .slot .right{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;white-space:nowrap;flex:0 0 auto;}
     .nm.winner{color:var(--success)}
     .nm.loser{color:var(--danger)}
+    .pill{padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.03);font-size:12px;color:var(--muted)}
 
     .badge{
       width:18px;height:18px;border-radius:6px;
@@ -372,7 +301,6 @@
       gap:10px;
       background: rgba(0,0,0,.10);
     }
-    .winners{display:grid;gap:8px;}
     .winnerline{
       display:flex;justify-content:space-between;align-items:center;gap:10px;
       border:1px solid rgba(255,255,255,.08);
@@ -383,20 +311,9 @@
     .winnerline .who{display:flex;gap:10px;align-items:center;min-width:0}
     .winnerline .who .nm{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .winnerline .amt{font-weight:900}
-    .pill{
-      padding:4px 8px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      font-size:12px;color:var(--muted)
-    }
 
     @media (max-width: 420px){
-      :root{
-        --treePadX: 10px;
-        --treeGap: 10px;
-        --matchGap: 12px;
-        --matchH: 124px;
-      }
+      :root{--treePadX: 10px;--treeGap: 10px;--matchGap: 12px;--matchH: 124px;}
       .treeHead h3{font-size:11px}
       .match{padding:7px;border-radius:14px}
       .slot{padding:7px 9px;border-radius:11px}
@@ -405,21 +322,11 @@
     }
 
     @media (orientation: landscape){
-      :root{
-        --treePadX: 18px;
-        --treeGap: 14px;
-        --matchH: 138px;
-      }
+      :root{--treePadX: 18px;--treeGap: 14px;--matchH: 138px;}
       .treeScroll{overflow-x:auto}
       .treeScroll::-webkit-scrollbar{height:10px}
-      .treeScroll::-webkit-scrollbar-thumb{
-        background: rgba(255,255,255,.10);
-        border-radius:999px;
-      }
-      .treeScroll::-webkit-scrollbar-track{
-        background: rgba(255,255,255,.04);
-        border-radius:999px;
-      }
+      .treeScroll::-webkit-scrollbar-thumb{background: rgba(255,255,255,.10);border-radius:999px;}
+      .treeScroll::-webkit-scrollbar-track{background: rgba(255,255,255,.04);border-radius:999px;}
       .tree{min-width: 920px;}
       .slot .nm{font-size: 15px;}
     }
@@ -431,7 +338,7 @@
     <header>
       <div class="title">
         <h1>Bowling Betting Brackets</h1>
-        <div class="sub">8 players → 4 → 2 • per-match auto-advance • lanes can finish at different times</div>
+        <div class="sub">Ties: Round1 uses Game2 as tiebreak • Round2 uses Game3 as tiebreak • Final tie splits pot evenly</div>
       </div>
       <div class="row">
         <span class="chip" id="chipOpen"><span class="dot"></span> <b id="openSpots">0</b> open spots</span>
@@ -475,8 +382,9 @@
           </div>
           <div class="bd">
             <div class="hint">
-              Enter scores as lanes finish. A matchup advances as soon as <b>both opponents</b> have scores.
-              Score entry is grouped by which game each bowler currently needs.
+              Matchups resolve as soon as the needed scores exist.
+              If Round 1 ties, it waits for <b>Game 2</b>. If Round 2 ties, it waits for <b>Game 3</b>.
+              If the final ties on Game 3, the pot is split evenly.
             </div>
             <div class="hr"></div>
             <div class="score-sections" id="scoreSections"></div>
@@ -527,6 +435,10 @@
   const state = { bowlers: new Map(), brackets: [] };
   const BRACKET_SIZE = 8;
 
+  function makeMatch(){
+    return {a:null,b:null,winner:null,loser:null,tie:false,tieNeedsRound:null,finalSplit:false,splitEach:0,splitWith:[]};
+  }
+
   function makeBracket(id){
     return {
       id,
@@ -534,9 +446,9 @@
       payout1: 0,
       payout2: 0,
       slots: Array(BRACKET_SIZE).fill(null),
-      r1: Array.from({length:4}, () => ({a:null,b:null,winner:null,loser:null})),
-      r2: Array.from({length:2}, () => ({a:null,b:null,winner:null,loser:null})),
-      r3: Array.from({length:1}, () => ({a:null,b:null,winner:null,loser:null})),
+      r1: Array.from({length:4}, makeMatch),
+      r2: Array.from({length:2}, makeMatch),
+      r3: Array.from({length:1}, makeMatch),
       champion: null,
       runnerUp: null
     };
@@ -546,12 +458,12 @@
     const pairs = [[0,1],[2,3],[4,5],[6,7]];
     br.r1.forEach((m,i)=>{
       const [p,q] = pairs[i];
+      Object.assign(m, makeMatch());
       m.a = br.slots[p] || null;
       m.b = br.slots[q] || null;
-      m.winner = null; m.loser = null;
     });
-    br.r2.forEach(m=>{ m.a=null; m.b=null; m.winner=null; m.loser=null; });
-    br.r3.forEach(m=>{ m.a=null; m.b=null; m.winner=null; m.loser=null; });
+    br.r2.forEach(m=>Object.assign(m, makeMatch()));
+    br.r3.forEach(m=>Object.assign(m, makeMatch()));
     br.champion = null;
     br.runnerUp = null;
   }
@@ -606,32 +518,73 @@
     return true;
   }
 
-  function scoreForMatch(br, bowlerName, round){
+  function scoreForMatch(br, bowlerName, game){
     if (!bowlerName) return null;
     const bowler = state.bowlers.get(bowlerName);
     if (!bowler) return null;
-    const base = bowler.scores[round];
+    const base = bowler.scores[game];
     if (base === undefined || base === null || base === "") return null;
     const val = Number(base);
     if (Number.isNaN(val)) return null;
     return br.type === "handicap" ? (val + Number(bowler.hcp || 0)) : val;
   }
 
-  function decideMatchWinner(br, match, round){
-    if (!match.a || !match.b) return;
-    const sa = scoreForMatch(br, match.a, round);
-    const sb = scoreForMatch(br, match.b, round);
-    if (sa === null || sb === null) return;
+  // FINAL: tie on game3 => split (p1+p2)/2 each
+  // R1: tie on game1 => wait for game2 tiebreak
+  // R2: tie on game2 => wait for game3 tiebreak
+  function decideMatchWinner(br, match, baseGame){
+    match.winner = null;
+    match.loser = null;
+    match.tie = false;
+    match.tieNeedsRound = null;
+    match.finalSplit = false;
+    match.splitEach = 0;
+    match.splitWith = [];
 
-    if (sa === sb){
-      const pickA = Math.random() < 0.5;
-      match.winner = pickA ? match.a : match.b;
-      match.loser  = pickA ? match.b : match.a;
-    } else if (sa > sb){
-      match.winner = match.a; match.loser = match.b;
-    } else {
-      match.winner = match.b; match.loser = match.a;
+    if (!match.a || !match.b) return;
+
+    const sA = scoreForMatch(br, match.a, baseGame);
+    const sB = scoreForMatch(br, match.b, baseGame);
+    if (sA === null || sB === null) return;
+
+    if (sA !== sB){
+      match.winner = (sA > sB) ? match.a : match.b;
+      match.loser  = (sA > sB) ? match.b : match.a;
+      return;
     }
+
+    // tie at base game
+    match.tie = true;
+
+    if (baseGame === 3){
+      const totalPot = Number(br.payout1||0) + Number(br.payout2||0);
+      match.finalSplit = true;
+      match.splitEach = totalPot / 2;
+      match.splitWith = [match.a, match.b];
+      return;
+    }
+
+    const tbGame = baseGame + 1;  // ✅ game2 for round1, game3 for round2
+    match.tieNeedsRound = tbGame;
+
+    const tA = scoreForMatch(br, match.a, tbGame);
+    const tB = scoreForMatch(br, match.b, tbGame);
+    if (tA === null || tB === null) return; // wait for both tiebreak scores
+
+    if (tA !== tB){
+      match.winner = (tA > tB) ? match.a : match.b;
+      match.loser  = (tA > tB) ? match.b : match.a;
+      match.tie = false;
+      match.tieNeedsRound = null;
+      return;
+    }
+
+    // Still tied after allowed tiebreak (rare). Coin flip.
+    const pickA = Math.random() < 0.5;
+    match.winner = pickA ? match.a : match.b;
+    match.loser  = pickA ? match.b : match.a;
+    match.tie = false;
+    match.tieNeedsRound = null;
   }
 
   function advanceBracketIfReady(br){
@@ -644,23 +597,51 @@
       decideMatchWinner(br, m, 2);
     });
 
-    const fA = br.r2[0]?.winner || null;
-    const fB = br.r2[1]?.winner || null;
-    br.r3[0].a = fA;
-    br.r3[0].b = fB;
+    br.r3[0].a = br.r2[0]?.winner || null;
+    br.r3[0].b = br.r2[1]?.winner || null;
     decideMatchWinner(br, br.r3[0], 3);
 
-    const final = br.r3[0];
-    if (final.winner && final.loser){
-      br.champion = final.winner;
-      br.runnerUp = final.loser;
+    const fin = br.r3[0];
+    if (fin.finalSplit){
+      br.champion = null;
+      br.runnerUp = null;
+      return;
+    }
+    if (fin.winner && fin.loser){
+      br.champion = fin.winner;
+      br.runnerUp = fin.loser;
     } else {
       br.champion = null;
       br.runnerUp = null;
     }
   }
 
-  function neededRoundForBowler(name){
+  // Determine which GAME score a bowler needs right now (1,2,3).
+  // - If they are in an unresolved matchup and base game score missing => need base game
+  // - If base game tied and tiebreak needed => need tiebreak game
+  function matchNeededGame(br, match, baseGame, name){
+    if (!match.a || !match.b) return null;
+    if (!(match.a===name || match.b===name)) return null;
+
+    // resolved or final split => nothing needed
+    if (match.winner || match.loser || match.finalSplit) return null;
+
+    const sA = scoreForMatch(br, match.a, baseGame);
+    const sB = scoreForMatch(br, match.b, baseGame);
+    if (sA === null || sB === null) return baseGame;
+
+    // tie => need next game (except final, which splits when both game3 exist)
+    if (sA === sB && baseGame < 3){
+      const tb = baseGame + 1;
+      const tA = scoreForMatch(br, match.a, tb);
+      const tB = scoreForMatch(br, match.b, tb);
+      if (tA === null || tB === null) return tb;
+    }
+
+    return null;
+  }
+
+  function neededGameForBowler(name){
     let needed = null;
     for (const br of state.brackets){
       if (!br.slots.includes(name)) continue;
@@ -671,16 +652,20 @@
         br.r2.some(m => m.loser === name) ||
         br.r3.some(m => m.loser === name);
 
+      // Note: if final split, nobody is marked loser, so not eliminated
       if (eliminated) continue;
 
       for (const m of br.r1){
-        if ((m.a===name || m.b===name) && !m.winner) needed = needed === null ? 1 : Math.min(needed, 1);
+        const g = matchNeededGame(br, m, 1, name);
+        if (g) needed = needed === null ? g : Math.min(needed, g);
       }
       for (const m of br.r2){
-        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner) needed = needed === null ? 2 : Math.min(needed, 2);
+        const g = matchNeededGame(br, m, 2, name);
+        if (g) needed = needed === null ? g : Math.min(needed, g);
       }
       for (const m of br.r3){
-        if ((m.a===name || m.b===name) && m.a && m.b && !m.winner) needed = needed === null ? 3 : Math.min(needed, 3);
+        const g = matchNeededGame(br, m, 3, name);
+        if (g) needed = needed === null ? g : Math.min(needed, g);
       }
     }
     return needed;
@@ -699,10 +684,18 @@
     const totals = new Map();
     for (const br of state.brackets){
       advanceBracketIfReady(br);
+
       const p1 = Number(br.payout1 || 0);
       const p2 = Number(br.payout2 || 0);
+
       if (br.champion) totals.set(br.champion, (totals.get(br.champion)||0) + p1);
       if (br.runnerUp) totals.set(br.runnerUp, (totals.get(br.runnerUp)||0) + p2);
+
+      const fin = br.r3[0];
+      if (fin.finalSplit && fin.splitWith.length === 2){
+        totals.set(fin.splitWith[0], (totals.get(fin.splitWith[0])||0) + fin.splitEach);
+        totals.set(fin.splitWith[1], (totals.get(fin.splitWith[1])||0) + fin.splitEach);
+      }
     }
     return totals;
   }
@@ -711,40 +704,44 @@
     const root = $("scoreSections");
     root.innerHTML = "";
 
-    const byRound = {1:[],2:[],3:[]};
+    const byGame = {1:[],2:[],3:[]};
     for (const [name] of state.bowlers.entries()){
-      const r = neededRoundForBowler(name);
-      if (r === 1 || r === 2 || r === 3) byRound[r].push(name);
+      const g = neededGameForBowler(name);
+      if (g === 1 || g === 2 || g === 3) byGame[g].push(name);
     }
-    byRound[1].sort((a,b)=>a.localeCompare(b));
-    byRound[2].sort((a,b)=>a.localeCompare(b));
-    byRound[3].sort((a,b)=>a.localeCompare(b));
+    byGame[1].sort((a,b)=>a.localeCompare(b));
+    byGame[2].sort((a,b)=>a.localeCompare(b));
+    byGame[3].sort((a,b)=>a.localeCompare(b));
 
-    const titles = { 1:"Game 1 (Round 1)", 2:"Game 2 (Round 2)", 3:"Game 3 (Final)" };
+    const titles = {
+      1:"Game 1 (Round 1)",
+      2:"Game 2 (Round 2 / R1 Tiebreak)",
+      3:"Game 3 (Final / R2 Tiebreak)"
+    };
 
-    [1,2,3].forEach((round)=>{
-      const names = byRound[round];
+    [1,2,3].forEach((game)=>{
+      const names = byGame[game];
       const sec = document.createElement("div");
       sec.className = "score-section";
       sec.innerHTML = `
         <div class="shd">
-          <div class="ttl">${titles[round]}</div>
+          <div class="ttl">${titles[game]}</div>
           <div class="meta">${names.length} bowler${names.length===1?"":"s"} need this score</div>
         </div>
         <div class="sbd">
-          <div class="score-list" id="scoreList_${round}">
-            ${names.length ? "" : `<div class="hint">No active bowlers needing Game ${round} right now.</div>`}
+          <div class="score-list" id="scoreList_${game}">
+            ${names.length ? "" : `<div class="hint">No active bowlers needing Game ${game} right now.</div>`}
           </div>
         </div>
       `;
       root.appendChild(sec);
 
-      const list = sec.querySelector(`#scoreList_${round}`);
+      const list = sec.querySelector(`#scoreList_${game}`);
       if (!names.length) return;
 
       names.forEach((name)=>{
         const bowler = state.bowlers.get(name);
-        const val = bowler?.scores?.[round] ?? "";
+        const val = bowler?.scores?.[game] ?? "";
         const uses = scoreUsesForName(name);
 
         const item = document.createElement("div");
@@ -754,9 +751,9 @@
             <div style="font-weight:900">${escapeHtml(name)}</div>
             <div class="muted" style="font-size:12px">HCP: <span class="mono">${Number(bowler?.hcp||0)}</span></div>
           </div>
-          <input type="number" class="scoreInput" data-round="${round}" data-name="${escapeAttr(name)}" placeholder="Score" value="${escapeAttr(val)}" />
+          <input type="number" class="scoreInput" data-game="${game}" data-name="${escapeAttr(name)}" placeholder="Score" value="${escapeAttr(val)}" />
           <div class="tag">${uses.length ? uses.join(" • ") : "—"}</div>
-          <button class="btn" data-clear="${escapeAttr(name)}" data-clear-round="${round}">Clear</button>
+          <button class="btn" data-clear="${escapeAttr(name)}" data-clear-game="${game}">Clear</button>
         `;
         list.appendChild(item);
       });
@@ -765,10 +762,10 @@
     root.querySelectorAll("[data-clear]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const name = btn.getAttribute("data-clear");
-        const round = Number(btn.getAttribute("data-clear-round"));
+        const game = Number(btn.getAttribute("data-clear-game"));
         const b = state.bowlers.get(name);
         if (!b) return;
-        delete b.scores[round];
+        delete b.scores[game];
         renderAll();
       });
     });
@@ -783,12 +780,13 @@
     return `<span class="nm1">${escapeHtml(first)}</span><span class="nm2">${escapeHtml(rest)}</span>`;
   }
 
-  function renderSlotHTML(br, name, match, round){
-    const raw = name ? (state.bowlers.get(name)?.scores?.[round] ?? "") : "";
-    const adj = scoreForMatch(br, name, round);
+  function renderSlotHTML(br, name, match, baseGame){
+    const raw = name ? (state.bowlers.get(name)?.scores?.[baseGame] ?? "") : "";
+    const adj = scoreForMatch(br, name, baseGame);
     const showAdj = (br.type==="handicap" && name && raw!=="")
       ? ` +HCP ${Number(state.bowlers.get(name)?.hcp||0)} = <b class="mono">${adj ?? "—"}</b>`
       : "";
+
     const winner = match.winner;
     const loser = match.loser;
 
@@ -796,13 +794,21 @@
     if (name && winner && name === winner) cls = "winner";
     if (name && loser && name === loser) cls = "loser";
 
+    let tiePill = "";
+    if (match.finalSplit){
+      tiePill = `<span class="pill">FINAL SPLIT</span>`;
+    } else if (match.tie && !match.winner){
+      tiePill = match.tieNeedsRound ? `<span class="pill">TIE → G${match.tieNeedsRound}</span>` : `<span class="pill">TIE</span>`;
+    }
+
     return `
       <div class="slot">
         <div class="left">
           <div class="nm ${cls}">${name ? formatNameTwoLines(name) : `<span class="muted">— empty —</span>`}</div>
-          <div class="sc">${name ? `Score: <span class="mono">${raw === "" ? "—" : raw}</span>${showAdj}` : `<span class="muted">Add bowlers to fill slots</span>`}</div>
+          <div class="sc">${name ? `G${baseGame}: <span class="mono">${raw === "" ? "—" : raw}</span>${showAdj}` : `<span class="muted">Add bowlers to fill slots</span>`}</div>
         </div>
         <div class="right">
+          ${tiePill}
           ${name && winner && name===winner ? `<span class="pill">WIN</span>` : ``}
           ${name && loser && name===loser ? `<span class="pill">OUT</span>` : ``}
         </div>
@@ -810,11 +816,11 @@
     `;
   }
 
-  function renderMatchCard(br, m, round){
+  function renderMatchCard(br, m, baseGame){
     return `
       <div class="match">
-        ${renderSlotHTML(br, m.a, m, round)}
-        ${renderSlotHTML(br, m.b, m, round)}
+        ${renderSlotHTML(br, m.a, m, baseGame)}
+        ${renderSlotHTML(br, m.b, m, baseGame)}
       </div>
     `;
   }
@@ -822,6 +828,43 @@
   function renderFinalResults(br){
     const p1 = Number(br.payout1||0);
     const p2 = Number(br.payout2||0);
+    const fin = br.r3[0];
+
+    if (fin.finalSplit && fin.splitWith.length === 2){
+      const each = fin.splitEach;
+      return `
+        <div class="winnerline">
+          <div class="who">
+            <span class="badge gold">≡</span>
+            <div style="min-width:0">
+              <div class="nm" style="color:var(--warn)">Final tied — split pot</div>
+              <div class="muted" style="font-size:12px">(${money(p1)} + ${money(p2)}) ÷ 2 = <b>${money(each)}</b> each</div>
+            </div>
+          </div>
+          <div class="amt">${money(each)}</div>
+        </div>
+        <div class="winnerline">
+          <div class="who">
+            <span class="badge gold">1</span>
+            <div style="min-width:0">
+              <div class="nm" style="color:var(--success)">${escapeHtml(fin.splitWith[0])}</div>
+              <div class="muted" style="font-size:12px">Split winner</div>
+            </div>
+          </div>
+          <div class="amt">${money(each)}</div>
+        </div>
+        <div class="winnerline">
+          <div class="who">
+            <span class="badge gold">1</span>
+            <div style="min-width:0">
+              <div class="nm" style="color:var(--success)">${escapeHtml(fin.splitWith[1])}</div>
+              <div class="muted" style="font-size:12px">Split winner</div>
+            </div>
+          </div>
+          <div class="amt">${money(each)}</div>
+        </div>
+      `;
+    }
 
     if (!br.champion || !br.runnerUp){
       return `<div class="hint">Final results will appear here after the final matchup has both scores (and payouts are set).</div>`;
@@ -852,22 +895,14 @@
     `;
   }
 
-  // ===== Save bracket as PDF (via print) =====
   function saveBracketToPDF(brId){
     const el = document.getElementById(`bracket_${brId}`);
     if (!el) return;
-
-    // Clone the bracket card so the print window has everything needed.
     const clone = el.cloneNode(true);
-
-    // Remove the Save+Delete button in the print version (optional, looks cleaner)
-    const toolBtns = clone.querySelectorAll("[data-save-del]");
-    toolBtns.forEach(b=>b.remove());
+    clone.querySelectorAll("[data-save-del]").forEach(b=>b.remove());
 
     const html = `
-      <!doctype html>
-      <html>
-      <head>
+      <!doctype html><html><head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Bracket #${brId}</title>
@@ -876,29 +911,19 @@
           body{margin:0;padding:18px;background:#0b0f14;color:#d8e1ee;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
           @media print { body{padding:0} .note{display:none} }
           .note{color:#8ea0b5;font-size:12px;margin:0 0 10px}
-          /* bring in minimal styles from main page by copying the current document's <style> */
           ${Array.from(document.querySelectorAll("style")).map(s=>s.textContent).join("\n")}
-          /* print tweaks */
           .wrap, header, .panel, .grid, .two-col { display:none !important; }
           .bracket { box-shadow:none !important; }
-          .brackets { display:block !important; }
         </style>
-      </head>
-      <body>
-        <p class="note">Use your browser share/print menu and choose “Save as PDF”.</p>
+      </head><body>
+        <p class="note">Use Print → Save as PDF (iOS: Share → Print → pinch-out → Share → Save to Files).</p>
         ${clone.outerHTML}
-        <script>
-          setTimeout(()=>{ window.print(); }, 250);
-        <\/script>
-      </body>
-      </html>
+        <script>setTimeout(()=>{ window.print(); }, 250);<\/script>
+      </body></html>
     `;
-
     const w = window.open("", "_blank");
     if (!w) return;
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
+    w.document.open(); w.document.write(html); w.document.close();
   }
 
   function deleteBracketById(brId){
@@ -977,28 +1002,19 @@
         const br = state.brackets.find(b=>b.id===id);
         if (!br) return;
         br.type = sel.value;
-        // DON'T full render on type change? we do, because bracket internals might show HCP calc
         renderAll();
       });
     });
 
-    // ✅ Focus fix: do NOT rerender the page on every keystroke.
-    // Update bracket payout values live, but only re-render totals/KPIs (no DOM rebuild of brackets).
     root.querySelectorAll("[data-p1]").forEach(inp=>{
       inp.addEventListener("input", ()=>{
         const id = Number(inp.getAttribute("data-p1"));
         const br = state.brackets.find(b=>b.id===id);
         if (!br) return;
         br.payout1 = Number(inp.value||0);
-        // update payouts panel without destroying focus
-        renderTotals();
-        renderKPIs();
+        renderTotals(); renderKPIs();
       });
-      inp.addEventListener("change", ()=>{
-        // final sync render
-        renderTotals();
-        renderKPIs();
-      });
+      inp.addEventListener("change", ()=>{ renderTotals(); renderKPIs(); });
     });
     root.querySelectorAll("[data-p2]").forEach(inp=>{
       inp.addEventListener("input", ()=>{
@@ -1006,22 +1022,15 @@
         const br = state.brackets.find(b=>b.id===id);
         if (!br) return;
         br.payout2 = Number(inp.value||0);
-        renderTotals();
-        renderKPIs();
+        renderTotals(); renderKPIs();
       });
-      inp.addEventListener("change", ()=>{
-        renderTotals();
-        renderKPIs();
-      });
+      inp.addEventListener("change", ()=>{ renderTotals(); renderKPIs(); });
     });
 
-    // ✅ Save + Delete
     root.querySelectorAll("[data-save-del]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const id = Number(btn.getAttribute("data-save-del"));
-        // 1) open print/save-as-PDF window
         saveBracketToPDF(id);
-        // 2) delete immediately after launching save window
         deleteBracketById(id);
       });
     });
@@ -1075,7 +1084,8 @@
     let done = 0;
     state.brackets.forEach(br=>{
       advanceBracketIfReady(br);
-      if (br.champion && br.runnerUp) done++;
+      const fin = br.r3[0];
+      if ((br.champion && br.runnerUp) || (fin && fin.finalSplit)) done++;
     });
     $("kpiDone").textContent = String(done);
 
@@ -1087,14 +1097,14 @@
   function applyScoresFromInputs(){
     document.querySelectorAll(".scoreInput").forEach(inp=>{
       const name = inp.getAttribute("data-name");
-      const round = Number(inp.getAttribute("data-round"));
+      const game = Number(inp.getAttribute("data-game"));
       const b = state.bowlers.get(name);
       if (!b) return;
 
       const v = inp.value;
-      if (v === "" || v === null || v === undefined) return; // blank = skip
+      if (v === "" || v === null || v === undefined) return;
       const n = Number(v);
-      if (!Number.isNaN(n)) b.scores[round] = n;
+      if (!Number.isNaN(n)) b.scores[game] = n;
     });
 
     state.brackets.forEach(br => advanceBracketIfReady(br));
