@@ -6,7 +6,7 @@
   <title>Bowling Betting Brackets</title>
   <style>
     :root{
-      --bg:#0b0f14;
+      --bg:#000; /* web page = black */
       --border:rgba(255,255,255,.08);
       --text:#d8e1ee;
       --muted:#8ea0b5;
@@ -30,13 +30,27 @@
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(106,167,255,.18), transparent 55%),
-                  radial-gradient(1200px 600px at 90% 0%, rgba(124,243,195,.12), transparent 55%),
-                  linear-gradient(180deg, #070a0f, var(--bg));
+      background: var(--bg);
       color:var(--text);
       min-height:100vh;
     }
-    .wrap{max-width:1200px;margin:0 auto;padding:18px 14px 60px}
+    .wrap{max-width:1200px;margin:0 auto;padding:14px 14px 60px}
+
+    /* LOGO (WEB) */
+    .brandbar{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:10px 0 6px;
+    }
+    .brandbar img{
+      width:min(260px, 70vw);
+      height:auto;
+      display:block;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.55));
+      opacity:.98;
+    }
+
     header{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px;}
     .title{display:flex;flex-direction:column;gap:6px;}
     .title h1{margin:0;font-size:22px;letter-spacing:.3px;font-weight:800;}
@@ -338,6 +352,12 @@
 
 <body>
   <div class="wrap">
+
+    <!-- LOGO TOP CENTERED (WEB) -->
+    <div class="brandbar">
+      <img src="assets/68D8CA4C-741E-41E1-ABBC-8B57D7FD0A57.png" alt="Logo" />
+    </div>
+
     <header>
       <div class="title">
         <h1>Bowling Betting Brackets</h1>
@@ -358,7 +378,6 @@
           </div>
         </div>
         <div class="bd">
-          <!-- FORM FIX: iOS "Done"/Enter reliably triggers submit (keydown often doesn't fire) -->
           <form id="setupForm">
             <div class="row">
               <input class="w-md" id="bowlerName" placeholder="Bowler name (tap to pick from list)" readonly />
@@ -488,6 +507,8 @@
 
 <script>
 (() => {
+  const LOGO_PATH = "assets/68D8CA4C-741E-41E1-ABBC-8B57D7FD0A57.png";
+
   const state = { bowlers: new Map(), brackets: [], roster: [], rosterLoaded:false, selectedRoster:null };
   const BRACKET_SIZE = 8;
 
@@ -543,8 +564,7 @@
     if(!anyOpen) addBracket(type);
   }
 
-  // Qty behavior: place bowler into Qty DIFFERENT brackets (same type), auto-create as needed.
-  // Rule: a bowler can appear only ONCE per bracket, but can appear in multiple brackets.
+  // place into one bracket (same type) where not already present
   function placeBowlerOncePerBracket(name, type){
     name = normalizeName(name);
     if(!name) return {ok:false,msg:"Name is blank"};
@@ -934,35 +954,106 @@
       </div>`;
   }
 
+  /* ===========================
+     EXPORT (WHITE BACKGROUND + LOGO TOP CENTER)
+     =========================== */
   function saveBracketToPDF(brId){
-    const el=document.getElementById(`bracket_${brId}`);
+    const el = document.getElementById(`bracket_${brId}`);
     if(!el) return;
-    const clone=el.cloneNode(true);
-    clone.querySelectorAll("[data-save-del]").forEach(b=>b.remove());
 
-    const html=`
-      <!doctype html><html><head>
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("[data-save-del]").forEach(b => b.remove());
+
+    // Wrap export content with logo header
+    const exportHTML = `
+      <div class="exportHeader">
+        <img class="exportLogo" src="${LOGO_PATH}" alt="Logo" />
+      </div>
+      ${clone.outerHTML}
+    `;
+
+    const html = `
+      <!doctype html>
+      <html>
+      <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Bracket #${brId}</title>
         <style>
           *{box-sizing:border-box}
-          body{margin:0;padding:18px;background:#0b0f14;color:#d8e1ee;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
-          @media print { body{padding:0} .note{display:none} }
-          .note{color:#8ea0b5;font-size:12px;margin:0 0 10px}
-          ${Array.from(document.querySelectorAll("style")).map(s=>s.textContent).join("\n")}
-          .wrap, header, .panel, .grid, .two-col { display:none !important; }
-          .bracket { box-shadow:none !important; }
+          body{
+            margin:0;
+            padding:18px;
+            background:#ffffff !important;
+            color:#000000 !important;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+          }
+
+          /* Logo header */
+          .exportHeader{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin:0 0 14px;
+          }
+          .exportLogo{
+            width:240px;
+            max-width:80%;
+            height:auto;
+            display:block;
+          }
+
+          /* Force light export theme */
+          .bracket,
+          .match,
+          .slot,
+          .winnerline,
+          .foot,
+          .top,
+          .tree,
+          .col{
+            background:#ffffff !important;
+            box-shadow:none !important;
+            border-color:#d9d9d9 !important;
+          }
+
+          .tree::before{ opacity:.55 !important; }
+
+          .nm.winner{ color:#0a8a3a !important; }
+          .nm.loser{ color:#c20000 !important; }
+
+          .pill, .badge{
+            background:#f2f2f2 !important;
+            border:1px solid #cccccc !important;
+            color:#000 !important;
+          }
+
+          /* remove muted gray-on-dark look for export */
+          .muted, .small, .sc, .hint, .tag{
+            color:#333 !important;
+          }
+
+          @media print{
+            body{padding:0}
+          }
         </style>
-      </head><body>
-        <p class="note">Use Print → Save as PDF (iOS: Share → Print → pinch-out → Share → Save to Files).</p>
-        ${clone.outerHTML}
-        <script>setTimeout(()=>{ window.print(); }, 250);<\/script>
-      </body></html>`;
-    const w=window.open("","_blank");
+      </head>
+      <body>
+        ${exportHTML}
+        <script>
+          setTimeout(function(){ window.print(); }, 250);
+        <\/script>
+      </body>
+      </html>
+    `;
+
+    const w = window.open("", "_blank");
     if(!w) return;
-    w.document.open(); w.document.write(html); w.document.close();
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
   }
+
   function deleteBracketById(brId){
     state.brackets = state.brackets.filter(b=>b.id!==brId);
     state.brackets.forEach((b,i)=>b.id=i+1);
@@ -1259,7 +1350,6 @@
 
   $("btnApplyScores").addEventListener("click", ()=>{ applyScoresFromInputs(); renderAll(); });
 
-  // FORM SUBMIT = the real fix for your "hit enter / done" issue on iPhone
   $("setupForm").addEventListener("submit", (e)=>{
     e.preventDefault();
     showEntryWarn("");
@@ -1307,7 +1397,6 @@
     if(!state.selectedRoster){ closePicker(); return; }
     applyPickedBowler(state.selectedRoster.name, state.selectedRoster.handicap);
     closePicker();
-    // keep focus on qty so user can type qty then tap Done
     setTimeout(()=>{ $("entryQty").focus(); }, 0);
   });
   $("pickerClear").addEventListener("click", ()=>{
